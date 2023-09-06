@@ -1,0 +1,7 @@
+name = "GenId"
+uuid = "a93f6079-9d48-41fe-9e61-c179e5016abc"
+authors = ["Plamen Stamov"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.9"
