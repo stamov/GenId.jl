@@ -95,6 +95,10 @@ using GenId
     end
 
     @testset "GenId.bit_mask" begin
+        @test GenId.word_size(Int16) == GenId.word_size(UInt16) == 16
+        @test GenId.word_size(Int32) == GenId.word_size(UInt32) == 32
+        @test GenId.word_size(Int64) == GenId.word_size(UInt64) == 64
+        @test GenId.word_size(Int128) == GenId.word_size(UInt128) == 128
         @test bitstring(GenId.bit_mask_uint(UInt64, 0, 0)) == "0000000000000000000000000000000000000000000000000000000000000001"
         @test bitstring(GenId.bit_mask_uint(Int64, 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
         @test bitstring(GenId.bit_mask_uint(UInt64, 63, 63)) == "1000000000000000000000000000000000000000000000000000000000000000"

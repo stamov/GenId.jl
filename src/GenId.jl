@@ -1,7 +1,7 @@
 module GenId
 
-using Dates
 using ArgCheck
+using Dates
 
 include("crockford32.jl")
 include("bitmasks.jl")

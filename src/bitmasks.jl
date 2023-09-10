@@ -39,6 +39,7 @@ function bit_mask_uint(type::Type{<:Integer}, from, to)
     @argcheck 0 <= from < size DomainError
     @argcheck 0 <= to < size DomainError
     @argcheck from <= to DomainError
+    
     return (-0x0000000000000001 >> (size - to - 1)) & ~(0x0000000000000001 << from - 1)
 end
 
@@ -47,5 +48,6 @@ end
 function bit_mask_int(type, v, from, to)
     mask = bit_mask_uint(type, from, to)
     r = convert(type, v & mask)
+    
     return r
 end

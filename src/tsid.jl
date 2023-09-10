@@ -31,7 +31,8 @@ struct TsIdDefinition
         #@argcheck 1 <= bits_time + bits_machine + bits_tail <= ws DomainError
         @argcheck bits_time + bits_machine + bits_tail + 1 == ws DomainError
         @argcheck epoch_start_dt < epoch_end_dt DomainError
-        new(
+        
+        return new(
             type,
             bits_time, bits_machine, bits_tail,
             machine_id, 1 << bits_tail,
@@ -50,6 +51,7 @@ def_bits_tail(def::TsIdDefinition) = def.bits_tail
 function _make_bits_timestamp(dt::DateTime, epoch_start_ms::Int, shift_bits_time::Int)
     #@arcgcheck (SOME_EPOCH_START_2020 <= dt <= SOME_EPOCH_END_2070) "Timestamp must be in the supported epoch."
     t_offset = (Dates.value(dt) - epoch_start_ms) << shift_bits_time
+    
     return t_offset
 end
 _make_bits_timestamp(def::TsIdDefinition, dt::DateTime) =  _make_bits_timestamp(dt, def.epoch_start_ms, def.shift_bits_time)
@@ -79,11 +81,13 @@ reset_globabl_machine_id_increment(n) = Threads.atomic_xchg!(TSID_MACHINE_INCR, 
 function _make_bits_increment(new_value::TT, tail_mod::Int) where {TT<:Integer}
     new_value = mod(new_value, tail_mod)
     TSID_MACHINE_INCR[] = new_value
+    
     return new_value
 end
 
 function _make_bits_increment(def::TsIdDefinition)
     old = Threads.atomic_xchg!(TSID_MACHINE_INCR, mod(TSID_MACHINE_INCR[] + 1, def.tail_mod))
+    
     return mod(old + 1, def.tail_mod)
 end
 

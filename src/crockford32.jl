@@ -43,6 +43,7 @@ function crockford32_encode_uint64(n::UInt64; started_init::Bool=false, with_che
     end
 
     res = reverse(String(buf[p+1:end]))
+    
     return res
 end
 
@@ -89,6 +90,7 @@ function crockford32_encode_int64(n::Int64; started_init::Bool=false, with_check
     end
 
     res = reverse(String(buf[p+1:end]))
+    
     return res
 end
 
@@ -104,6 +106,7 @@ end
 function crockford32_encode_int128(n::Int128)
     high = convert(Int64, (n & 0x7fffffffffffffff0000000000000000) >> 64)
     low = convert(Int64, n & 0x00000000000000007fffffffffffffff)
+    
     return crockford32_encode_int128(high, low)
 end
 
@@ -152,6 +155,7 @@ function skip_dashes_13_2(s::String)
             s13m[tp] = c
         end
     end
+    
     return @view s13m[1:tp] # returning a @view skips the whole machinery for copying/loops of a tiny vector slice
 end
 
@@ -165,6 +169,7 @@ function skip_dashes_13_3(s::String)
             s13m[tp] = cu
         end
     end
+    
     return String(s13m)[1:tp]
 end
 
@@ -201,6 +206,7 @@ function crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_13_1, wi
         end
     end
     @assert res >= 0 "Can't have negative numbers for Int64 conversion."
+    
     return res
 end
 
@@ -220,6 +226,6 @@ function crockford32_decode_int128(s::String)
         high = s[1:ls-13]
         return convert(Int128, crockford32_decode_int64(high)) << 64 + crockford32_decode_int64(low)
     else
-        -1
+        return -1
     end
 end
