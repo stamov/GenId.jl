@@ -4,7 +4,7 @@ CurrentModule = GenId
 
 # GenId
 
-Documentation for [GenId](https://github.com/plamen.stamov@gmail.com/GenId.jl).
+Documentation for [GenId](https://github.com/stamov/GenId.jl).
 
 ```@index
 ```

@@ -3,5 +3,18 @@ uuid = "a93f6079-9d48-41fe-9e61-c179e5016abc"
 authors = ["Plamen Stamov"]
 version = "1.0.0-DEV"
 
+[deps]
+ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+
 [compat]
 julia = "1.9"
+
+[extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TestEnv = "1e6cf692-eddd-4d53-88a5-2d735e33781b"
+
+[targets]
+test = ["Aqua", "JET", "Test", "TestEnv"]

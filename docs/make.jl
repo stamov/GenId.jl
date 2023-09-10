@@ -6,11 +6,11 @@ DocMeta.setdocmeta!(GenId, :DocTestSetup, :(using GenId); recursive=true)
 makedocs(;
     modules=[GenId],
     authors="Plamen Stamov",
-    repo="https://github.com/plamen.stamov@gmail.com/GenId.jl/blob/{commit}{path}#{line}",
+    repo="https://github.com/stamov/GenId.jl/blob/{commit}{path}#{line}",
     sitename="GenId.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://plamen.stamov@gmail.com.github.io/GenId.jl",
+        canonical="https://stamov.github.io/GenId.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/plamen.stamov@gmail.com/GenId.jl",
+    repo="github.com/stamov/GenId.jl",
     devbranch="main",
 )
