@@ -1,8 +1,4 @@
-
-# const C32_1::UInt8  = 0x0001
-# const C32_1::UInt16 = 0x0001
-# const C32_1::UInt32 = 0x00000001
-# const C64_1::UInt64 = 0x0000000000000001
+# TODO switch to 1-based indexing in bit_mask_*
 
 #@inline word_size(::Type{Int8}) = 8
 @inline word_size(::Type{Int16}) = 16
@@ -14,6 +10,11 @@
 @inline word_size(::Type{UInt32}) = 32
 @inline word_size(::Type{UInt64}) = 64
 @inline word_size(::Type{UInt128}) = 128
+
+@inline mask1_uint(::Type{UInt16}) = 0x0001
+@inline mask1_uint(::Type{UInt32}) = 0x00000001
+@inline mask1_uint(::Type{UInt64}) = 0x0000000000000001
+@inline mask1_uint(::Type{UInt128}) = 0x00000000000000000000000000000001
 
 @inline unsigned_int_for_signed(::Type{Int16}) = UInt16
 @inline unsigned_int_for_signed(::Type{Int32}) = UInt32
@@ -42,8 +43,8 @@ function bit_mask_uint(type::Type{<:Unsigned}, from, to)
     @argcheck 0 <= from < size DomainError
     @argcheck 0 <= to < size DomainError
     @argcheck from <= to DomainError
-    
-    return (-0x0000000000000001 >> (size - to - 1)) & ~(0x0000000000000001 << from - 1)
+
+    return (-mask1_uint(type) >> (size - to - 1)) & ~(mask1_uint(type) << from - 1)
 end
 
 """

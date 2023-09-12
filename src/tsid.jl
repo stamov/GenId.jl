@@ -1,8 +1,6 @@
 
-# struct TSID
-#     v::Int64
-# end
-
+# Simplest wrapper. 
+# Instead of having a comprehensive TsIdDefinition, we could have 2 ints - the one is the value and the other is the bits definitions packed in a single Int64, while calculations are derived from it.
 struct TSID{T<:Integer}
     value::T
 end

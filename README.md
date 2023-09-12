@@ -10,7 +10,7 @@ GenId offers few algorithms to generate mostly non-conflicting IDs (mostly for d
 [![Aqua](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![ColPrac: Contributor Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
-[![current status](https://img.shields.io/badge/julia%20support-v1.9%20and%20up-dark%20green)](https://github.com/stamov/GenId.jl/blob/main/Project.toml) 
+[![current status](https://img.shields.io/badge/julia%20support-v1.6%20and%20up-dark%20green)](https://github.com/stamov/GenId.jl/blob/main/Project.toml) 
  
 # About
 
