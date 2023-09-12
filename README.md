@@ -37,6 +37,7 @@ Currently implemented TsIds allow for:
 * Support 64 bit types (Int64/UInt64) which are shorter than UUIDs, ULIDs, KSUIDs etc.
   * these can be used as traditional int primary keys in databases (sqllite, postgresql etc.) instead of sequences, with low probability of conflict depending on bit sizes in the ID definition;
   * if stored as strings, they use 13 (without) or 14 characters (with checksums);
+* Split machine_id field into at least one more (optional) field and alias it with thread_id. Add possible aliases for domain/user_id etc.
 * Using Crockford Base 32 for textual representation makes them somewhat more readable when displayed to end users;
 * Using Crockford Base 32 makes them URL safe (e.g. when used in REST APIs);
 * When using Crockford Base 32, they are case insensitive and support hyphens in the encoding which increases readability for end users;

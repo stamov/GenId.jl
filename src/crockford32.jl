@@ -8,6 +8,10 @@ const CF32_UPPERCASE_ENCODING_CHECKSUM = Vector{Char}(raw"0123456789ABCDEFGHJKMN
 
 Encodes an UInt64 `n` using Crockford Base 32.
 
+If `with_checksum` is set to `true`, adds a modulo 37 checksum character at the end.
+
+If `started_init` is set to `true`, pads the string to the left to 13(14 when a checksum is generated) characters.
+
 # Examples
 ```julia-repl
 julia> crockford32_encode_uint64(0x000000000000001f)
@@ -70,6 +74,10 @@ end
     crockford32_encode_int64(n::UInt64; started_init::Bool=false, with_checksum::Bool=false)
 
 Encodes an Int64 `n` using Crockford Base 32.
+
+If `with_checksum` is set to `true`, adds a modulo 37 checksum character at the end.
+
+If `started_init` is set to `true`, pads the string to the left to 13(14 when a checksum is generated) characters.
 
 # Examples
 ```julia-repl
@@ -216,6 +224,8 @@ skip_dashes_13(s::String) = skip_dashes_13_3(s)
 
 Decodes a Crockford Base 32 encoded text into an UInt64.
 
+If `with_checksum` is set to `true`, parses the last character from the text as a modulo 37 checksum.
+
 # Examples
 ```julia-repl
 julia> crockford32_decode_uint64("Z")
@@ -224,7 +234,7 @@ julia> crockford32_decode_uint64("Z")
 julia> crockford32_decode_uint64("ZZ"; with_checksum=true)
 0x000000000000001f
 
-julia> crockford32_decode_uint64("Z-Z"; with_checksum=true, skip_fn=GenId.skip_dashes_13_1)
+julia> crockford32_decode_uint64("Z-Z"; with_checksum=true)
 0x000000000000001f
 ```
 """
@@ -266,6 +276,8 @@ end
     crockford32_decode_int64(s_input::String; skip_fn=skip_dashes_13_1, with_checksum=false)
 
 Decodes a Crockford Base 32 encoded text into an Int64.
+
+If `with_checksum` is set to `true`, parses the last character from the text as a modulo 37 checksum.
 
 # Examples
 ```julia-repl
