@@ -17,6 +17,7 @@ using GenId
     @testset "GenId.croford32" begin
         @testset "crockford32_encode_uint64" begin
             @test crockford32_encode_uint64(0x0000000000000000) == "0"
+            @test crockford32_encode_uint64(0x0000000000000000; with_checksum=true) == "00"
             @test crockford32_encode_uint64(0x0000000000000001) == "1"
             @test crockford32_encode_uint64(0xffffffffffffffff) == "FZZZZZZZZZZZZ"
             @test crockford32_encode_uint64(0x000000000000001e) == "Y"
@@ -24,26 +25,27 @@ using GenId
             @test crockford32_encode_uint64(0x0000000000000020) == "10"
             @test crockford32_encode_uint64(0x0000000000000021) == "11"
             @test crockford32_encode_uint64(0x000000000000002f) == "1F"
-            @test crockford32_encode_uint64(0x000000000000002f, started_init=true) == "000000000001F"
+            @test crockford32_encode_uint64(0x000000000000002f; started_init=true) == "000000000001F"
         end
 
         @testset "crockford32_encode_int64" begin
             @test crockford32_encode_int64(convert(Int64, 0x0000000000000000)) == "0"
+            @test crockford32_encode_int64(0; with_checksum=true) == "00"
             @test crockford32_encode_int64(convert(Int64, 0x0000000000000001)) == "1"
-            @test crockford32_encode_int64(convert(Int64, 0x0000000000000001), with_checksum=true) == "11"
+            @test crockford32_encode_int64(convert(Int64, 0x0000000000000001); with_checksum=true) == "11"
             @test crockford32_encode_int64(convert(Int64, 0x0000000000000002)) == "2"
-            @test crockford32_encode_int64(convert(Int64, 0x0000000000000002), with_checksum=true) == "22"
+            @test crockford32_encode_int64(convert(Int64, 0x0000000000000002); with_checksum=true) == "22"
             @test crockford32_encode_int64(convert(Int64, 0x7fffffffffffffff)) == "7ZZZZZZZZZZZZ"
             @test crockford32_encode_int64(convert(Int64, 0x000000000000001e)) == "Y"
             @test crockford32_encode_int64(convert(Int64, 0x000000000000001f)) == "Z"
             @test crockford32_encode_int64(convert(Int64, 0x0000000000000020)) == "10"
             @test crockford32_encode_int64(convert(Int64, 0x0000000000000021)) == "11"
             @test crockford32_encode_int64(convert(Int64, 0x000000000000002f)) == "1F"
-            @test crockford32_encode_int64(194, with_checksum=true) == "629"
-            @test crockford32_encode_int64(398373, with_checksum=true) == "C515Z"
-            @test crockford32_encode_int64(3838385658376483, with_checksum=true) == "3D2ZQ6TVC935"
+            @test crockford32_encode_int64(194; with_checksum=true) == "629"
+            @test crockford32_encode_int64(398373; with_checksum=true) == "C515Z"
+            @test crockford32_encode_int64(3838385658376483; with_checksum=true) == "3D2ZQ6TVC935"
             @test crockford32_encode_uint64(convert(UInt64, 18446744073709551615)) == "FZZZZZZZZZZZZ"
-            @test crockford32_encode_uint64(convert(UInt64, 18446744073709551615), with_checksum=true) == "FZZZZZZZZZZZZB"
+            @test crockford32_encode_uint64(convert(UInt64, 18446744073709551615); with_checksum=true) == "FZZZZZZZZZZZZB"
         end
 
 
@@ -68,12 +70,15 @@ using GenId
         end
 
         @testset "crockford32_decode_int64" begin
-            @test crockford32_decode_int64("11", with_checksum=true) == 1
+            @test crockford32_decode_int64("11"; with_checksum=true) == 1
+            @test crockford32_decode_int64("0") == 0
+            @test crockford32_decode_int64("00"; with_checksum=true) == 0
+            @test_throws ArgumentError crockford32_decode_int64("01"; with_checksum=true) == 0
             @test crockford32_decode_int64("1") == 1
-            @test crockford32_decode_int64("629", with_checksum=true) == 194
+            @test crockford32_decode_int64("629"; with_checksum=true) == 194
             @test crockford32_decode_int64("62") == 194
             @test crockford32_decode_int64("DY2N") == 456789
-            @test crockford32_decode_int64("C515Z", with_checksum=true) == 398373
+            @test crockford32_decode_int64("C515Z"; with_checksum=true) == 398373
             @test crockford32_decode_int64("C515") == 398373
             @test crockford32_decode_int64("5ZZZZZZZZZZZZ") == 6917529027641081855
             @test crockford32_decode_int64("5bcdefghjkmnp") == 6174908412290781878

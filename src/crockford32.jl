@@ -190,18 +190,18 @@ skip_dashes_13_0(s::String) = replace.(s, ['-'] => "")
 
 skip_dashes_13_1(s::String) = filter.(c -> c != '-', s)
 
-function skip_dashes_13_2(s::String)
-    s13m = Vector{Char}(undef, 13)
-    tp = 0
-    @inbounds for c in s
-        if c != '-'
-            tp = tp + 1
-            s13m[tp] = c
-        end
-    end
+# function skip_dashes_13_2(s::String)
+#     s13m = Vector{Char}(undef, 13)
+#     tp = 0
+#     @inbounds for c in s
+#         if c != '-'
+#             tp = tp + 1
+#             s13m[tp] = c
+#         end
+#     end
     
-    return @view s13m[1:tp] # returning a @view skips the whole machinery for copying/loops of a tiny vector slice
-end
+#     return @view s13m[1:tp] # returning a @view skips the whole machinery for copying/loops of a tiny vector slice
+# end
 
 function skip_dashes_13_3(s::String)
     scs = codeunits(s)
