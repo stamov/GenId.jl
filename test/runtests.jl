@@ -122,12 +122,42 @@ using GenId
         bits_machine = 10
         bits_tail = 12
         machine_id = 1
-        iddef1 = TsIdDefinition(Int64, bits_time, bits_machine, bits_tail, machine_id, SOME_EPOCH_START_2020, SOME_EPOCH_END_2070)
+        iddef1 = TsIdDefinition(
+            Int64; 
+            bits_time=bits_time,
+            bits_machine=bits_machine,
+            bits_tail=bits_tail,
+            machine_id=machine_id,
+            epoch_start_dt=SOME_EPOCH_START_2020, 
+            epoch_end_dt=SOME_EPOCH_END_2070)
         @show iddef1
 
         @testset "GenId TsIdDefinition" begin
-            @test_throws DomainError TsIdDefinition(Int64, -3, bits_machine, bits_tail, machine_id, SOME_EPOCH_START_2020, SOME_EPOCH_END_2070)
-            @test_throws DomainError TsIdDefinition(Int64, 1, 1, 1, machine_id, SOME_EPOCH_START_2020, SOME_EPOCH_END_2070)
+            @test_throws DomainError TsIdDefinition(
+                Int64;
+                bits_time=-3,
+                bits_machine=bits_machine,
+                bits_tail=bits_tail,
+                machine_id=machine_id,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070)
+            @test_throws DomainError TsIdDefinition(
+                Int64;
+                bits_time=1,
+                bits_machine=1,
+                bits_tail=1,
+                machine_id=machine_id,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070)
+            @test_throws DomainError TsIdDefinition(
+                Int64;
+                bits_time=bits_time,
+                bits_machine=bits_machine,
+                bits_tail=bits_tail,
+                machine_id=machine_id,
+                epoch_start_dt=SOME_EPOCH_END_2070,
+                epoch_end_dt=SOME_EPOCH_START_2020)
+
         end
         @testset "tsid_timestamp" begin
             tsid_start = GenId._make_bits_timestamp(SOME_EPOCH_START_2020, SOME_EPOCH_START_VALUE_2020, iddef1.shift_bits_time)

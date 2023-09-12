@@ -10,7 +10,7 @@ GenId offers few algorithms to generate mostly non-conflicting IDs (mostly for d
 [![Aqua](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![ColPrac: Contributor Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
-[![current status](https://img.shields.io/badge/julia%20support-v1.6%20and%20up-dark%20green)](https://github.com/stamov/GenId.jl/blob/main/Project.toml) 
+[![current status](https://img.shields.io/badge/Julia%20support-v1.6%20and%20up-dark%20green)](https://github.com/stamov/GenId.jl/blob/main/Project.toml) 
  
 # About
 
@@ -65,21 +65,21 @@ machine_id = 1
 # the actual UUID definition
 iddef = TsIdDefinition(
     # Data type used for storage of the ID
-    Int64, 
+    Int64; 
     # Number of bits used for the timestamp section.
-    41, 
+    bits_time=41, 
     # Number of bits used for the machine section.
-    10, 
+    bits_machine=10, 
     # Number of bits for the tail section.
     # Can be a random number or a local machine/thread specific sequence.
-    12, 
-    machine_id, 
+    bits_tail=12, 
+    machine_id=machine_id, 
     # Start of the epoch for this UUID scheme.
     # Time before that can't be represented.
-    DateTime(2020, 1, 1, 0, 0, 0, 0), 
+    epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0), 
     # Start of the epoch for this UUID scheme.
     # Time after that can't be represented.
-    DateTime(2070, 12, 31, 23, 59, 59, 999)
+    epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
 )
 # The sum of the desired bits must match the word size of the specified data type (e.g. 41+10+12=63, which (currently) are the number of bits used in a Int64 type).
 # Start and end of the epoch of the ID must fit in the desired number of bits for time.

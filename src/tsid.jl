@@ -21,7 +21,7 @@ struct TsIdDefinition
     epoch_start_ms::Int64
     epoch_end_ms::Int64
 
-    function TsIdDefinition(type::Type{<:Integer}, bits_time::Int, bits_machine::Int, bits_tail::Int, machine_id::Int, epoch_start_dt::DateTime, epoch_end_dt::DateTime)
+    function TsIdDefinition(type::Type{<:Integer}; bits_time::Int, bits_machine::Int, bits_tail::Int, machine_id::Int, epoch_start_dt::DateTime, epoch_end_dt::DateTime)
         ws = word_size(type)
         @argcheck 1 <= bits_time <= ws DomainError
         @argcheck 1 <= bits_machine <= ws DomainError
@@ -89,6 +89,37 @@ function _make_bits_increment(def::TsIdDefinition)
     return mod(old + 1, def.tail_mod)
 end
 
+"""
+    tsid_generate(def)
+
+Creates a new UUID based on `def`.
+
+# Examples
+```julia-repl
+julia> iddef = TsIdDefinition(
+    # Data type used for storage of the ID
+    Int64; 
+    # Number of bits used for the timestamp section.
+    bits_time=41, 
+    # Number of bits used for the machine section.
+    bits_machine=10, 
+    # Number of bits for the tail section.
+    # Can be a random number or a local machine/thread specific sequence.
+    bits_tail=12, 
+    machine_id=1, 
+    # Start of the epoch for this UUID scheme.
+    # Time before that can't be represented.
+    epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0), 
+    # Start of the epoch for this UUID scheme.
+    # Time after that can't be represented.
+    epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
+)
+TsIdDefinition(Int64, 41, 10, 12, 1, 4096, 22, 12, Dates.DateTime("2020-01-01T00:00:00"), Dates.DateTime("2070-12-31T23:59:59.999"), 63713520000000, 65322979199999)
+
+julia> tsid_generate(iddef)
+489485826766409729
+```
+"""
 function tsid_generate(def::TsIdDefinition)
     return _make_bits_timestamp(def) | _make_bits_machine_id(def) | _make_bits_increment(def)
 end
