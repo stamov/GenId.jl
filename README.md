@@ -2,6 +2,7 @@
 
 GenId offers few algorithms to generate mostly non-conflicting IDs (mostly for databases/workflows) without a central coordinator. 
 
+[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://stamov.github.io/GenId.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://stamov.github.io/GenId.jl/dev/)
 [![Build Status](https://github.com/stamov/GenId.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/stamov/GenId.jl/actions/workflows/CI.yml?query=branch%3Amain)
@@ -10,8 +11,7 @@ GenId offers few algorithms to generate mostly non-conflicting IDs (mostly for d
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![ColPrac: Contributor Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
 [![current status](https://img.shields.io/badge/julia%20support-v1.9%20and%20up-dark%20green)](https://github.com/stamov/GenId.jl/blob/main/Project.toml) 
-[![Tests](https://img.shields.io/badge/build-passing-green)](https://github.com/stamov/GenId.jl/actions) 
-
+ 
 # About
 
 In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is too high under some circumstances. In such contexts Universally Unique IDentifiers (UUIDs) can be used.
