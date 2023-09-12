@@ -78,7 +78,7 @@ iddef = TsIdDefinition(
     # Start of the epoch for this UUID scheme.
     # Time before that can't be represented.
     epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0), 
-    # Start of the epoch for this UUID scheme.
+    # End of the epoch for this UUID scheme.
     # Time after that can't be represented.
     epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
 )

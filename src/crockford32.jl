@@ -186,7 +186,7 @@ push!(CF32_REVERSE_DICT, 'U' => findfirst('U', CF32_UPPERCASE_ENCODING_STR) - 1)
 #     println(k, " => ", CF32_REVERSE_DICT[k])
 # end
 
-skip_dashes_13_0(s::String) = replace.(s, ['-'] => "")
+# skip_dashes_13_0(s::String) = replace.(s, ['-'] => "")
 
 skip_dashes_13_1(s::String) = filter.(c -> c != '-', s)
 

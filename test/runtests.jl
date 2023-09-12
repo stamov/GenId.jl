@@ -153,6 +153,38 @@ using GenId
                 bits_machine=bits_machine,
                 bits_tail=bits_tail,
                 machine_id=machine_id,
+                epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
+                epoch_end_dt=SOME_EPOCH_END_2070)
+            @test_throws DomainError TsIdDefinition(
+                Int64;
+                bits_time=bits_time,
+                bits_machine=72,
+                bits_tail=bits_tail,
+                machine_id=machine_id,
+                epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
+                epoch_end_dt=SOME_EPOCH_END_2070)
+            @test_throws DomainError TsIdDefinition(
+                Int64;
+                bits_time=bits_time,
+                bits_machine=bits_machine,
+                bits_tail=92,
+                machine_id=machine_id,
+                epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
+                epoch_end_dt=SOME_EPOCH_END_2070)
+            @test_throws DomainError TsIdDefinition(
+                Int64;
+                bits_time=-3,
+                bits_machine=bits_machine,
+                bits_tail=bits_tail,
+                machine_id=machine_id,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt = DateTime("2090-01-12T17:21:55.308"))
+            @test_throws DomainError TsIdDefinition(
+                Int64;
+                bits_time=-3,
+                bits_machine=bits_machine,
+                bits_tail=bits_tail,
+                machine_id=machine_id,
                 epoch_start_dt=SOME_EPOCH_START_2020,
                 epoch_end_dt=SOME_EPOCH_END_2070)
             @test_throws DomainError TsIdDefinition(
