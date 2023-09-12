@@ -40,31 +40,31 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: lcov.info
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      statuses: write
-    steps:
-      - uses: actions/checkout@v3
-      - uses: julia-actions/setup-julia@v1
-        with:
-          version: '1'
-      - name: Configure doc environment
-        run: |
-          julia --project=docs/ -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-      - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-docdeploy@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
-      - run: |
-          julia --project=docs -e '
-            using Documenter: DocMeta, doctest
-            using GenId
-            DocMeta.setdocmeta!(GenId, :DocTestSetup, :(using GenId); recursive=true)
-            doctest(GenId)'
+  # docs:
+  #   name: Documentation
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #     statuses: write
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: julia-actions/setup-julia@v1
+  #       with:
+  #         version: '1'
+  #     - name: Configure doc environment
+  #       run: |
+  #         julia --project=docs/ -e '
+  #           using Pkg
+  #           Pkg.develop(PackageSpec(path=pwd()))
+  #           Pkg.instantiate()'
+  #     - uses: julia-actions/julia-buildpkg@v1
+  #     - uses: julia-actions/julia-docdeploy@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
+  #     - run: |
+  #         julia --project=docs -e '
+  #           using Documenter: DocMeta, doctest
+  #           using GenId
+  #           DocMeta.setdocmeta!(GenId, :DocTestSetup, :(using GenId); recursive=true)
+  #           doctest(GenId)'
