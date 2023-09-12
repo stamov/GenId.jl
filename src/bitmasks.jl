@@ -26,7 +26,7 @@
 
 Creates a 64 bit unsigned integer mask, with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
 
-Counting of bits starts at 1.
+Counting of bits starts at 0.
 
 # Examples
 ```julia-repl
@@ -52,7 +52,7 @@ end
 
 Masks a 64 bit unsigned integer `v` with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
 
-Counting of bits starts at 1.
+Counting of bits starts at 0.
 
 # Examples
 ```julia-repl
@@ -72,7 +72,7 @@ end
 
 Applies a 64 bit signed integer mask to a value `v`, with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
 
-Counting of bits starts at 1.
+Counting of bits starts at 0.
 
 `v` can't be a negative integer.
 
