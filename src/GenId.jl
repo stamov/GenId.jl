@@ -15,7 +15,7 @@ export bit_mask_uint, bit_mask_int
 export crockford32_encode_uint64, crockford32_encode_int64, crockford32_decode_int64, crockford32_decode_uint64
 export crockford32_encode_int128, crockford32_decode_int128
 
-export TsIdDefinition
+export TSID, TsIdDefinition
 export reset_globabl_machine_id_increment
 export def_machine_id, def_thread_id, def_bits_time, def_bits_machine, def_bits_tail
 export tsid_generate

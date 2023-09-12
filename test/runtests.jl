@@ -202,6 +202,12 @@ using GenId
             
             tsid_r = GenId._make_bits_machine_id(iddef1)
             @test tsid_machine_id(iddef1, tsid_r) == machine_id
+
+            @test tsid_timestamp(iddef1, TSID{Int64}(489485826766409729)) == DateTime("2023-09-12T17:21:55.308")
+            @test tsid_machine_id(iddef1, TSID{Int64}(489485826766409729)) == machine_id
+            @test tsid_thread_id(iddef1, TSID{Int64}(489485826766409729)) == 0
+            @test tsid_machine_tail(iddef1, TSID{Int64}(489485826766409729)) == 1
+
         end
 
         @testset "tsid_machine_tail :increment_global" begin
@@ -223,6 +229,14 @@ using GenId
             
             tsid_tincr_4096 = GenId.tsid_generate(iddef1)
             @test tsid_machine_tail(iddef1, tsid_tincr_4096) == 0
+        end
+        
+        @testset "def_*" begin
+            @test def_machine_id(iddef1) == machine_id
+            @test def_thread_id(iddef1) == 0
+            @test def_bits_time(iddef1) == bits_time
+            @test def_bits_machine(iddef1) == bits_machine
+            @test def_bits_tail(iddef1) == bits_tail
         end
 
         @testset "tsid_from_string" begin
