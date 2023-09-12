@@ -56,9 +56,9 @@ Counting of bits starts at 0.
 
 # Examples
 ```julia-repl
-julia> GenId.bit_mask_uint(UInt64, typemax(UInt64), 0,0)
+julia> bit_mask_uint(UInt64, typemax(UInt64), 0,0)
 0x0000000000000001
-julia> GenId.bit_mask_uint(UInt64, typemax(UInt64), 12, 21)
+julia> bit_mask_uint(UInt64, typemax(UInt64), 12, 21)
 0x00000000003ff000
 ```
 """
