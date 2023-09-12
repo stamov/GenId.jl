@@ -1,6 +1,25 @@
 
+# Code for the bit fiddlings is written in almost SSA style for easier debugging.
+
 const CF32_UPPERCASE_ENCODING_CHECKSUM = Vector{Char}(raw"0123456789ABCDEFGHJKMNPQRSTVWXYZ*~$=U")
 
+"""
+    crockford32_encode_uint64(n::UInt64; started_init::Bool=false, with_checksum::Bool=false)
+
+Encodes an UInt64 `n` using Crockford Base 32.
+
+# Examples
+```julia-repl
+julia> crockford32_encode_uint64(0x000000000000001f)
+"Z"
+
+julia> crockford32_encode_uint64(0x000000000000001f; with_checksum=true)
+"ZZ"
+
+julia> crockford32_encode_uint64(0x000000000000001f; with_checksum=true, started_init=true)
+"000000000000ZZ"
+```
+"""
 function crockford32_encode_uint64(n::UInt64; started_init::Bool=false, with_checksum::Bool=false)
     started = started_init
     buf = with_checksum ? fill('.', 14) : fill('.', 13)
@@ -47,6 +66,23 @@ function crockford32_encode_uint64(n::UInt64; started_init::Bool=false, with_che
     return res
 end
 
+"""
+    crockford32_encode_int64(n::UInt64; started_init::Bool=false, with_checksum::Bool=false)
+
+Encodes an Int64 `n` using Crockford Base 32.
+
+# Examples
+```julia-repl
+julia> crockford32_encode_int64(31)
+"Z"
+
+julia> crockford32_encode_int64(31; with_checksum=true)
+"ZZ"
+
+julia> crockford32_encode_int64(31; with_checksum=true, started_init=true)
+"000000000000ZZ"
+```
+"""
 function crockford32_encode_int64(n::Int64; started_init::Bool=false, with_checksum::Bool=false)
     @assert n >= 0 "Can't have negative numbers for Int64 conversion in crockford32_encode_int64."
     buf = with_checksum ? fill('.', 14) : fill('.', 13)
@@ -175,7 +211,23 @@ end
 
 skip_dashes_13(s::String) = skip_dashes_13_3(s)
 
+"""
+    crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_13_1, with_checksum=false)
 
+Decodes a Crockford Base 32 encoded text into an UInt64.
+
+# Examples
+```julia-repl
+julia> crockford32_decode_uint64("Z")
+0x000000000000001f
+
+julia> crockford32_decode_uint64("ZZ"; with_checksum=true)
+0x000000000000001f
+
+julia> crockford32_decode_uint64("Z-Z"; with_checksum=true, skip_fn=GenId.skip_dashes_13_1)
+0x000000000000001f
+```
+"""
 function crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_13_1, with_checksum=false)
     res = 0x0000000000000000
     s13m = skip_fn(s_input)
@@ -210,6 +262,23 @@ function crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_13_1, wi
     return res
 end
 
+"""
+    crockford32_decode_int64(s_input::String; skip_fn=skip_dashes_13_1, with_checksum=false)
+
+Decodes a Crockford Base 32 encoded text into an Int64.
+
+# Examples
+```julia-repl
+julia> crockford32_decode_int64("Z")
+31
+
+julia> crockford32_decode_int64("ZZ"; with_checksum=true)
+31
+
+julia> crockford32_decode_int64("Z-Z"; with_checksum=true)
+31
+```
+"""
 function crockford32_decode_int64(s::String; with_checksum=false)
     r = reinterpret(Int64, crockford32_decode_uint64(s, with_checksum=with_checksum))
     @assert r >= 0 "Decode_int64 not yet implemented without uint64 and should not support negative results."
