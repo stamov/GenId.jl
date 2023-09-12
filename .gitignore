@@ -1,4 +1,4 @@
-.vscode/**
+.vscode/launch.json
 *.jl.*.cov
 *.jl.cov
 *.jl.mem
