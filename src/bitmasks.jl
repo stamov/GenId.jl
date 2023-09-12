@@ -78,7 +78,7 @@ Counting of bits starts at 0.
 
 # Examples
 ```julia-repl
-julia> abit_mask_int(Int64, typemax(Int64), 0,0)
+julia> bit_mask_int(Int64, typemax(Int64), 0,0)
 1
 julia> bit_mask_int(Int64, typemax(Int64), 0,1)
 3
