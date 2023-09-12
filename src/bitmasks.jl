@@ -15,27 +15,29 @@
 @inline word_size(::Type{UInt64}) = 64
 @inline word_size(::Type{UInt128}) = 128
 
+@inline unsigned_int_for_signed(::Type{Int16}) = UInt16
+@inline unsigned_int_for_signed(::Type{Int32}) = UInt32
+@inline unsigned_int_for_signed(::Type{Int64}) = UInt64
+@inline unsigned_int_for_signed(::Type{Int128}) = UInt128
 
 """
-    bit_mask_uint64(from, to)
+    bit_mask_uint(from, to)
 
-Creates a 64 bit unsigned integer mask, with ones between bits in postitions between `from` and `to` and zeroes for other bits. Counting of bits starts at 1.
+Creates a 64 bit unsigned integer mask, with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
+Counting of bits starts at 1.
 
 # Examples
 ```julia-repl
-julia> bit_mask_uint64(0,0)
+julia> bit_mask_uint(0,0)
 0x0000000000000000000000000000000000000000000000000000000000000001
-julia> bit_mask_uint64(63,63)
+julia> bit_mask_uint(63,63)
 0x1000000000000000000000000000000000000000000000000000000000000000
-julia> bit_mask_uint64(12,21)
+julia> bit_mask_uint(12,21)
 0x0000000000000000000000000000000000000000001111111111000000000000
 ```
 """
-function bit_mask_uint(type::Type{<:Integer}, from, to)
+function bit_mask_uint(type::Type{<:Unsigned}, from, to)
     size = word_size(type)
-    #@show size, from, to
-    #@argcheck ispow2(size) DomainError
-    #@argcheck 8 <= size <= 128 DomainError
     @argcheck 0 <= from < size DomainError
     @argcheck 0 <= to < size DomainError
     @argcheck from <= to DomainError
@@ -43,10 +45,24 @@ function bit_mask_uint(type::Type{<:Integer}, from, to)
     return (-0x0000000000000001 >> (size - to - 1)) & ~(0x0000000000000001 << from - 1)
 end
 
-#bit_mask_int(from, to) = convert(Int64, bit_mask_uint(from, to))
+"""
+    bit_mask_int(type, v, from, to)
 
+Applies a 64 bit signed integer mask to a value `v`, with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
+Counting of bits starts at 1.
+`v` can't be a negative integer.
+
+# Examples
+```julia-repl
+julia> bit_mask_int(Int64, typemax(Int64), 0,0)
+1
+julia> bit_mask_int(Int64, typemax(Int64), 0,1)
+3
+```
+"""
 function bit_mask_int(type, v, from, to)
-    mask = bit_mask_uint(type, from, to)
+    @argcheck v >= 0 DomainError
+    mask = bit_mask_uint(unsigned_int_for_signed(type), from, to)
     r = convert(type, v & mask)
     
     return r
