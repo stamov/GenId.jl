@@ -9,7 +9,8 @@ using GenId
 @testset "GenId" begin
 
     @testset "GenId.quality" begin
-        Aqua.test_all(GenId; deps_compat=false)
+        # Aqua.test_all(GenId; deps_compat=false)
+        Aqua.test_all(GenId)
     end
 
 

@@ -169,4 +169,5 @@ Just a design choice between trade-offs at the moment, mainly constrained by ava
 
 This library is Open Source software released under the LGPL 3.0+ license.
 
-# Enjoy! :smiley:
+---
+Enjoy! :smiley:
