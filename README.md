@@ -154,7 +154,7 @@ Just a design choice between trade-offs at the moment, mainly constrained by ava
 
 * More readable than some others (e.g. Base32, Base64, Base58 etc.), while still compressing a bit over Hex encoding for example (each character in Crockford Base 32 corresponds to 5 bits of input);
 * Simple, efficient.
-* Support in other languages [Crockford 32 on Github](https://github.com/search?q=crockford+32&type=repositories&s=stars&o=desc)
+* Support in other languages (see [Crockford 32 on Github](https://github.com/search?q=crockford+32&type=repositories&s=stars&o=desc))
 
 ##### Future plans
 * Finish support for 128 bit representations;
