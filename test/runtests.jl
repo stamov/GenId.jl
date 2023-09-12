@@ -100,6 +100,14 @@ using GenId
         @test GenId.word_size(Int32) == GenId.word_size(UInt32) == 32
         @test GenId.word_size(Int64) == GenId.word_size(UInt64) == 64
         @test GenId.word_size(Int128) == GenId.word_size(UInt128) == 128
+        @test GenId.mask1_uint(UInt16) == 0x0001
+        @test GenId.mask1_uint(UInt32) == 0x00000001
+        @test GenId.mask1_uint(UInt64) == 0x0000000000000001
+        @test GenId.mask1_uint(UInt128) == 0x00000000000000000000000000000001
+        @test GenId.unsigned_int_for_signed(Int16) == UInt16
+        @test GenId.unsigned_int_for_signed(Int32) == UInt32
+        @test GenId.unsigned_int_for_signed(Int64) == UInt64
+        @test GenId.unsigned_int_for_signed(Int128) == UInt128
         @test bitstring(bit_mask_uint(UInt64, 0, 0)) == "0000000000000000000000000000000000000000000000000000000000000001"
         @test bitstring(bit_mask_uint(UInt64, 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
         @test bitstring(bit_mask_uint(UInt64, 63, 63)) == "1000000000000000000000000000000000000000000000000000000000000000"
