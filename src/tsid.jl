@@ -60,15 +60,48 @@ _make_bits_machine_id(def::TsIdDefinition) = _make_bits_machine_id(def.machine_i
 
 
 tsid_timestamp(tsid::TT, epoch_start_ms::Int, shift_bits_time::Int) where {TT<:Integer} = DateTime(Dates.UTM((tsid >> shift_bits_time) + epoch_start_ms))
+"""
+    tsid_timestamp(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
+
+Extracts the timestamp from an existing `tsid`.
+
+# Examples
+```julia-repl
+julia> tsid_timestamp(iddef, 489485826766409729)
+2023-09-12T17:21:55.308
+```
+"""
 tsid_timestamp(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = tsid_timestamp(tsid, def.epoch_start_ms, def.shift_bits_time)
 tsid_timestamp(def::TsIdDefinition, tsid::TSID) = tsid_timestamp(def, tsid.value)
 
+"""
+    tsid_machine_id(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
+
+Extracts the machine id from an existing `tsid`.
+
+# Examples
+```julia-repl
+julia> tsid_machine_id(iddef, 489485826766409729)
+1
+```
+"""
 tsid_machine_id(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = bit_mask_int(def.type, tsid, def.bits_tail, def.bits_tail + def.bits_machine - 1) >> def.bits_tail
 tsid_machine_id(def::TsIdDefinition, tsid::TSID) = tsid_machine_id(def, tsid.value)
 
 tsid_thread_id(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = 0
 tsid_thread_id(def::TsIdDefinition, tsid::TSID) = tsid_thread_id(def, tsid.value)
 
+"""
+    tsid_machine_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
+
+Extracts the tail (an increment or a random number) from an existing `tsid`.
+
+# Examples
+```julia-repl
+julia> tsid_machine_tail(iddef, 489485826766409729)
+1
+```
+"""
 tsid_machine_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = bit_mask_int(def.type, tsid, 0, def.bits_tail - 1)
 tsid_machine_tail(def::TsIdDefinition, tsid::TSID) = tsid_machine_tail(def, tsid.value)
 
@@ -132,6 +165,17 @@ tsid_to_string(tsid::UInt128) = crockford32_encode_int128(convert(Int128, tsid))
 #     return crockford32_encode_int64(tsid_generate(def))
 # end
 
+"""
+    tsid_from_string(s::AbstractString)
+
+Creates a new UUID from a textual representation in `s`.
+
+# Examples
+```julia-repl
+julia> tsid_from_string("DJR0RGDG0401")
+489485826766409729
+```
+"""
 function tsid_from_string(s::String)
     return crockford32_decode_int64(s)
 end
