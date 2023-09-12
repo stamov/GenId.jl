@@ -24,6 +24,7 @@
     bit_mask_uint(from, to)
 
 Creates a 64 bit unsigned integer mask, with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
+
 Counting of bits starts at 1.
 
 # Examples
@@ -46,10 +47,32 @@ function bit_mask_uint(type::Type{<:Unsigned}, from, to)
 end
 
 """
+    bit_mask_uint(type, v, from, to)
+
+Masks a 64 bit unsigned integer `v` with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
+
+Counting of bits starts at 1.
+
+# Examples
+```julia-repl
+julia> GenId.bit_mask_uint(UInt64, typemax(UInt64), 0,0)
+0x0000000000000001
+julia> GenId.bit_mask_uint(UInt64, typemax(UInt64), 12, 21)
+0x00000000003ff000
+```
+"""
+function bit_mask_uint(type, v, from, to)
+    mask = bit_mask_uint(type, from, to)
+    return v & mask
+end
+
+"""
     bit_mask_int(type, v, from, to)
 
 Applies a 64 bit signed integer mask to a value `v`, with ones between bits in postitions between `from` and `to` and zeroes for other bits. 
+
 Counting of bits starts at 1.
+
 `v` can't be a negative integer.
 
 # Examples
