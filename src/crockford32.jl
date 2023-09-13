@@ -304,11 +304,9 @@ function crockford32_decode_int128(s::String)
     @assert 1 <= ls <= 26 "Can't convert to Int128 empty or more than 26 characters."
     if 1 <= ls <= 13
         return convert(Int128, crockford32_decode_int64(s))
-    elseif ls <= 26
+    else
         low = s[ls-13+1:end]
         high = s[1:ls-13]
         return convert(Int128, crockford32_decode_int64(high)) << 64 + crockford32_decode_int64(low)
-    else
-        return -1
     end
 end
