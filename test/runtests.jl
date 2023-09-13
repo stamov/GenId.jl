@@ -62,6 +62,7 @@ using GenId
             @test crockford32_encode_int128(convert(Int128, 0x70000000000000010000000000000000)) == "70000000000010000000000000"
             @test crockford32_encode_int128(convert(Int128, 0x00000000000000010000000000000000)) == "10000000000000"
             @test crockford32_encode_int128(convert(Int128, 170141183460469231722463931679029329919)) == "7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ"
+            @test crockford32_encode_int128(convert(Int128, typemax(Int128))) == "7ZZZZZZZZZZZZFZZZZZZZZZZZZ"
         end
 
         @testset "skip_dashes_13" begin
@@ -99,6 +100,7 @@ using GenId
             @test crockford32_decode_int128("7ZZZZZZZZZZZZ") == 9223372036854775807
             @test length(string(170141183460469231722463931679029329919, base=16)) == 32
             @test crockford32_decode_int128("7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ") == 170141183460469231722463931679029329919
+            #@test crockford32_decode_int128("7ZZZZZZZZZZZZFZZZZZZZZZZZZ") == typemax(Int128)
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HP") == 13
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HPAWKHA8760HPZYHAWKHA8760HP") == 13
         end

@@ -141,16 +141,18 @@ end
 
 function crockford32_encode_int128(high::Int64, low::UInt64)
     if high == 0
-        return crockford32_encode_int64(low, started_init=false)
+        return crockford32_encode_uint64(low, started_init=false)
     else
         return crockford32_encode_int64(high, started_init=false) * crockford32_encode_uint64(low, started_init=true)
     end
 end
 
 function crockford32_encode_int128(n::Int128)
+    #@show n
     high = convert(Int64, (n & 0x7fffffffffffffff0000000000000000) >> 64)
+    #@show high, typeof(high), bitstring(high)
     low = convert(UInt64, n & 0x0000000000000000ffffffffffffffff)
-    
+    #@show low, typeof(low), bitstring(low)
     return crockford32_encode_int128(high, low)
 end
 
