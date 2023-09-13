@@ -16,7 +16,7 @@ GenId offers few algorithms to generate mostly non-conflicting IDs (mostly for d
 
 In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is too high under some circumstances. In such contexts Universally Unique IDentifiers (UUIDs) can be used.
 
-This library provides few algorithms to generate some of them and support user friendly test representation.
+This library provides few algorithms to generate some of them and supports user friendly text representations.
 
 # Background
 
@@ -37,7 +37,6 @@ Currently implemented TsIds allow for:
 * Support 64 bit types (Int64/UInt64) which are shorter than UUIDs, ULIDs, KSUIDs etc.
   * these can be used as traditional int primary keys in databases (sqllite, postgresql etc.) instead of sequences, with low probability of conflict depending on bit sizes in the ID definition;
   * if stored as strings, they use 13 (without) or 14 characters (with checksums);
-* Split machine_id field into at least one more (optional) field and alias it with thread_id. Add possible aliases for domain/user_id etc.
 * Using Crockford Base 32 for textual representation makes them somewhat more readable when displayed to end users;
 * Using Crockford Base 32 makes them URL safe (e.g. when used in REST APIs);
 * When using Crockford Base 32, they are case insensitive and support hyphens in the encoding which increases readability for end users;
@@ -153,17 +152,19 @@ Just a design choice between trade-offs at the moment, mainly constrained by ava
 ##### Why using Crockford Base 32?
 
 * More readable than some others (e.g. Base32, Base64, Base58 etc.), while still compressing a bit over Hex encoding for example (each character in Crockford Base 32 corresponds to 5 bits of input);
-* Simple, efficient.
-* Support in other languages (see [Crockford 32 on Github](https://github.com/search?q=crockford+32&type=repositories&s=stars&o=desc))
+* Simple, efficient;
+* Support in other languages (see [Crockford 32 on Github](https://github.com/search?q=crockford+32&type=repositories&s=stars&o=desc)).
 
 ##### Future plans
 * Finish support for 128 bit representations;
 * Add a wrapper type, which will allow for:
-  * If there is a way to automatically marshall UUIDs from a UUID wrapper type to databases using [DBInterface.jl](https://github.com/JuliaDatabases/DBInterface.jl), will be implemented.
+  * Typed UUIDs instead of flavors of Ints only;
+  * If there is a way to automatically marshall UUIDs from a UUID wrapper type to databases using [DBInterface.jl](https://github.com/JuliaDatabases/DBInterface.jl), will be implemented;
   * Support basic IO over streams (see [CodecBase.jl](https://github.com/JuliaIO/CodecBase.jl) and [TranscodingStreams.jl](https://github.com/JuliaIO/TranscodingStreams.jl));
   * Provide support functions for [StructTypes](https://github.com/JuliaData/StructTypes.jl).
-* Add few more encodings and support declarative grouping through hyphens in textual representations;
-* Add support for 128 bit specific UUIDs (e.g. ULID + some of the official RFC proposals).
+* Split machine_id field into at least one more (optional) field and alias it with thread_id. Add possible aliases for domain/user_id etc.;
+* Add support for 128 bit specific UUIDs (e.g. ULID + some of the official RFC proposals) - high priority;
+* Add few more encodings and support declarative grouping through hyphens in textual representations - very low priority.
 
 # License
 
