@@ -17,9 +17,9 @@ export crockford32_encode_int128, crockford32_decode_uint128, crockford32_decode
 
 export TSID, TsIdDefinition
 export reset_globabl_machine_id_increment
-export def_machine_id, def_thread_id, def_bits_time, def_bits_machine, def_bits_tail
+export def_bits_time, def_bits_group_1, def_bits_group_2, def_bits_tail, def_group_1, def_group_2
 export tsid_generate
-export tsid_timestamp, tsid_machine_id, tsid_thread_id, tsid_machine_tail
+export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
 export tsid_to_string, tsid_from_string
 
 end

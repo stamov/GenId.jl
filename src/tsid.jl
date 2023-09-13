@@ -10,40 +10,47 @@ end
 struct TsIdDefinition
     type::DataType
     bits_time::Int64
-    bits_machine::Int64
+    bits_group_1::Int64
+    bits_group_2::Int64
     bits_tail::Int64
-    machine_id::Int64
+    tail_algorithm::Symbol
+    group_1::Int64
+    group_2::Int64
     tail_mod::Int64
     shift_bits_time::Int64
-    shift_bits_machine::Int64
+    shift_bits_group_1::Int64
+    shift_bits_group_2::Int64
     epoch_start_dt::DateTime
     epoch_end_dt::DateTime
     epoch_start_ms::Int64
     epoch_end_ms::Int64
 
-    function TsIdDefinition(type::Type{<:Integer}; bits_time::Int, bits_machine::Int, bits_tail::Int, machine_id::Int, epoch_start_dt::DateTime, epoch_end_dt::DateTime)
+    function TsIdDefinition(type::Type{<:Integer}; bits_time::Int, bits_group_1::Int, bits_group_2::Int=0, bits_tail::Int, tail_algorithm::Symbol=:node_increment, group_1::Int, group_2::Int = 0, epoch_start_dt::DateTime, epoch_end_dt::DateTime)
         ws = word_size(type)
         @argcheck 1 <= bits_time <= ws AssertionError
-        @argcheck 1 <= bits_machine <= ws AssertionError
+        @argcheck 1 <= bits_group_1 <= ws AssertionError
+        @argcheck 0 <= bits_group_2 <= ws AssertionError
         @argcheck 1 <= bits_tail <= ws AssertionError
-        #@argcheck 1 <= bits_time + bits_machine + bits_tail <= ws AssertionError
-        @argcheck bits_time + bits_machine + bits_tail + 1 == ws AssertionError
+        @argcheck bits_time + bits_group_1 + bits_group_2 + bits_tail + 1 == ws AssertionError
         @argcheck epoch_start_dt < epoch_end_dt AssertionError
         
         return new(
             type,
-            bits_time, bits_machine, bits_tail,
-            machine_id, 1 << bits_tail,
-            ws - bits_time - 1, bits_tail,
+            bits_time, bits_group_1, bits_group_2, bits_tail,
+            tail_algorithm,
+            group_1, group_2,
+            1 << bits_tail,
+            ws - bits_time - 1, bits_tail, 0,
             epoch_start_dt, epoch_end_dt,
             Dates.value(epoch_start_dt), Dates.value(epoch_end_dt))
     end
 end
 
-def_machine_id(def::TsIdDefinition) = def.machine_id
-def_thread_id(def::TsIdDefinition) = 0
+def_group_1(def::TsIdDefinition) = def.group_1
+def_group_2(def::TsIdDefinition) = def.group_2
 def_bits_time(def::TsIdDefinition) = def.bits_time
-def_bits_machine(def::TsIdDefinition) = def.bits_machine
+def_bits_group_1(def::TsIdDefinition) = def.bits_group_1
+def_bits_group_2(def::TsIdDefinition) = def.bits_group_2
 def_bits_tail(def::TsIdDefinition) = def.bits_tail
 
 function _make_bits_timestamp(dt::DateTime, epoch_start_ms::Int, shift_bits_time::Int)
@@ -55,8 +62,8 @@ end
 _make_bits_timestamp(def::TsIdDefinition, dt::DateTime) =  _make_bits_timestamp(dt, def.epoch_start_ms, def.shift_bits_time)
 _make_bits_timestamp(def::TsIdDefinition) = _make_bits_timestamp(def, Dates.now())
 
-_make_bits_machine_id(mid::Int64, shift_bits_machine::Int64) = mid << shift_bits_machine
-_make_bits_machine_id(def::TsIdDefinition) = _make_bits_machine_id(def.machine_id, def.shift_bits_machine)
+_make_bits_group_1(mid::Int64, shift_bits_machine::Int64) = mid << shift_bits_machine
+_make_bits_group_1(def::TsIdDefinition) = _make_bits_group_1(def.group_1, def.shift_bits_group_1)
 
 
 tsid_timestamp(tsid::TT, epoch_start_ms::Int, shift_bits_time::Int) where {TT<:Integer} = DateTime(Dates.UTM((tsid >> shift_bits_time) + epoch_start_ms))
@@ -85,11 +92,11 @@ julia> tsid_machine_id(iddef, 489485826766409729)
 1
 ```
 """
-tsid_machine_id(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = bit_mask_int(def.type, tsid, def.bits_tail, def.bits_tail + def.bits_machine - 1) >> def.bits_tail
-tsid_machine_id(def::TsIdDefinition, tsid::TSID) = tsid_machine_id(def, tsid.value)
+tsid_group_1(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = bit_mask_int(def.type, tsid, def.bits_tail, def.bits_tail + def.bits_group_1 - 1) >> def.bits_tail
+tsid_group_1(def::TsIdDefinition, tsid::TSID) = tsid_group_1(def, tsid.value)
 
-tsid_thread_id(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = 0
-tsid_thread_id(def::TsIdDefinition, tsid::TSID) = tsid_thread_id(def, tsid.value)
+tsid_group_2(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = 0
+tsid_group_2(def::TsIdDefinition, tsid::TSID) = tsid_group_2(def, tsid.value)
 
 """
     tsid_machine_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
@@ -102,8 +109,8 @@ julia> tsid_machine_tail(iddef, 489485826766409729)
 1
 ```
 """
-tsid_machine_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = bit_mask_int(def.type, tsid, 0, def.bits_tail - 1)
-tsid_machine_tail(def::TsIdDefinition, tsid::TSID) = tsid_machine_tail(def, tsid.value)
+tsid_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = bit_mask_int(def.type, tsid, 0, def.bits_tail - 1)
+tsid_tail(def::TsIdDefinition, tsid::TSID) = tsid_tail(def, tsid.value)
 
 const TSID_MACHINE_INCR = Base.Threads.Atomic{Int64}(0)
 reset_globabl_machine_id_increment() = Threads.atomic_xchg!(TSID_MACHINE_INCR, 0)
@@ -154,7 +161,7 @@ julia> tsid_generate(iddef)
 ```
 """
 function tsid_generate(def::TsIdDefinition)
-    return _make_bits_timestamp(def) | _make_bits_machine_id(def) | _make_bits_increment(def)
+    return _make_bits_timestamp(def) | _make_bits_group_1(def) | _make_bits_increment(def)
 end
 
 tsid_to_string(tsid::Int64) = crockford32_encode_int64(tsid)

@@ -69,11 +69,13 @@ iddef = TsIdDefinition(
     # Number of bits used for the timestamp section.
     bits_time=41, 
     # Number of bits used for the machine section.
-    bits_machine=10, 
+    bits_group_1=10, 
     # Number of bits for the tail section.
     # Can be a random number or a local machine/thread specific sequence.
     bits_tail=12, 
-    machine_id=machine_id, 
+    # Increment tail bits globally (independent of thread ids) for the node (machine/server)
+    tail_algorithm=:node_increment,
+    group_1=machine_id, 
     # Start of the epoch for this UUID scheme.
     # Time before that can't be represented.
     epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0), 
