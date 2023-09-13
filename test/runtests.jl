@@ -167,8 +167,10 @@ using GenId
             epoch_start_dt=SOME_EPOCH_START_2020, 
             epoch_end_dt=SOME_EPOCH_END_2070)
         @show iddef_int64_1
+        @show typeof(iddef_int64_1)
 
         @testset "GenId TsIdDefinition" begin
+            @test typeof(iddef_int64_1) == TsIdDefinition
             @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=-3,
@@ -290,6 +292,7 @@ using GenId
             @test def_group_2(iddef_int64_1) == 0
             @test def_bits_time(iddef_int64_1) == bits_time
             @test def_bits_group_1(iddef_int64_1) == bits_machine
+            @test def_bits_group_2(iddef_int64_1) == 0
             @test def_bits_tail(iddef_int64_1) == bits_tail
         end
 

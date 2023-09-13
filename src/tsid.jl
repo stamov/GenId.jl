@@ -24,8 +24,20 @@ struct TsIdDefinition
     epoch_end_dt::DateTime
     epoch_start_ms::Int64
     epoch_end_ms::Int64
+    rand_max::Int64
 
-    function TsIdDefinition(type::Type{<:Integer}; bits_time::Int, bits_group_1::Int, bits_group_2::Int=0, bits_tail::Int, tail_algorithm::Symbol=:node_increment, group_1::Int, group_2::Int = 0, epoch_start_dt::DateTime, epoch_end_dt::DateTime)
+    function TsIdDefinition(
+        type::Type{<:Integer}; 
+        bits_time::Int, 
+        bits_group_1::Int, 
+        bits_group_2::Int=0, 
+        bits_tail::Int, 
+        tail_algorithm::Symbol=:machine_increment, 
+        group_1::Int, 
+        group_2::Int = 0, 
+        epoch_start_dt::DateTime, 
+        epoch_end_dt::DateTime
+    )
         ws = word_size(type)
         @argcheck 1 <= bits_time <= ws AssertionError
         @argcheck 1 <= bits_group_1 <= ws AssertionError
@@ -33,18 +45,40 @@ struct TsIdDefinition
         @argcheck 1 <= bits_tail <= ws AssertionError
         @argcheck bits_time + bits_group_1 + bits_group_2 + bits_tail + 1 == ws AssertionError
         @argcheck epoch_start_dt < epoch_end_dt AssertionError
+        @argcheck in(tail_algorithm, Set([:machine_increment, :random])) AssertionError
         
         return new(
             type,
-            bits_time, bits_group_1, bits_group_2, bits_tail,
+            bits_time, 
+            bits_group_1, 
+            bits_group_2, 
+            bits_tail,
             tail_algorithm,
-            group_1, group_2,
-            1 << bits_tail,
-            ws - bits_time - 1, bits_tail, 0,
-            epoch_start_dt, epoch_end_dt,
-            Dates.value(epoch_start_dt), Dates.value(epoch_end_dt))
+            group_1, 
+            group_2,
+            convert(Int64, 1 << bits_tail),
+            ws - bits_time - 1, 
+            bits_tail, 
+            0,
+            epoch_start_dt, 
+            epoch_end_dt,
+            Dates.value(epoch_start_dt), 
+            Dates.value(epoch_end_dt),
+            convert(Int64, (1 << bits_tail) - 1)
+        )
     end
 end
+
+# iddef = TsIdDefinition(
+#     Int64;
+#     bits_time=41,
+#     bits_group_1=10,
+#     bits_tail=12,
+#     tail_algorithm=:machine_increment,
+#     group_1=1,
+#     epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
+#     epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
+# )
 
 def_group_1(def::TsIdDefinition) = def.group_1
 def_group_2(def::TsIdDefinition) = def.group_2

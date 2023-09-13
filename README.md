@@ -74,7 +74,8 @@ iddef = TsIdDefinition(
     # Can be a random number or a local machine/thread specific sequence.
     bits_tail=12, 
     # Increment tail bits globally (independent of thread ids) for the node (machine/server)
-    tail_algorithm=:node_increment,
+    tail_algorithm=:machine_increment,
+    # Use group_1 as the machine_id
     group_1=machine_id, 
     # Start of the epoch for this UUID scheme.
     # Time before that can't be represented.
