@@ -139,22 +139,69 @@ function crockford32_encode_int64(n::Int64; started_init::Bool=false, with_check
 end
 
 
-function crockford32_encode_int128(high::Int64, low::UInt64)
-    if high == 0
-        return crockford32_encode_uint64(low, started_init=false)
+function crockford32_encode_int128(n::Int128; started_init::Bool=false, with_checksum::Bool=false)
+    @assert n >= 0 "Can't have negative numbers for Int64 conversion in crockford32_encode_int64."
+    buf = with_checksum ? fill('.', 27) : fill('.', 26)
+    p = with_checksum ? 27 : 26
+    started = started_init
+    if n == 0 && !started
+        if with_checksum
+            return "00"
+        else
+            return "0"
+        end
     else
-        return crockford32_encode_int64(high, started_init=false) * crockford32_encode_uint64(low, started_init=true)
+        mask = reinterpret(Int128, 0x70000000000000000000000000000000)
+        mn = n & mask
+        mni = mn >> 125 + 1
+        if mn != 0 || started
+            c = CF32_UPPERCASE_ENCODING_CHECKSUM[mni]
+            buf[p] = c
+            p = p - 1
+            started = true
+        end
+
+        mask_init = reinterpret(Int128, 0x0000000000000000000000000000001f)
+        for i in 24:-1:0
+            mask = mask_init << (i * 5)
+            mn = n & mask
+            mni = mn >> (i * 5) + 1
+            if mn != 0 || started
+                c = CF32_UPPERCASE_ENCODING_CHECKSUM[mni]
+                buf[p] = c
+                p = p - 1
+                started = true
+            end
+        end
     end
+
+    if with_checksum
+        c = CF32_UPPERCASE_ENCODING_CHECKSUM[mod(n, 37)+1]
+        buf[p] = c
+        p = p - 1
+    end
+
+    res = reverse(String(buf[p+1:end]))
+
+    return res
 end
 
-function crockford32_encode_int128(n::Int128)
-    #@show n
-    high = convert(Int64, (n & 0x7fffffffffffffff0000000000000000) >> 64)
-    #@show high, typeof(high), bitstring(high)
-    low = convert(UInt64, n & 0x0000000000000000ffffffffffffffff)
-    #@show low, typeof(low), bitstring(low)
-    return crockford32_encode_int128(high, low)
-end
+# function crockford32_encode_int128(high::Int64, low::UInt64)
+#     if high == 0
+#         return crockford32_encode_uint64(low, started_init=false)
+#     else
+#         return crockford32_encode_int64(high, started_init=false) * crockford32_encode_uint64(low, started_init=true)
+#     end
+# end
+
+# function crockford32_encode_int128(n::Int128)
+#     #@show n
+#     high = convert(Int64, (n & 0x7fffffffffffffff0000000000000000) >> 64)
+#     #@show high, typeof(high), bitstring(high)
+#     low = convert(UInt64, n & 0x0000000000000000ffffffffffffffff)
+#     #@show low, typeof(low), bitstring(low)
+#     return crockford32_encode_int128(high, low)
+# end
 
 const CF32_UPPERCASE_ENCODING_STR = String(CF32_UPPERCASE_ENCODING_CHECKSUM)
 const CF32_REVERSE_DICT = IdDict{Char,UInt64}()

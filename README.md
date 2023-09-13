@@ -29,7 +29,7 @@ Additional reading:
 * [The primary key dillema: IDs vs UUIDs and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/);
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
 
-This library implements few of these starting with [Snowflake](https://github.com/twitter-archive/snowflake) and using [Crockford Base 32](https://www.crockford.com/base32.html) for textual representation.
+This library implements few of these starting with [Snowflake](https://github.com/twitter-archive/snowflake) alikes and using [Crockford Base 32](https://www.crockford.com/base32.html) for textual representation.
 
 # Features
 
