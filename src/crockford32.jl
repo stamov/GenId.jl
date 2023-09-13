@@ -237,7 +237,7 @@ push!(CF32_REVERSE_DICT, 'U' => findfirst('U', CF32_UPPERCASE_ENCODING_STR) - 1)
 
 # skip_dashes_13_0(s::String) = replace.(s, ['-'] => "")
 
-skip_dashes_13_1(s::String) = filter.(c -> c != '-', s)
+skip_dashes_1(s::String) = filter.(c -> c != '-', s)
 
 # function skip_dashes_13_2(s::String)
 #     s13m = Vector{Char}(undef, 13)
@@ -252,21 +252,22 @@ skip_dashes_13_1(s::String) = filter.(c -> c != '-', s)
 #     return @view s13m[1:tp] # returning a @view skips the whole machinery for copying/loops of a tiny vector slice
 # end
 
-function skip_dashes_13_3(s::String)
-    scs = codeunits(s)
-    s13m = Vector{UInt8}(undef, 13)
-    tp = 0
-    @inbounds for cu in scs
-        if cu != 0x2d # '-'
-            tp = tp + 1
-            s13m[tp] = cu
-        end
-    end
+# function skip_dashes_13_3(s::String)
+#     scs = codeunits(s)
+#     s13m = Vector{UInt8}(undef, 13)
+#     tp = 0
+#     @inbounds for cu in scs
+#         if cu != 0x2d # '-'
+#             tp = tp + 1
+#             s13m[tp] = cu
+#         end
+#     end
     
-    return String(s13m)[1:tp]
-end
+#     return String(s13m)[1:tp]
+# end
 
-skip_dashes_13(s::String) = skip_dashes_13_3(s)
+#skip_dashes_13(s::String) = skip_dashes_13_3(s)
+skip_dashes(s::String) = skip_dashes_1(s)
 
 """
     crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_13_1, with_checksum=false)
@@ -287,7 +288,7 @@ julia> crockford32_decode_uint64("Z-Z"; with_checksum=true)
 0x000000000000001f
 ```
 """
-function crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_13_1, with_checksum=false)
+function crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_1, with_checksum=false)
     res = 0x0000000000000000
     s13m = skip_fn(s_input)
     ls = length(s13m)
@@ -316,11 +317,55 @@ function crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_13_1, wi
             throw(ArgumentError("Checksum $checksum_char doesn't match the parsed number of $res with modulo 37 of $modulo."))
         end
     end
-    @assert res >= 0 "Can't have negative numbers for Int64 conversion."
+    #@assert res >= 0 "Can't have negative numbers for Int64 conversion."
     
     return res
 end
 
+
+function crockford32_decode_uint128(s_input::String; skip_fn=skip_dashes_1, with_checksum=false)
+    #@show "crockford32_decode_uint128", s_input
+    res::UInt128 = 0x00000000000000000000000000000000
+    s26m = skip_fn(s_input)
+    #@show s26m
+    ls = length(s26m)
+    checksum_char = with_checksum ? s26m[ls] : '.'
+    if with_checksum
+        ls = ls - 1
+    end
+    #@show ls
+    if ls == 26
+        c = s26m[1]
+        ni = CF32_REVERSE_DICT[c]
+        #@show c, ni
+        n = convert(UInt128, ni) << 124
+        #@show n, typeof(n)
+        res = res | n
+        #@show res, typeof(res)
+    end
+    si = ls == 26 ? 2 : 1
+    for i in si:ls
+        c = s26m[i]
+        ni = CF32_REVERSE_DICT[c]
+        shift = (ls - i) * 5
+        n = convert(UInt128, ni) << shift
+        res = res | n
+        #@show res
+    end
+    if with_checksum
+        checksum_char_idx = CF32_REVERSE_DICT[checksum_char]
+        modulo = mod(res, 37)
+        if modulo != checksum_char_idx
+            throw(ArgumentError("Checksum $checksum_char doesn't match the parsed number of $res with modulo 37 of $modulo."))
+        end
+    end
+    #@assert res >= 0 "Can't have negative numbers for Int64 conversion."
+
+    return res
+end
+#bitstring(typemax(Int128))
+#bitstring(typemax(UInt128))
+#convert(UInt128, typemax(Int128))
 """
     crockford32_decode_int64(s_input::String; skip_fn=skip_dashes_13_1, with_checksum=false)
 
@@ -346,14 +391,14 @@ function crockford32_decode_int64(s::String; with_checksum=false)
     return r
 end
 
-function crockford32_decode_int128(s::String)
-    ls = length(s)
-    @assert 1 <= ls <= 26 "Can't convert to Int128 empty or more than 26 characters."
-    if 1 <= ls <= 13
-        return convert(Int128, crockford32_decode_int64(s))
-    else
-        low = s[ls-13+1:end]
-        high = s[1:ls-13]
-        return convert(Int128, crockford32_decode_int64(high)) << 64 + crockford32_decode_int64(low)
-    end
-end
+# function crockford32_decode_int128(s::String)
+#     ls = length(s)
+#     @assert 1 <= ls <= 26 "Can't convert to Int128 empty or more than 26 characters."
+#     if 1 <= ls <= 13
+#         return convert(Int128, crockford32_decode_int64(s))
+#     else
+#         low = s[ls-13+1:end]
+#         high = s[1:ls-13]
+#         return convert(Int128, crockford32_decode_int64(high)) << 64 + crockford32_decode_int64(low)
+#     end
+# end

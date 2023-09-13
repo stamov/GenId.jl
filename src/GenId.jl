@@ -13,7 +13,7 @@ include("tsid.jl")
 export bit_mask_uint, bit_mask_int
 
 export crockford32_encode_uint64, crockford32_encode_int64, crockford32_decode_int64, crockford32_decode_uint64
-export crockford32_encode_int128, crockford32_decode_int128
+export crockford32_encode_int128, crockford32_decode_uint128 #, crockford32_decode_int128
 
 export TSID, TsIdDefinition
 export reset_globabl_machine_id_increment

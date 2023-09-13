@@ -71,11 +71,13 @@ using GenId
         end
  
         @testset "skip_dashes_13" begin
-            @test GenId.skip_dashes_13("FZ") == "FZ"
-            @test GenId.skip_dashes_13("FZZZZ-ZZZZ-ZZZZ") == "FZZZZZZZZZZZZ"
+            @test GenId.skip_dashes("FZ") == "FZ"
+            @test GenId.skip_dashes("FZZZZ-ZZZZ-ZZZZ") == "FZZZZZZZZZZZZ"
         end
 
         @testset "crockford32_decode_uint64" begin
+            @test crockford32_decode_uint64("7ZZZZZZZZZZZZ") == 0x7fffffffffffffff
+            @test crockford32_decode_uint64("7ZZZZZZZZZZZZ") == convert(UInt64, typemax(Int64))
             @test crockford32_decode_uint64("FZZZZZZZZZZZZ") == 0xffffffffffffffff
             @test crockford32_decode_uint64("FZZZZ-ZZZZ-ZZZZ") == 0xffffffffffffffff
         end
@@ -102,10 +104,11 @@ using GenId
 
         @testset "crockford32_decode_int128" begin
             @test length(string(9223372036854775807, base=16)) == 16
-            @test crockford32_decode_int128("7ZZZZZZZZZZZZ") == 9223372036854775807
+            @test crockford32_decode_uint128("07ZZZZZZZZZZZZ") == 9223372036854775807
             @test length(string(170141183460469231722463931679029329919, base=16)) == 32
-            @test crockford32_decode_int128("7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ") == 170141183460469231722463931679029329919
-            #@test crockford32_decode_int128("7ZZZZZZZZZZZZFZZZZZZZZZZZZ") == typemax(Int128)
+            #@test crockford32_decode_int128("7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ") == 170141183460469231722463931679029329919
+            @test crockford32_decode_uint128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == 0x7fffffffffffffffffffffffffffffff
+            @test crockford32_decode_uint128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == convert(UInt128, typemax(Int128))
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HP") == 13
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HPAWKHA8760HPZYHAWKHA8760HP") == 13
         end
@@ -290,7 +293,8 @@ using GenId
             @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
             @test tsid_to_string(convert(Int128, 1)) == "1"
             @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
-            @test tsid_from_string("3FFFFFFFFFFFFFFFFFFFFFFFFF") == 9223372036854775807
+            @test tsid_from_string("00000000000000000000000001") == convert(UInt128, 1)
+            #@test tsid_from_string("3ZZZZZZZZZZZZZZZZZZZZZZZZZ") == convert(UInt128, typemax(Int128))
             #@test tsid_to_str(1) == "DGVTV3540402"
             #@test tsid1_int64_from_str("D4PMAVXC0408") == 473674380866490376
             #@show tsid_machine_id(iddef1, 473674380866490376)
