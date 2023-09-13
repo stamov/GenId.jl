@@ -58,7 +58,9 @@ using GenId
             @test crockford32_encode_int128(convert(Int128, typemax(Int128))) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
             @test crockford32_encode_int128(convert(Int128, 0x7fffffffffffffffffffffffffffffff)) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
             @test crockford32_encode_int128(convert(Int128, 0)) == "0"
+            @test crockford32_encode_int128(convert(Int128, 0); with_checksum=true) == "00"
             @test crockford32_encode_int128(convert(Int128, 1)) == "1"
+            @test crockford32_encode_int128(convert(Int128, 1); with_checksum=true) == "11"
             @test crockford32_encode_int128(convert(Int128, 0x000000000000001)) == "1"
             @test crockford32_encode_int128(convert(Int128, 0x10000000000000010000000000000000)) == "0G00000000000G000000000000"
             @test crockford32_encode_int128(convert(Int128, 0x10000000000000001000000000000000)) == "0G000000000001000000000000"
@@ -86,7 +88,7 @@ using GenId
             @test crockford32_decode_int64("11"; with_checksum=true) == 1
             @test crockford32_decode_int64("0") == 0
             @test crockford32_decode_int64("00"; with_checksum=true) == 0
-            @test_throws ArgumentError crockford32_decode_int64("01"; with_checksum=true) == 0
+            @test_throws AssertionError crockford32_decode_int64("01"; with_checksum=true) == 0
             @test crockford32_decode_int64("1") == 1
             @test crockford32_decode_int64("629"; with_checksum=true) == 194
             @test crockford32_decode_int64("62") == 194
@@ -110,8 +112,9 @@ using GenId
             @test crockford32_decode_uint128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == 0x7fffffffffffffffffffffffffffffff
             @test crockford32_decode_uint128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == convert(UInt128, typemax(Int128))
             @test crockford32_decode_int128("00000000000000000000000001") == 1
+            @test crockford32_decode_int128("000000000000000000000000011"; with_checksum=true) == 1
+            @test_throws AssertionError crockford32_decode_int128("000000000000000000000000012"; with_checksum=true) == 1
             @test crockford32_decode_int128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == typemax(Int128)
-            #@test crockford32_decode_int128("8ZZZZZZZZZZZZZZZZZZZZZZZZZ") == 13
             @test_throws AssertionError crockford32_decode_int128("8ZZZZZZZZZZZZZZZZZZZZZZZZZ")
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HP") == 13
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HPAWKHA8760HPZYHAWKHA8760HP") == 13
@@ -297,7 +300,8 @@ using GenId
             @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
             @test tsid_to_string(convert(Int128, 1)) == "1"
             @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
-            @test tsid_from_string("00000000000000000000000001") == convert(UInt128, 1)
+            @test tsid_from_string("00000000000000000000000001") == convert(Int128, 1)
+            @test tsid_from_string("0000000000001") == 1
             #@test tsid_from_string("3ZZZZZZZZZZZZZZZZZZZZZZZZZ") == convert(UInt128, typemax(Int128))
             #@test tsid_to_str(1) == "DGVTV3540402"
             #@test tsid1_int64_from_str("D4PMAVXC0408") == 473674380866490376

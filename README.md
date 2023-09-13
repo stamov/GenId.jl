@@ -156,7 +156,6 @@ Just a design choice between trade-offs at the moment, mainly constrained by ava
 * Support in other languages (see [Crockford 32 on Github](https://github.com/search?q=crockford+32&type=repositories&s=stars&o=desc)).
 
 ##### Future plans
-* Finish support for 128 bit representations;
 * Add a wrapper type, which will allow for:
   * Typed UUIDs instead of flavors of Ints only;
   * If there is a way to automatically marshall UUIDs from a UUID wrapper type to databases using [DBInterface.jl](https://github.com/JuliaDatabases/DBInterface.jl), will be implemented;

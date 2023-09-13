@@ -314,7 +314,7 @@ function crockford32_decode_uint64(s_input::String; skip_fn=skip_dashes_1, with_
         checksum_char_idx = CF32_REVERSE_DICT[checksum_char]
         modulo = mod(res, 37)
         if modulo != checksum_char_idx
-            throw(ArgumentError("Checksum $checksum_char doesn't match the parsed number of $res with modulo 37 of $modulo."))
+            throw(AssertionError("Checksum $checksum_char doesn't match the parsed number of $res with modulo 37 of $modulo."))
         end
     end
     #@assert res >= 0 "Can't have negative numbers for Int64 conversion."
@@ -356,7 +356,7 @@ function crockford32_decode_uint128(s_input::String; skip_fn=skip_dashes_1, with
         checksum_char_idx = CF32_REVERSE_DICT[checksum_char]
         modulo = mod(res, 37)
         if modulo != checksum_char_idx
-            throw(ArgumentError("Checksum $checksum_char doesn't match the parsed number of $res with modulo 37 of $modulo."))
+            throw(AssertionError("Checksum $checksum_char doesn't match the parsed number of $res with modulo 37 of $modulo."))
         end
     end
     #@assert res >= 0 "Can't have negative numbers for Int64 conversion."
