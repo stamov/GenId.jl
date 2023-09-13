@@ -391,6 +391,12 @@ function crockford32_decode_int64(s::String; with_checksum=false)
     return r
 end
 
+function crockford32_decode_int128(s::String; with_checksum=false)
+    r = reinterpret(Int128, crockford32_decode_uint128(s, with_checksum=with_checksum))
+    @assert r >= 0 "Decode_int64 not yet implemented without uint64 and should not support negative results."
+    return r
+end
+
 # function crockford32_decode_int128(s::String)
 #     ls = length(s)
 #     @assert 1 <= ls <= 26 "Can't convert to Int128 empty or more than 26 characters."

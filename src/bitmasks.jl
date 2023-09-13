@@ -40,9 +40,9 @@ julia> bit_mask_uint(12,21)
 """
 function bit_mask_uint(type::Type{<:Unsigned}, from, to)
     size = word_size(type)
-    @argcheck 0 <= from < size DomainError
-    @argcheck 0 <= to < size DomainError
-    @argcheck from <= to DomainError
+    @argcheck 0 <= from < size AssertionError
+    @argcheck 0 <= to < size AssertionError
+    @argcheck from <= to AssertionError
 
     return (-mask1_uint(type) >> (size - to - 1)) & ~(mask1_uint(type) << from - 1)
 end
@@ -85,7 +85,7 @@ julia> bit_mask_int(Int64, typemax(Int64), 0,1)
 ```
 """
 function bit_mask_int(type, v, from, to)
-    @argcheck v >= 0 DomainError
+    @argcheck v >= 0 AssertionError
     mask = bit_mask_uint(unsigned_int_for_signed(type), from, to)
     r = convert(type, v & mask)
     

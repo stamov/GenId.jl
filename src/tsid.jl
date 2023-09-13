@@ -23,12 +23,12 @@ struct TsIdDefinition
 
     function TsIdDefinition(type::Type{<:Integer}; bits_time::Int, bits_machine::Int, bits_tail::Int, machine_id::Int, epoch_start_dt::DateTime, epoch_end_dt::DateTime)
         ws = word_size(type)
-        @argcheck 1 <= bits_time <= ws DomainError
-        @argcheck 1 <= bits_machine <= ws DomainError
-        @argcheck 1 <= bits_tail <= ws DomainError
-        #@argcheck 1 <= bits_time + bits_machine + bits_tail <= ws DomainError
-        @argcheck bits_time + bits_machine + bits_tail + 1 == ws DomainError
-        @argcheck epoch_start_dt < epoch_end_dt DomainError
+        @argcheck 1 <= bits_time <= ws AssertionError
+        @argcheck 1 <= bits_machine <= ws AssertionError
+        @argcheck 1 <= bits_tail <= ws AssertionError
+        #@argcheck 1 <= bits_time + bits_machine + bits_tail <= ws AssertionError
+        @argcheck bits_time + bits_machine + bits_tail + 1 == ws AssertionError
+        @argcheck epoch_start_dt < epoch_end_dt AssertionError
         
         return new(
             type,

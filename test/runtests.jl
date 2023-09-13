@@ -109,6 +109,10 @@ using GenId
             #@test crockford32_decode_int128("7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ") == 170141183460469231722463931679029329919
             @test crockford32_decode_uint128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == 0x7fffffffffffffffffffffffffffffff
             @test crockford32_decode_uint128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == convert(UInt128, typemax(Int128))
+            @test crockford32_decode_int128("00000000000000000000000001") == 1
+            @test crockford32_decode_int128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ") == typemax(Int128)
+            #@test crockford32_decode_int128("8ZZZZZZZZZZZZZZZZZZZZZZZZZ") == 13
+            @test_throws AssertionError crockford32_decode_int128("8ZZZZZZZZZZZZZZZZZZZZZZZZZ")
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HP") == 13
             #@test crockford32_decode_uint128("AWKHA8760HPZYHAWKHA8760HPAWKHA8760HPZYHAWKHA8760HP") == 13
         end
@@ -134,7 +138,7 @@ using GenId
         @test bitstring(bit_mask_uint(UInt64, typemax(UInt64), 0, 0)) == "0000000000000000000000000000000000000000000000000000000000000001"
         @test bitstring(bit_mask_uint(UInt64, typemax(UInt64), 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
         @test bitstring(bit_mask_int(Int64, typemax(Int64), 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
-        @test_throws DomainError bitstring(GenId.bit_mask_int(Int64, -1, 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
+        @test_throws AssertionError bitstring(GenId.bit_mask_int(Int64, -1, 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
     end
 
 
@@ -162,7 +166,7 @@ using GenId
         @show iddef_int64_1
 
         @testset "GenId TsIdDefinition" begin
-            @test_throws DomainError TsIdDefinition(
+            @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=-3,
                 bits_machine=bits_machine,
@@ -170,7 +174,7 @@ using GenId
                 machine_id=machine_id,
                 epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
                 epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws DomainError TsIdDefinition(
+            @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=bits_time,
                 bits_machine=72,
@@ -178,7 +182,7 @@ using GenId
                 machine_id=machine_id,
                 epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
                 epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws DomainError TsIdDefinition(
+            @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=bits_time,
                 bits_machine=bits_machine,
@@ -186,7 +190,7 @@ using GenId
                 machine_id=machine_id,
                 epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
                 epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws DomainError TsIdDefinition(
+            @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=-3,
                 bits_machine=bits_machine,
@@ -194,7 +198,7 @@ using GenId
                 machine_id=machine_id,
                 epoch_start_dt=SOME_EPOCH_START_2020,
                 epoch_end_dt = DateTime("2090-01-12T17:21:55.308"))
-            @test_throws DomainError TsIdDefinition(
+            @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=-3,
                 bits_machine=bits_machine,
@@ -202,7 +206,7 @@ using GenId
                 machine_id=machine_id,
                 epoch_start_dt=SOME_EPOCH_START_2020,
                 epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws DomainError TsIdDefinition(
+            @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=1,
                 bits_machine=1,
@@ -210,7 +214,7 @@ using GenId
                 machine_id=machine_id,
                 epoch_start_dt=SOME_EPOCH_START_2020,
                 epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws DomainError TsIdDefinition(
+            @test_throws AssertionError TsIdDefinition(
                 Int64;
                 bits_time=bits_time,
                 bits_machine=bits_machine,
