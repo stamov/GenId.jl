@@ -20,6 +20,8 @@ using GenId
             @test crockford32_encode_uint64(0x0000000000000000; with_checksum=true) == "00"
             @test crockford32_encode_uint64(0x0000000000000001) == "1"
             @test crockford32_encode_uint64(0xffffffffffffffff) == "FZZZZZZZZZZZZ"
+            @test crockford32_encode_uint64(convert(UInt64, typemax(Int64))) == "7ZZZZZZZZZZZZ"
+            @test crockford32_encode_uint64(typemax(UInt64)) == "FZZZZZZZZZZZZ"
             @test crockford32_encode_uint64(0x000000000000001e) == "Y"
             @test crockford32_encode_uint64(0x000000000000001f) == "Z"
             @test crockford32_encode_uint64(0x0000000000000020) == "10"
@@ -52,7 +54,10 @@ using GenId
         @testset "crockford32_encode_int128" begin
             @test crockford32_encode_int128(convert(Int128, 0x7fffffffffffffff0000000000000000)) == "7ZZZZZZZZZZZZ0000000000000"
             @test crockford32_encode_int128(convert(Int128, 0x7fffffffffffffff0000000000000001)) == "7ZZZZZZZZZZZZ0000000000001"
-            @test crockford32_encode_int128(convert(Int128, 0x0000000000000001)) == "1"
+            @test crockford32_encode_int128(convert(Int128, 0x7fffffffffffffff7fffffffffffffff)) == "7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ"
+            @test crockford32_encode_int128(convert(Int128, typemax(Int128))) == "7ZZZZZZZZZZZZFZZZZZZZZZZZZ"
+            #@test crockford32_encode_int128(convert(Int128, 0x7fffffffffffffffffffffffffffffff)) == "7ZZZZZZZZZZZZZZZZZZZZZZZZZ"
+            @test crockford32_encode_int128(convert(Int128, 1)) == "1"
             @test crockford32_encode_int128(convert(Int128, 0x000000000000001)) == "1"
             @test crockford32_encode_int128(convert(Int128, 0x70000000000000010000000000000000)) == "70000000000010000000000000"
             @test crockford32_encode_int128(convert(Int128, 0x00000000000000010000000000000000)) == "10000000000000"
@@ -136,7 +141,7 @@ using GenId
         bits_machine = 10
         bits_tail = 12
         machine_id = 1
-        iddef1 = TsIdDefinition(
+        iddef_int64_1 = TsIdDefinition(
             Int64; 
             bits_time=bits_time,
             bits_machine=bits_machine,
@@ -144,7 +149,7 @@ using GenId
             machine_id=machine_id,
             epoch_start_dt=SOME_EPOCH_START_2020, 
             epoch_end_dt=SOME_EPOCH_END_2070)
-        @show iddef1
+        @show iddef_int64_1
 
         @testset "GenId TsIdDefinition" begin
             @test_throws DomainError TsIdDefinition(
@@ -206,69 +211,69 @@ using GenId
 
         end
         @testset "tsid_timestamp" begin
-            tsid_start = GenId._make_bits_timestamp(SOME_EPOCH_START_2020, SOME_EPOCH_START_VALUE_2020, iddef1.shift_bits_time)
+            tsid_start = GenId._make_bits_timestamp(SOME_EPOCH_START_2020, SOME_EPOCH_START_VALUE_2020, iddef_int64_1.shift_bits_time)
             @test tsid_start == 0
             @test GenId.tsid_timestamp(tsid_start, SOME_EPOCH_START_VALUE_2020, bits_time) == SOME_EPOCH_START_2020
             
             tsid_end = GenId._make_bits_timestamp(SOME_EPOCH_END_2070, SOME_EPOCH_START_VALUE_2020, 22)
             @test tsid_end == 6750561160392605696
-            @test tsid_timestamp(iddef1, tsid_end) == SOME_EPOCH_END_2070
+            @test tsid_timestamp(iddef_int64_1, tsid_end) == SOME_EPOCH_END_2070
             
-            @test GenId._make_bits_timestamp(iddef1, SOME_EPOCH_START_2020) == tsid_start
-            @test GenId._make_bits_timestamp(iddef1, SOME_EPOCH_END_2070) == tsid_end
+            @test GenId._make_bits_timestamp(iddef_int64_1, SOME_EPOCH_START_2020) == tsid_start
+            @test GenId._make_bits_timestamp(iddef_int64_1, SOME_EPOCH_END_2070) == tsid_end
         end
 
         @testset "tsid_machine_id" begin
-            mid1 = GenId._make_bits_machine_id(1, iddef1.shift_bits_machine)
+            mid1 = GenId._make_bits_machine_id(1, iddef_int64_1.shift_bits_machine)
             @test mid1 == 4096
-            @test tsid_machine_id(iddef1, mid1) == 1
+            @test tsid_machine_id(iddef_int64_1, mid1) == 1
             
-            mid2 = GenId._make_bits_machine_id(2, iddef1.shift_bits_machine)
+            mid2 = GenId._make_bits_machine_id(2, iddef_int64_1.shift_bits_machine)
             @test mid2 == 8192
-            @test tsid_machine_id(iddef1, mid2) == 2
+            @test tsid_machine_id(iddef_int64_1, mid2) == 2
             
-            mid1023 = GenId._make_bits_machine_id(1023, iddef1.shift_bits_machine)
+            mid1023 = GenId._make_bits_machine_id(1023, iddef_int64_1.shift_bits_machine)
             @test mid1023 == 4190208
-            @test tsid_machine_id(iddef1, mid1023) == 1023
-            @test GenId._make_bits_machine_id(iddef1) == mid1
+            @test tsid_machine_id(iddef_int64_1, mid1023) == 1023
+            @test GenId._make_bits_machine_id(iddef_int64_1) == mid1
             
-            tsid_r = GenId._make_bits_machine_id(iddef1)
-            @test tsid_machine_id(iddef1, tsid_r) == machine_id
+            tsid_r = GenId._make_bits_machine_id(iddef_int64_1)
+            @test tsid_machine_id(iddef_int64_1, tsid_r) == machine_id
 
-            @test tsid_timestamp(iddef1, TSID{Int64}(489485826766409729)) == DateTime("2023-09-12T17:21:55.308")
-            @test tsid_machine_id(iddef1, TSID{Int64}(489485826766409729)) == machine_id
-            @test tsid_thread_id(iddef1, TSID{Int64}(489485826766409729)) == 0
-            @test tsid_machine_tail(iddef1, TSID{Int64}(489485826766409729)) == 1
+            @test tsid_timestamp(iddef_int64_1, TSID{Int64}(489485826766409729)) == DateTime("2023-09-12T17:21:55.308")
+            @test tsid_machine_id(iddef_int64_1, TSID{Int64}(489485826766409729)) == machine_id
+            @test tsid_thread_id(iddef_int64_1, TSID{Int64}(489485826766409729)) == 0
+            @test tsid_machine_tail(iddef_int64_1, TSID{Int64}(489485826766409729)) == 1
 
         end
 
         @testset "tsid_machine_tail :increment_global" begin
-            @test GenId._make_bits_increment(4094, iddef1.tail_mod) == 4094
-            @test GenId._make_bits_increment(4095, iddef1.tail_mod) == 4095
-            @test GenId._make_bits_increment(4096, iddef1.tail_mod) == 0
-            @test GenId._make_bits_increment(4097, iddef1.tail_mod) == 1
+            @test GenId._make_bits_increment(4094, iddef_int64_1.tail_mod) == 4094
+            @test GenId._make_bits_increment(4095, iddef_int64_1.tail_mod) == 4095
+            @test GenId._make_bits_increment(4096, iddef_int64_1.tail_mod) == 0
+            @test GenId._make_bits_increment(4097, iddef_int64_1.tail_mod) == 1
             
             GenId.reset_globabl_machine_id_increment()
-            tsid_tincr_1 = GenId.tsid_generate(iddef1)
-            tsid_tincr_2 = GenId.tsid_generate(iddef1)
-            @test tsid_machine_tail(iddef1, tsid_tincr_1) == 1
-            @test tsid_machine_tail(iddef1, tsid_tincr_2) == 2
+            tsid_tincr_1 = GenId.tsid_generate(iddef_int64_1)
+            tsid_tincr_2 = GenId.tsid_generate(iddef_int64_1)
+            @test tsid_machine_tail(iddef_int64_1, tsid_tincr_1) == 1
+            @test tsid_machine_tail(iddef_int64_1, tsid_tincr_2) == 2
             
             GenId.reset_globabl_machine_id_increment(4094)
             
-            tsid_tincr_4095 = GenId.tsid_generate(iddef1)
-            @test tsid_machine_tail(iddef1, tsid_tincr_4095) == 4095
+            tsid_tincr_4095 = GenId.tsid_generate(iddef_int64_1)
+            @test tsid_machine_tail(iddef_int64_1, tsid_tincr_4095) == 4095
             
-            tsid_tincr_4096 = GenId.tsid_generate(iddef1)
-            @test tsid_machine_tail(iddef1, tsid_tincr_4096) == 0
+            tsid_tincr_4096 = GenId.tsid_generate(iddef_int64_1)
+            @test tsid_machine_tail(iddef_int64_1, tsid_tincr_4096) == 0
         end
         
         @testset "def_*" begin
-            @test def_machine_id(iddef1) == machine_id
-            @test def_thread_id(iddef1) == 0
-            @test def_bits_time(iddef1) == bits_time
-            @test def_bits_machine(iddef1) == bits_machine
-            @test def_bits_tail(iddef1) == bits_tail
+            @test def_machine_id(iddef_int64_1) == machine_id
+            @test def_thread_id(iddef_int64_1) == 0
+            @test def_bits_time(iddef_int64_1) == bits_time
+            @test def_bits_machine(iddef_int64_1) == bits_machine
+            @test def_bits_tail(iddef_int64_1) == bits_tail
         end
 
         @testset "tsid_from_string" begin
@@ -276,7 +281,7 @@ using GenId
             @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
             @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
             @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
-            @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ"
+            @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "7ZZZZZZZZZZZZFZZZZZZZZZZZZ"
             @test tsid_from_string("7ZZZZZZZZZZZZ7ZZZZZZZZZZZZ") == 9223372036854775807
             #@test tsid_to_str(1) == "DGVTV3540402"
             #@test tsid1_int64_from_str("D4PMAVXC0408") == 473674380866490376
