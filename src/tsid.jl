@@ -180,7 +180,7 @@ function _make_bits_tail(def::TsIdDefinition)
 end
 
 """
-    tsid_to_string(def::TsIdDefinition, tsid<:Integer)
+    tsid_to_string(def::TsIdDefinition, tsid::T) where T <: Integer
 
 Creates a new UUID from a textual representation in `s` based on `text_*` flags in `def``.
 
@@ -190,7 +190,7 @@ julia> tsid_to_string(iddef, 489485826766409729)
 "DJR0RGDG0401"
 ```
 """
-function tsid_to_string(def::TsIdDefinition, tsid<:Integer)
+function tsid_to_string(def::TsIdDefinition, tsid::T) where T <: Integer
     if def.text_algorithm == :crockford_base_32
         if def.type == Int64
             crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
