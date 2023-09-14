@@ -14,14 +14,14 @@ GenId offers few algorithms to generate mostly non-conflicting and time-ordered 
  
 # About
 
-In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is too high under some circumstances. In such contexts Universally Unique IDentifiers (UUIDs) can be used.
+In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is higher than desirable. In such contexts Universally Unique IDentifiers (UUIDs) can be used which offer uniqueness across number of machines/threads without round-trip to a central authority.
 
 This library provides few algorithms to generate some of them and supports user friendly text representations:
 * [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html)
 
 # Background
 
-Julia currently offers implementations UUID v1, v4 and v5 (see [UUIDs in Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs)). While these provide industry standard algorithms and representations of the IDs (see [RFC 4122](https://www.ietf.org/rfc/rfc4122.txt)), they are not always ideal for usage in databases as they could induce some difficulties like index fragmentation/write amplification.
+Julia currently offers implementations of UUID v1, v4 and v5 (see [UUIDs in the Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs)). While these provide industry standard algorithms and representations of the IDs (see [RFC 4122](https://www.ietf.org/rfc/rfc4122.txt)), they are not always ideal for usage in databases as they could induce some difficulties like index fragmentation/write amplification.
 
 There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)).
 

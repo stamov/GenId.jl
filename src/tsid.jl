@@ -84,6 +84,10 @@ struct TsIdDefinition
     end
 end
 
+function epoch_end_dt_from_epoch_start(epoch_start_dt::DateTime, bits_time::Int64)
+    return DateTime(Dates.UTM(Dates.value(epoch_start_dt) + convert(Int64, (1 << bits_time) - 1)))
+end
+
 def_group_1(def::TsIdDefinition) = def.group_1
 def_group_2(def::TsIdDefinition) = def.group_2
 def_bits_time(def::TsIdDefinition) = def.bits_time
@@ -237,8 +241,14 @@ function tsid_int_from_string(def::TsIdDefinition, tsid::String)
     end
 end
 
+
+function tsid_generate(::Type{Val{:TsIdDefinition}}, def::TsIdDefinition)
+    return _make_bits_timestamp(def) | _make_bits_group_1(def) | _make_bits_tail(def)
+end
+
+
 """
-    tsid_generate(def)
+    tsid_generate(def::TsIdDefinition)
 
 Creates a new UUID based on `def`.
 
@@ -269,9 +279,20 @@ julia> tsid_generate(iddef)
 ```
 """
 function tsid_generate(def::TsIdDefinition)
-    return _make_bits_timestamp(def) | _make_bits_group_1(def) | _make_bits_tail(def)
+    return tsid_generate(Val{def.name}, def)
 end
 
+"""
+    tsid_generate_string(def::TsIdDefinition)
+
+Creates a new UUID based on `def`.
+
+# Examples
+```julia-repl
+julia> tsid_generate_string(iddef)
+"DJR0RGDG0401"
+```
+"""
 function tsid_generate_string(def::TsIdDefinition)
     return tsid_to_string(def, tsid_generate(def))
 end
