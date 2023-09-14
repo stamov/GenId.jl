@@ -167,10 +167,15 @@ see https://en.wikipedia.org/wiki/Snowflake_ID
 # SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
 julia> iddef = SnowflakeIdDefinition(DateTime(2020, 1, 1, 0, 0, 0, 0), 1)
 ...
+
 julia> iddef.name == :SnowflakeIdDefinition
 true
-tsid_generate(iddef)
+
+julia> tsid_generate(iddef)
 489485826766409729
+
+julia> GenId.tsid_to_string(489485826766409729)
+"DJR0RGDG0401"
 ```
 
 # FAQ
