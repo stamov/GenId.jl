@@ -161,7 +161,7 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 # Specific UUIDs implemented
 
 ##### Snowflake ID
-see [](https://en.wikipedia.org/wiki/Snowflake_ID)
+see https://en.wikipedia.org/wiki/Snowflake_ID
 
 ```julia
 SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
