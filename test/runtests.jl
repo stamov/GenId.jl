@@ -391,16 +391,16 @@ using GenId
             @test iddef_int64_1.tail_algorithm == iddef_snowflake.tail_algorithm
             @test iddef_int64_1.epoch_start_dt == iddef_snowflake.epoch_start_dt
         end
-        
+
         @testset "tsid_from_string" begin
-            @test_throws MethodError tsid_from_string(13)
+            @test_throws MethodError tsid_int_from_string(13)
             @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
             @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
             @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
             @test tsid_to_string(convert(Int128, 1)) == "1"
             @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
-            @test tsid_from_string("00000000000000000000000001") == convert(Int128, 1)
-            @test tsid_from_string("0000000000001") == 1
+            @test tsid_int_from_string("00000000000000000000000001") == convert(Int128, 1)
+            @test tsid_int_from_string("0000000000001") == 1
             #@test tsid_from_string("3ZZZZZZZZZZZZZZZZZZZZZZZZZ") == convert(UInt128, typemax(Int128))
             #@test tsid_to_str(1) == "DGVTV3540402"
             #@test tsid1_int64_from_str("D4PMAVXC0408") == 473674380866490376

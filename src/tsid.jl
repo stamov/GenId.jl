@@ -231,7 +231,7 @@ julia> tsid_from_string("DJR0RGDG0401")
 489485826766409729
 ```
 """
-function tsid_from_string(s::String)
+function tsid_int_from_string(s::String)
     len = length(s)
     if len >= 14
         return crockford32_decode_int128(s)

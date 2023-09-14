@@ -91,6 +91,15 @@ iddef = TsIdDefinition(
 )
 # The sum of the desired bits must match the word size of the specified data type (e.g. 41+10+12=63, which (currently) are the number of bits used in a Int64 type).
 # Start and end of the epoch of the ID must fit in the desired number of bits for time.
+
+# or
+
+iddef = SnowflakeIdDefinition(
+  # Start of the epoch for this UUID scheme.
+  SOME_EPOCH_START_2020, 
+  # the machine_id
+  1
+)
 ```
 
 Generate an ID using the ID definition:
@@ -148,6 +157,16 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401")
 julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 489485826766409729
 ```
+
+# Specific UUIDs implemented
+
+##### Snowflake ID
+see [][https://en.wikipedia.org/wiki/Snowflake_ID]
+
+```julia
+SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
+```
+
 # FAQ
 
 ##### What is the status of the package?
