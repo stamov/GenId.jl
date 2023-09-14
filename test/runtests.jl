@@ -390,6 +390,7 @@ using GenId
             @test iddef_int64_1.bits_tail == iddef_snowflake.bits_tail
             @test iddef_int64_1.tail_algorithm == iddef_snowflake.tail_algorithm
             @test iddef_int64_1.epoch_start_dt == iddef_snowflake.epoch_start_dt
+            @test iddef_snowflake.name == :SnowflakeIdDefinition
         end
 
         @testset "tsid_from_string" begin
