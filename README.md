@@ -16,7 +16,8 @@ GenId offers few algorithms to generate mostly non-conflicting and time-ordered 
 
 In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is too high under some circumstances. In such contexts Universally Unique IDentifiers (UUIDs) can be used.
 
-This library provides few algorithms to generate some of them and supports user friendly text representations.
+This library provides few algorithms to generate some of them and supports user friendly text representations:
+* [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html)
 
 # Background
 
@@ -33,7 +34,6 @@ Also for some security implications:
 * https://www.intruder.io/research/in-guid-we-trust
 * https://infosecwriteups.com/how-this-easy-vulnerability-resulted-in-a-20-000-bug-bounty-from-gitlab-d9dc9312c10a
 * https://infosecwriteups.com/bugbounty-how-i-was-able-to-compromise-any-user-account-via-reset-password-functionality-a11bb5f863b3
-This library implements few of these starting with [Snowflake](https://github.com/twitter-archive/snowflake) alikes and using [Crockford Base 32](https://www.crockford.com/base32.html) for textual representation.
 
 # Features
 
