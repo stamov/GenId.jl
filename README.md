@@ -174,7 +174,7 @@ true
 julia> tsid_generate(iddef)
 489485826766409729
 
-julia> GenId.tsid_to_string(489485826766409729)
+julia> tsid_to_string(489485826766409729)
 "DJR0RGDG0401"
 ```
 
