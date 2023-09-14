@@ -164,7 +164,8 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 see https://en.wikipedia.org/wiki/Snowflake_ID
 
 ```julia
-SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
+idfef = SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
+tsid_generate(iddef)
 ```
 
 # FAQ
