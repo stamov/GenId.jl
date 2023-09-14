@@ -16,6 +16,7 @@ struct TsIdDefinition
     bits_group_2::Int64
     bits_tail::Int64
     tail_algorithm::Symbol
+    tail_rand_crypto::Bool
     text_algorithm::Symbol
     text_with_checksum::Bool
     text_full_width::Bool
@@ -29,7 +30,7 @@ struct TsIdDefinition
     epoch_end_dt::DateTime
     epoch_start_ms::Int64
     epoch_end_ms::Int64
-    rand_max::Int64
+    rand_max::Int128
 
     function TsIdDefinition(
         type::Type{<:Integer};
@@ -40,6 +41,7 @@ struct TsIdDefinition
         bits_group_2::Int=0, 
         bits_tail::Int, 
         tail_algorithm::Symbol=:machine_increment,
+        tail_rand_crypto::Bool=false,
         text_algorithm::Symbol=:crockford_base_32,
         text_with_checksum::Bool=false,
         text_full_width::Bool=false,
@@ -66,6 +68,7 @@ struct TsIdDefinition
             bits_group_2, 
             bits_tail,
             tail_algorithm,
+            tail_rand_crypto,
             text_algorithm,
             text_with_checksum,
             text_full_width,
@@ -79,7 +82,7 @@ struct TsIdDefinition
             epoch_end_dt,
             Dates.value(epoch_start_dt), 
             Dates.value(epoch_end_dt),
-            convert(Int64, (1 << bits_tail) - 1)
+            (1 << bits_tail) - 1
         )
     end
 end

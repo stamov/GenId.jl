@@ -17,7 +17,6 @@ function SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
 end
 
 function tsid_generate(::Type{Val{:SnowflakeIdDefinition}}, def::TsIdDefinition)
-    @show "in snowflake"
     return tsid_generate(Val{:TsIdDefinition}, def)
 end
 

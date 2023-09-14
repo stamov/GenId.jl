@@ -122,6 +122,20 @@ using GenId
 
     end
 
+    @testset "base32" begin
+        #@test GenId.base32encode_int128(convert(Int128, 0); started_init=true) == "2"
+        @test GenId.base32encode_int128(convert(Int128, 0)) == "2"
+        @test GenId.base32encode_int128(convert(Int128, 0); started_init=true) == "22222222222222222222222222"
+        @test GenId.base32encode_int128(convert(Int128, 1)) == "3"
+        @test GenId.base32encode_int128(convert(Int128, 1); started_init=true) == "22222222222222222222222223"
+        @test GenId.base32encode_int128(typemax(Int128)) == "5ZZZZZZZZZZZZZZZZZZZZZZZZZ"
+        #@test GenId.base32decode_int128("2") == 0
+        #@test GenId.base32decode_int128("3") == 1
+        #@test GenId.base32decode_int128("2222222222222222222222222") == 0
+        #@test GenId.base32decode_int128("2222222222222222222222223") == 1
+        #@test GenId.base32decode_int128("5ZZZZZZZZZZZZZZZZZZZZZZZZZ") == typemax(Int128)
+    end
+
     @testset "GenId.bit_mask" begin
         @test GenId.word_size(Int16) == GenId.word_size(UInt16) == 16
         @test GenId.word_size(Int32) == GenId.word_size(UInt32) == 32
@@ -392,6 +406,13 @@ using GenId
             @test iddef_int64_1.epoch_start_dt == iddef_snowflake.epoch_start_dt
             @test iddef_snowflake.name == :SnowflakeIdDefinition
             tsid_generate(iddef_snowflake)
+        end
+
+        @testset "Snowflake ID" begin
+            iddef_firebase_push_id = FirebasePushIdDefinition(SOME_EPOCH_START_2020)
+            @show iddef_firebase_push_id
+            @show tsid_generate(iddef_firebase_push_id)
+            #GenId._make_bits_random(iddef_firebase_push_id)
         end
 
         @testset "tsid_to_string" begin

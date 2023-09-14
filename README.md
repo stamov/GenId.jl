@@ -42,12 +42,13 @@ Currently implemented TsIds allow for:
 * Support 64 bit types (Int64/UInt64) which are shorter than UUIDs, ULIDs, KSUIDs etc.
   * these can be used as traditional int primary keys in databases (sqllite, postgresql etc.) instead of sequences, with low probability of conflict depending on bit sizes in the ID definition;
   * if stored as strings, they use 13 (without) or 14 characters (with checksums);
-  * relatively fast - about 150ns per 64-bit generated id on an M1 with a single group,  field and random or sequential tails, which is faster than some popular libraries for other languages
+  * relatively fast - about 200ns per generated 64-bit id on an M1 with a single group,  field and random or sequential tails;
 * Support 128 bit types for rest of the UUID zoo;
 * Default TsIds are using signed integers to cover most database tech out of the box;
 * Using Crockford Base 32 for textual representation makes them somewhat more readable when displayed to end users;
 * Using Crockford Base 32 makes them URL safe (e.g. when used in REST APIs);
 * When using Crockford Base 32, they are case insensitive and support hyphens in the encoding which increases readability for end users;
+* Other text representations, e.g. Base 32 and Base 64, while not sharing the above qualities, still use lexicographic mapping of characters, to allow sorting in a database;
 * Sorted monotonically by generation time;
 
 # Usage
