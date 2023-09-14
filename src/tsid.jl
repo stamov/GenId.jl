@@ -213,10 +213,10 @@ function tsid_generate(def::TsIdDefinition)
     return _make_bits_timestamp(def) | _make_bits_group_1(def) | _make_bits_tail(def)
 end
 
-tsid_to_string(tsid::Int64) = crockford32_encode_int64(tsid)
-tsid_to_string(tsid::UInt64) = crockford32_encode_uint64(tsid)
-tsid_to_string(tsid::Int128) = crockford32_encode_int128(tsid)
-tsid_to_string(tsid::UInt128) = crockford32_encode_int128(convert(Int128, tsid))
+# tsid_to_string(tsid::Int64) = crockford32_encode_int64(tsid)
+# tsid_to_string(tsid::UInt64) = crockford32_encode_uint64(tsid)
+# tsid_to_string(tsid::Int128) = crockford32_encode_int128(tsid)
+# tsid_to_string(tsid::UInt128) = crockford32_encode_int128(convert(Int128, tsid))
 
 function tsid_to_string(def::TsIdDefinition, tsid)
     if def.text_algorithm == :crockford_base_32
@@ -250,12 +250,29 @@ julia> tsid_from_string("DJR0RGDG0401")
 489485826766409729
 ```
 """
-function tsid_int_from_string(s::String)
-    len = length(s)
-    if len >= 14
-        return crockford32_decode_int128(s)
+# function tsid_int_from_string(s::String)
+#     len = length(s)
+#     if len >= 14
+#         return crockford32_decode_int128(s)
+#     else
+#         return crockford32_decode_int64(s)
+#     end
+# end
+
+function tsid_int_from_string(def::TsIdDefinition, tsid::String)
+    if def.text_algorithm == :crockford_base_32
+        if def.type == Int64
+            crockford32_decode_int64(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == Int128
+            crockford32_decode_int128(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == UInt64
+            crockford32_decode_uint64(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == UInt128
+            crockford32_decode_uint128(tsid; with_checksum=def.text_with_checksum)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+        end
     else
-        return crockford32_decode_int64(s)
+        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
     end
 end
-

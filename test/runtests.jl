@@ -394,11 +394,11 @@ using GenId
         end
 
         @testset "tsid_to_string" begin
-            @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
-            @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
-            @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
-            @test tsid_to_string(convert(Int128, 1)) == "1"
-            @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
+            # @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
+            # @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
+            # @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
+            # @test tsid_to_string(convert(Int128, 1)) == "1"
+            # @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
 
             iddef_int64_1 = TsIdDefinition(
                 Int64;
@@ -449,17 +449,89 @@ using GenId
                 epoch_end_dt=SOME_EPOCH_END_2070
             )
             @test tsid_to_string(iddef_int64_4, 489485826766409729) == "0DJR0RGDG04014"
+
+            iddef_int64_5 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=false,
+                text_full_width=false,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_to_string(iddef_int64_5, 489485826766409729) == "DJR0RGDG0401"
         end
 
         @testset "tsid_from_string" begin
             @test_throws MethodError tsid_int_from_string(13)
-            @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
-            @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
-            @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
-            @test tsid_to_string(convert(Int128, 1)) == "1"
-            @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
-            @test tsid_int_from_string("00000000000000000000000001") == convert(Int128, 1)
-            @test tsid_int_from_string("0000000000001") == 1
+   
+   
+            iddef_int64_1 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_int_from_string(iddef_int64_1, "0DJR0RGDG0401") == 489485826766409729
+
+            iddef_int64_2 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=true,
+                text_full_width=false,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_int_from_string(iddef_int64_2, "DJR0RGDG04014") == 489485826766409729
+
+            iddef_int64_3 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=false,
+                text_full_width=true,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_int_from_string(iddef_int64_3, "0DJR0RGDG0401") == 489485826766409729
+
+            iddef_int64_4 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=true,
+                text_full_width=true,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_int_from_string(iddef_int64_4, "0DJR0RGDG04014") == 489485826766409729
+
+            iddef_int64_5 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=false,
+                text_full_width=false,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_int_from_string(iddef_int64_5, "00000000000000000000000001") == convert(Int128, 1)
+            @test tsid_int_from_string(iddef_int64_5, "0000000000001") == 1
+            @test tsid_int_from_string(iddef_int64_5, "DJR0RGDG0401") == 489485826766409729
         end
 
     end
