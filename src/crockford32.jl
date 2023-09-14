@@ -1,6 +1,8 @@
 
 # Code for the bit fiddlings is written in almost SSA style for easier debugging.
 
+# see https://github.com/JuliaLang/julia/issues/30167
+
 const CF32_UPPERCASE_ENCODING_CHECKSUM = Vector{Char}(raw"0123456789ABCDEFGHJKMNPQRSTVWXYZ*~$=U")
 
 """

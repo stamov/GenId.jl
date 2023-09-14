@@ -10,12 +10,15 @@ end
 struct TsIdDefinition
     type::DataType
     name::Symbol
+    bits_ignore_start::Int64
     bits_time::Int64
     bits_group_1::Int64
     bits_group_2::Int64
     bits_tail::Int64
     tail_algorithm::Symbol
     text_algorithm::Symbol
+    text_with_checksum::Bool
+    text_full_width::Bool
     group_1::Int64
     group_2::Int64
     tail_mod::Int64
@@ -31,12 +34,15 @@ struct TsIdDefinition
     function TsIdDefinition(
         type::Type{<:Integer};
         name::Symbol=:TsIdDefinition,
-        bits_time::Int, 
+        bits_ignore_start::Int64=0,
+        bits_time::Int64, 
         bits_group_1::Int, 
         bits_group_2::Int=0, 
         bits_tail::Int, 
         tail_algorithm::Symbol=:machine_increment,
         text_algorithm::Symbol=:crockford_base_32,
+        text_with_checksum::Bool=false,
+        text_full_width::Bool=true,
         group_1::Int, 
         group_2::Int = 0, 
         epoch_start_dt::DateTime, 
@@ -47,19 +53,22 @@ struct TsIdDefinition
         @argcheck 0 <= bits_group_1 <= ws AssertionError
         @argcheck 0 <= bits_group_2 <= ws AssertionError
         @argcheck 1 <= bits_tail <= ws AssertionError
-        @argcheck bits_time + bits_group_1 + bits_group_2 + bits_tail + 1 == ws AssertionError
+        @argcheck bits_ignore_start + bits_time + bits_group_1 + bits_group_2 + bits_tail + 1 == ws AssertionError
         @argcheck epoch_start_dt < epoch_end_dt AssertionError
         @argcheck in(tail_algorithm, Set([:machine_increment, :random])) AssertionError
         
         return new(
             type,
             name,
+            bits_ignore_start,
             bits_time, 
             bits_group_1, 
             bits_group_2, 
             bits_tail,
             tail_algorithm,
             text_algorithm,
+            text_with_checksum,
+            text_full_width,
             group_1, 
             group_2,
             convert(Int64, 1 << bits_tail),
@@ -74,17 +83,6 @@ struct TsIdDefinition
         )
     end
 end
-
-# iddef = TsIdDefinition(
-#     Int64;
-#     bits_time=41,
-#     bits_group_1=10,
-#     bits_tail=12,
-#     tail_algorithm=:machine_increment,
-#     group_1=1,
-#     epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
-#     epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
-# )
 
 def_group_1(def::TsIdDefinition) = def.group_1
 def_group_2(def::TsIdDefinition) = def.group_2
@@ -219,6 +217,24 @@ tsid_to_string(tsid::Int64) = crockford32_encode_int64(tsid)
 tsid_to_string(tsid::UInt64) = crockford32_encode_uint64(tsid)
 tsid_to_string(tsid::Int128) = crockford32_encode_int128(tsid)
 tsid_to_string(tsid::UInt128) = crockford32_encode_int128(convert(Int128, tsid))
+
+function tsid_to_string(def::TsIdDefinition, tsid)
+    if def.text_algorithm == :crockford_base_32
+        if def.type == Int64
+            crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == Int128
+            crockford32_encode_int128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == UInt64
+            crockford32_encode_uint64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == UInt128
+            crockford32_encode_uint128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+        end
+    else
+        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
+    end
+end
 # function tsid_to_string(def::TsIdDefinition)
 #     return crockford32_encode_int64(tsid_generate(def))
 # end

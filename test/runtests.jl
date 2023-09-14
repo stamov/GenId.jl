@@ -393,6 +393,64 @@ using GenId
             @test iddef_snowflake.name == :SnowflakeIdDefinition
         end
 
+        @testset "tsid_to_string" begin
+            @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
+            @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
+            @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
+            @test tsid_to_string(convert(Int128, 1)) == "1"
+            @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
+
+            iddef_int64_1 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_to_string(iddef_int64_1, 489485826766409729) == "0DJR0RGDG0401"
+
+            iddef_int64_2 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=true,
+                text_full_width=false,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_to_string(iddef_int64_2, 489485826766409729) == "DJR0RGDG04014"
+
+            iddef_int64_3 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=false,
+                text_full_width=true,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_to_string(iddef_int64_3, 489485826766409729) == "0DJR0RGDG0401"
+
+            iddef_int64_4 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                text_with_checksum=true,
+                text_full_width=true,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            @test tsid_to_string(iddef_int64_4, 489485826766409729) == "0DJR0RGDG04014"
+        end
+
         @testset "tsid_from_string" begin
             @test_throws MethodError tsid_int_from_string(13)
             @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
@@ -402,11 +460,6 @@ using GenId
             @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
             @test tsid_int_from_string("00000000000000000000000001") == convert(Int128, 1)
             @test tsid_int_from_string("0000000000001") == 1
-            #@test tsid_from_string("3ZZZZZZZZZZZZZZZZZZZZZZZZZ") == convert(UInt128, typemax(Int128))
-            #@test tsid_to_str(1) == "DGVTV3540402"
-            #@test tsid1_int64_from_str("D4PMAVXC0408") == 473674380866490376
-            #@show tsid_machine_id(iddef1, 473674380866490376)
-            #@test crockford32_encode_int64(tsid1_int64_from_str("D4PMAVXC0408")) == "D4PMAVXC0408"
         end
 
     end

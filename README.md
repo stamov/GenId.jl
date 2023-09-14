@@ -1,6 +1,6 @@
 # GenId
 
-GenId offers few algorithms to generate mostly non-conflicting IDs (mostly for databases/workflows) without a central coordinator. 
+GenId offers few algorithms to generate mostly non-conflicting and time-ordered IDs (mostly for databases/workflows) without a central coordinator. 
 
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://stamov.github.io/GenId.jl/stable/)
@@ -29,6 +29,10 @@ Additional reading:
 * [The primary key dillema: IDs vs UUIDs and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/);
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
 
+Also for some security implications:
+* https://www.intruder.io/research/in-guid-we-trust
+* https://infosecwriteups.com/how-this-easy-vulnerability-resulted-in-a-20-000-bug-bounty-from-gitlab-d9dc9312c10a
+* https://infosecwriteups.com/bugbounty-how-i-was-able-to-compromise-any-user-account-via-reset-password-functionality-a11bb5f863b3
 This library implements few of these starting with [Snowflake](https://github.com/twitter-archive/snowflake) alikes and using [Crockford Base 32](https://www.crockford.com/base32.html) for textual representation.
 
 # Features
@@ -165,6 +169,7 @@ see https://en.wikipedia.org/wiki/Snowflake_ID
 
 ```julia
 # SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
+# 41 bits timestamp (ms), 10 bits machine id, 12 bits sequence numbers per machine
 julia> iddef = SnowflakeIdDefinition(DateTime(2020, 1, 1, 0, 0, 0, 0), 1)
 ...
 
