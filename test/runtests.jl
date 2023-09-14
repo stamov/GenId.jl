@@ -166,8 +166,8 @@ using GenId
             group_1=machine_id,
             epoch_start_dt=SOME_EPOCH_START_2020, 
             epoch_end_dt=SOME_EPOCH_END_2070)
-        @show iddef_int64_1
-        @show typeof(iddef_int64_1)
+        #@show iddef_int64_1
+        #@show typeof(iddef_int64_1)
 
         @testset "GenId TsIdDefinition" begin
             @test typeof(iddef_int64_1) == TsIdDefinition
@@ -296,6 +296,81 @@ using GenId
             @test def_bits_tail(iddef_int64_1) == bits_tail
         end
 
+        @testset "tsid_generate random" begin
+            n_ids = 1000
+            
+            iddef_s1 = GenId.TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                tail_algorithm=:machine_increment,
+                group_1=1,
+                epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
+                epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
+            )
+            
+            ids = [tsid_generate(iddef_s1) for i in 1:n_ids]
+            millis = collect(map(x -> tsid_timestamp(iddef_s1, x), ids))
+            tails = collect(map(x -> tsid_tail(iddef_s1, x), ids))
+            
+            montonic = true
+            for i in 2:n_ids
+                if millis[i] < millis[i-1]
+                    monotonic = false
+                end
+            end
+            @test monotinic = true
+            
+            sequential = true
+            for i in 2:n_ids
+                if tails[i] < tails[i-1]
+                    sequential = false
+                end
+            end
+            @test sequential = true
+
+
+            iddef_r1 = GenId.TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                tail_algorithm=:random,
+                group_1=1,
+                epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
+                epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
+            )
+            
+            ids = [tsid_generate(iddef_r1) for i in 1:n_ids]
+            millis = collect(map(x -> tsid_timestamp(iddef_r1, x), ids))
+            tails = collect(map(x -> tsid_tail(iddef_r1, x), ids))
+            
+            montonic = true
+            for i in 2:n_ids
+                if millis[i] < millis[i-1]
+                    monotonic = false
+                end
+            end
+            @test monotinic = true
+
+            sequential = true
+            for i in 2:n_ids
+                if tails[i] < tails[i-1]
+                    sequential = false
+                end
+            end
+            @test sequential == false
+
+            in_rand_max = true
+            for i in 1:n_ids
+                if tails[i] < 0 || tails[i] > iddef_r1.rand_max
+                    in_rand_max = false
+                end
+            end
+            @test in_rand_max == true
+
+        end
         @testset "tsid_from_string" begin
             @test_throws MethodError tsid_from_string(13)
             @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"

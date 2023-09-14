@@ -40,7 +40,7 @@ struct TsIdDefinition
     )
         ws = word_size(type)
         @argcheck 1 <= bits_time <= ws AssertionError
-        @argcheck 1 <= bits_group_1 <= ws AssertionError
+        @argcheck 0 <= bits_group_1 <= ws AssertionError
         @argcheck 0 <= bits_group_2 <= ws AssertionError
         @argcheck 1 <= bits_tail <= ws AssertionError
         @argcheck bits_time + bits_group_1 + bits_group_2 + bits_tail + 1 == ws AssertionError
@@ -96,7 +96,7 @@ end
 _make_bits_timestamp(def::TsIdDefinition, dt::DateTime) =  _make_bits_timestamp(dt, def.epoch_start_ms, def.shift_bits_time)
 _make_bits_timestamp(def::TsIdDefinition) = _make_bits_timestamp(def, Dates.now())
 
-_make_bits_group_1(mid::Int64, shift_bits_machine::Int64) = mid << shift_bits_machine
+_make_bits_group_1(mid::Int64, shift_bits_group_1::Int64) = mid << shift_bits_group_1
 _make_bits_group_1(def::TsIdDefinition) = _make_bits_group_1(def.group_1, def.shift_bits_group_1)
 
 
@@ -163,6 +163,17 @@ function _make_bits_increment(def::TsIdDefinition)
     return mod(old + 1, def.tail_mod)
 end
 
+function _make_bits_random(def::TsIdDefinition)
+    return rand(0:def.rand_max)
+end
+
+function _make_bits_tail(def::TsIdDefinition)
+    if def.tail_algorithm == :machine_increment
+        return _make_bits_increment(def)
+    else
+        return _make_bits_random(def)
+    end
+end
 """
     tsid_generate(def)
 
@@ -195,7 +206,7 @@ julia> tsid_generate(iddef)
 ```
 """
 function tsid_generate(def::TsIdDefinition)
-    return _make_bits_timestamp(def) | _make_bits_group_1(def) | _make_bits_increment(def)
+    return _make_bits_timestamp(def) | _make_bits_group_1(def) | _make_bits_tail(def)
 end
 
 tsid_to_string(tsid::Int64) = crockford32_encode_int64(tsid)
