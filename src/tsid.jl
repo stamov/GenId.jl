@@ -42,7 +42,7 @@ struct TsIdDefinition
         tail_algorithm::Symbol=:machine_increment,
         text_algorithm::Symbol=:crockford_base_32,
         text_with_checksum::Bool=false,
-        text_full_width::Bool=true,
+        text_full_width::Bool=false,
         group_1::Int, 
         group_2::Int = 0, 
         epoch_start_dt::DateTime, 
@@ -120,13 +120,13 @@ tsid_timestamp(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = tsid_timesta
 tsid_timestamp(def::TsIdDefinition, tsid::TSID) = tsid_timestamp(def, tsid.value)
 
 """
-    tsid_machine_id(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
+    tsid_group_1(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
 
-Extracts the machine id from an existing `tsid`.
+Extracts the first custom number from an existing `tsid` (e.g. a machine id).
 
 # Examples
 ```julia-repl
-julia> tsid_machine_id(iddef, 489485826766409729)
+julia> tsid_group_1(iddef, 489485826766409729)
 1
 ```
 """
@@ -137,7 +137,7 @@ tsid_group_2(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = 0
 tsid_group_2(def::TsIdDefinition, tsid::TSID) = tsid_group_2(def, tsid.value)
 
 """
-    tsid_machine_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
+    tsid_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
 
 Extracts the tail (an increment or a random number) from an existing `tsid`.
 
@@ -178,6 +178,65 @@ function _make_bits_tail(def::TsIdDefinition)
         return _make_bits_random(def)
     end
 end
+
+"""
+    tsid_to_string(def::TsIdDefinition, tsid<:Integer)
+
+Creates a new UUID from a textual representation in `s` based on `text_*` flags in `def``.
+
+# Examples
+```julia-repl
+julia> tsid_to_string(iddef, 489485826766409729)
+"DJR0RGDG0401"
+```
+"""
+function tsid_to_string(def::TsIdDefinition, tsid<:Integer)
+    if def.text_algorithm == :crockford_base_32
+        if def.type == Int64
+            crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == Int128
+            crockford32_encode_int128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == UInt64
+            crockford32_encode_uint64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == UInt128
+            crockford32_encode_uint128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+        end
+    else
+        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
+    end
+end
+
+"""
+    tsid_int_from_string(def::TsIdDefinition, s::AbstractString)
+
+Creates a new UUID from a textual representation in `s` based on `text_*` flags in `def``.
+
+# Examples
+```julia-repl
+julia> tsid_from_string(iddef, "DJR0RGDG0401")
+489485826766409729
+```
+"""
+function tsid_int_from_string(def::TsIdDefinition, tsid::String)
+    if def.text_algorithm == :crockford_base_32
+        if def.type == Int64
+            crockford32_decode_int64(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == Int128
+            crockford32_decode_int128(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == UInt64
+            crockford32_decode_uint64(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == UInt128
+            crockford32_decode_uint128(tsid; with_checksum=def.text_with_checksum)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+        end
+    else
+        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
+    end
+end
+
 """
     tsid_generate(def)
 
@@ -203,7 +262,7 @@ julia> iddef = TsIdDefinition(
     # Time after that can't be represented.
     epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
 )
-TsIdDefinition(Int64, 41, 10, 12, 1, 4096, 22, 12, Dates.DateTime("2020-01-01T00:00:00"), Dates.DateTime("2070-12-31T23:59:59.999"), 63713520000000, 65322979199999)
+...
 
 julia> tsid_generate(iddef)
 489485826766409729
@@ -213,66 +272,6 @@ function tsid_generate(def::TsIdDefinition)
     return _make_bits_timestamp(def) | _make_bits_group_1(def) | _make_bits_tail(def)
 end
 
-# tsid_to_string(tsid::Int64) = crockford32_encode_int64(tsid)
-# tsid_to_string(tsid::UInt64) = crockford32_encode_uint64(tsid)
-# tsid_to_string(tsid::Int128) = crockford32_encode_int128(tsid)
-# tsid_to_string(tsid::UInt128) = crockford32_encode_int128(convert(Int128, tsid))
-
-function tsid_to_string(def::TsIdDefinition, tsid)
-    if def.text_algorithm == :crockford_base_32
-        if def.type == Int64
-            crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
-        elseif def.type == Int128
-            crockford32_encode_int128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
-        elseif def.type == UInt64
-            crockford32_encode_uint64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
-        elseif def.type == UInt128
-            crockford32_encode_uint128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
-        else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
-        end
-    else
-        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
-    end
-end
-# function tsid_to_string(def::TsIdDefinition)
-#     return crockford32_encode_int64(tsid_generate(def))
-# end
-
-"""
-    tsid_from_string(s::AbstractString)
-
-Creates a new UUID from a textual representation in `s`.
-
-# Examples
-```julia-repl
-julia> tsid_from_string("DJR0RGDG0401")
-489485826766409729
-```
-"""
-# function tsid_int_from_string(s::String)
-#     len = length(s)
-#     if len >= 14
-#         return crockford32_decode_int128(s)
-#     else
-#         return crockford32_decode_int64(s)
-#     end
-# end
-
-function tsid_int_from_string(def::TsIdDefinition, tsid::String)
-    if def.text_algorithm == :crockford_base_32
-        if def.type == Int64
-            crockford32_decode_int64(tsid; with_checksum=def.text_with_checksum)
-        elseif def.type == Int128
-            crockford32_decode_int128(tsid; with_checksum=def.text_with_checksum)
-        elseif def.type == UInt64
-            crockford32_decode_uint64(tsid; with_checksum=def.text_with_checksum)
-        elseif def.type == UInt128
-            crockford32_decode_uint128(tsid; with_checksum=def.text_with_checksum)
-        else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
-        end
-    else
-        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
-    end
+function tsid_generate_string(def::TsIdDefinition)
+    return tsid_to_string(def, tsid_generate(def))
 end

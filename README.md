@@ -149,7 +149,7 @@ julia> tsid_machine_tail(iddef, 489485826766409729)
 
 One can also decode it from a text representation:
 ```julia
-julia> tsid_from_string("DJR0RGDG0401")
+julia> tsid_from_string(iddef, "DJR0RGDG0401")
 489485826766409729
 
 julia> crockford32_decode_int64("DJR0RGDG0401")
@@ -179,7 +179,10 @@ true
 julia> tsid_generate(iddef)
 489485826766409729
 
-julia> tsid_to_string(489485826766409729)
+julia> tsid_generate_string(iddef)
+"DJR0RGDG0401"
+
+julia> tsid_to_string(iddef, 489485826766409729)
 "DJR0RGDG0401"
 ```
 

@@ -409,7 +409,7 @@ using GenId
                 epoch_start_dt=SOME_EPOCH_START_2020,
                 epoch_end_dt=SOME_EPOCH_END_2070
             )
-            @test tsid_to_string(iddef_int64_1, 489485826766409729) == "0DJR0RGDG0401"
+            @test tsid_to_string(iddef_int64_1, 489485826766409729) == "DJR0RGDG0401"
 
             iddef_int64_2 = TsIdDefinition(
                 Int64;
@@ -477,7 +477,7 @@ using GenId
                 epoch_start_dt=SOME_EPOCH_START_2020,
                 epoch_end_dt=SOME_EPOCH_END_2070
             )
-            @test tsid_int_from_string(iddef_int64_1, "0DJR0RGDG0401") == 489485826766409729
+            @test tsid_int_from_string(iddef_int64_1, "DJR0RGDG0401") == 489485826766409729
 
             iddef_int64_2 = TsIdDefinition(
                 Int64;
