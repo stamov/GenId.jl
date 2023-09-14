@@ -22,4 +22,6 @@ export tsid_generate
 export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
 export tsid_to_string, tsid_from_string
 
+export SnowflakeIdDefinition
+
 end

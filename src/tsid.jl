@@ -9,6 +9,7 @@ end
 
 struct TsIdDefinition
     type::DataType
+    name::Symbol
     bits_time::Int64
     bits_group_1::Int64
     bits_group_2::Int64
@@ -27,7 +28,8 @@ struct TsIdDefinition
     rand_max::Int64
 
     function TsIdDefinition(
-        type::Type{<:Integer}; 
+        type::Type{<:Integer};
+        name::Symbol=:TsIdDefinition,
         bits_time::Int, 
         bits_group_1::Int, 
         bits_group_2::Int=0, 
@@ -49,6 +51,7 @@ struct TsIdDefinition
         
         return new(
             type,
+            name,
             bits_time, 
             bits_group_1, 
             bits_group_2, 
@@ -235,4 +238,21 @@ function tsid_from_string(s::String)
     else
         return crockford32_decode_int64(s)
     end
+end
+
+function SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64) 
+    bits_time = 41
+    v_epoch_end_dt = DateTime(Dates.UTM(Dates.value(epoch_start_dt) + convert(Int64, (1 << bits_time) - 1)))
+    def = TsIdDefinition(
+        Int64;
+        name=:SnowflakeIdDefinition,
+        bits_time=bits_time,
+        bits_group_1=10,
+        bits_tail=12,
+        group_1=machine_id,
+        tail_algorithm=:machine_increment,
+        epoch_start_dt=epoch_start_dt,
+        epoch_end_dt=v_epoch_end_dt
+    )
+    return def
 end

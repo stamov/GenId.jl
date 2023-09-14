@@ -371,6 +371,27 @@ using GenId
             @test in_rand_max == true
 
         end
+
+        @testset "Snowflake ID" begin
+            iddef_int64_1 = TsIdDefinition(
+                Int64;
+                bits_time=41,
+                bits_group_1=10,
+                bits_tail=12,
+                group_1=1,
+                epoch_start_dt=SOME_EPOCH_START_2020,
+                epoch_end_dt=SOME_EPOCH_END_2070
+            )
+            iddef_snowflake = SnowflakeIdDefinition(SOME_EPOCH_START_2020, 1)
+            @test iddef_int64_1.type == iddef_snowflake.type
+            @test iddef_int64_1.bits_time == iddef_snowflake.bits_time
+            @test iddef_int64_1.bits_group_1 == iddef_snowflake.bits_group_1
+            @test iddef_int64_1.bits_group_2 == iddef_snowflake.bits_group_2
+            @test iddef_int64_1.bits_tail == iddef_snowflake.bits_tail
+            @test iddef_int64_1.tail_algorithm == iddef_snowflake.tail_algorithm
+            @test iddef_int64_1.epoch_start_dt == iddef_snowflake.epoch_start_dt
+        end
+        
         @testset "tsid_from_string" begin
             @test_throws MethodError tsid_from_string(13)
             @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
