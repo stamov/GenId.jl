@@ -6,6 +6,7 @@ using Dates
 include("crockford32.jl")
 include("bitmasks.jl")
 include("tsid.jl")
+include("snowflakeid.jl")
 
 #@__MODULE__
 #println("in file eval:", @__MODULE__)

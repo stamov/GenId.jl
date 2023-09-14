@@ -15,6 +15,7 @@ struct TsIdDefinition
     bits_group_2::Int64
     bits_tail::Int64
     tail_algorithm::Symbol
+    text_algorithm::Symbol
     group_1::Int64
     group_2::Int64
     tail_mod::Int64
@@ -34,7 +35,8 @@ struct TsIdDefinition
         bits_group_1::Int, 
         bits_group_2::Int=0, 
         bits_tail::Int, 
-        tail_algorithm::Symbol=:machine_increment, 
+        tail_algorithm::Symbol=:machine_increment,
+        text_algorithm::Symbol=:crockford_base_32,
         group_1::Int, 
         group_2::Int = 0, 
         epoch_start_dt::DateTime, 
@@ -57,6 +59,7 @@ struct TsIdDefinition
             bits_group_2, 
             bits_tail,
             tail_algorithm,
+            text_algorithm,
             group_1, 
             group_2,
             convert(Int64, 1 << bits_tail),
@@ -240,19 +243,3 @@ function tsid_int_from_string(s::String)
     end
 end
 
-function SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64) 
-    bits_time = 41
-    v_epoch_end_dt = DateTime(Dates.UTM(Dates.value(epoch_start_dt) + convert(Int64, (1 << bits_time) - 1)))
-    def = TsIdDefinition(
-        Int64;
-        name=:SnowflakeIdDefinition,
-        bits_time=bits_time,
-        bits_group_1=10,
-        bits_tail=12,
-        group_1=machine_id,
-        tail_algorithm=:machine_increment,
-        epoch_start_dt=epoch_start_dt,
-        epoch_end_dt=v_epoch_end_dt
-    )
-    return def
-end
