@@ -567,6 +567,7 @@ using GenId
                 epoch_end_dt=SOME_EPOCH_END_2070
             )
             @test tsid_to_string(iddef_int64_5, 489485826766409729) == "DJR0RGDG0401"
+            tsid_to_string(iddef_int64_5)
         end
 
         @testset "tsid_from_string" begin

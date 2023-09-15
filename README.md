@@ -230,10 +230,17 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 
 64 bit implementation is used internally in production. 128-bit support nearly finished. But public API might still change.
 
+Over 200 unit tests in the repository.
+
 ##### Why variations as Ints instead of using wrapper types?
 
-Just a design choice between trade-offs at the moment, mainly constrained by available time for development.
-##### Why Crockford Base 32?
+A design choice and not a necessity, between trade-offs at this moment, a wrapper type is planned.
+
+##### Why modified Base 64 encoding?
+
+Stock Base 64 is not correctly sortable.
+
+##### Why Crockford Base 32 encoding?
 
 * More human readable and less error prone to dictation than some others (e.g. Base32, Base64, Base58 etc.), while still compressing a bit over Hex encoding for example (each character in Crockford Base 32 corresponds to 5 bits of input);
 * Simple, efficient;
