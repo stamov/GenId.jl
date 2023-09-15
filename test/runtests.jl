@@ -150,26 +150,28 @@ using GenId
     @testset "base64" begin
         @test GenId.base64encode_int128(convert(Int128, 0)) == "0"
         @test GenId.base64encode_int128(convert(Int128, 0); started_init=true) == "0000000000000000000000"
-        @test GenId.base64encode_int128(convert(Int128, 1)) == "1"
-        @test GenId.base64encode_int128(convert(Int128, 1); started_init=true) == "0000000000000000000001"
-        @test GenId.base64encode_int128(convert(Int128, 10)) == "A"
-        @test GenId.base64encode_int128(typemax(Int128)) == "1/////////////////////"
-        @test GenId.base64encode_int128(convert(Int128, 63)) == "/"
-        @test GenId.base64encode_int128(convert(Int128, 64)) == "10"
-        @test GenId.base64encode_int128(convert(Int128, 65)) == "11"
-        @test GenId.base64decode_int128("0") == 0
-        @test GenId.base64decode_int128("1") == 1
-        @test GenId.base64decode_int128("A") == 10
-        @test GenId.base64decode_int128("/") == 63
-        @test GenId.base64decode_int128("10") == 64
-        @test GenId.base64decode_int128("11") == 65
-        @test GenId.base64decode_int128("0000000000000000000000") == 0
-        @test GenId.base64decode_int128("0000000000000000000001") == 1
-        @test GenId.base64decode_int128("1/////////////////////") == typemax(Int128)
+        @test GenId.base64encode_int128(convert(Int128, 1)) == "0"
+        @test GenId.base64encode_int128(convert(Int128, 1); started_init=true) == "---------------------0"
+        @test GenId.base64encode_int128(convert(Int128, 10)) == "9"
+        @test GenId.base64encode_int128(typemax(Int128)) == "0zzzzzzzzzzzzzzzzzzzzz"
+        @test GenId.base64encode_int128(convert(Int128, 63)) == "z"
+        @test GenId.base64encode_int128(convert(Int128, 64)) == "0-"
+        @test GenId.base64encode_int128(convert(Int128, 65)) == "00"
+        @test GenId.base64decode_int128("-") == 0
+        @test GenId.base64decode_int128("0") == 1
+        @test GenId.base64decode_int128("A") == 11
+        @test GenId.base64decode_int128("z") == 63
+        @test GenId.base64decode_int128("0-") == 64
+        @test GenId.base64decode_int128("00") == 65
+        @test GenId.base64decode_int128("10") == 129
+        @test GenId.base64decode_int128("11") == 130
+        @test GenId.base64decode_int128("----------------------") == 0
+        @test GenId.base64decode_int128("---------------------0") == 1
+        @test GenId.base64decode_int128("0zzzzzzzzzzzzzzzzzzzzz") == typemax(Int128)
         
-        s = "gRCN4la4I0vGAQ6empS4F"
-        @test GenId.base64decode_int128(s) == 56392355105980817333659767379929710863
-        r = 56392355105980817333659767379929710863
+        s = "DVqh4j54DWG1F0Pda-Ms"
+        r = 301430602692632926610578560781911544
+        @test GenId.base64decode_int128(s) == 301430602692632926610578560781911544
         
         # s = GenId.base64encode_int128(r)
         # @show s
@@ -474,8 +476,8 @@ using GenId
             id_int_2 = GenId.base32decode_int128("22BCAUU7RLKOX3CKM24UOTK3JS")
             @test id_int_1 == id_int_2
 
-            @test tsid_to_string(iddef_firebase_push_id, id_int_1) == "EWsj5l65EXH2G1Qfc0Nu"
-            @test tsid_int_from_string(iddef_firebase_push_id, "EWsj5l65EXH2G1Qfc0Nu") == id_int_1
+            @test tsid_to_string(iddef_firebase_push_id, id_int_1) == "DVqh4j54DWG1F0Pda-Ms"
+            @test tsid_int_from_string(iddef_firebase_push_id, "DVqh4j54DWG1F0Pda-Ms") == id_int_1
         end
 
         @testset "tsid_to_string" begin

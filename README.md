@@ -17,7 +17,8 @@ GenId offers few algorithms to generate mostly non-conflicting and time-ordered 
 In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is higher than desirable. In such contexts Universally Unique IDentifiers (UUIDs) can be used which offer uniqueness across number of machines/threads without round-trip to a central authority.
 
 This library provides few algorithms to generate some of them and supports user friendly text representations:
-* [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html)
+* 64-bit [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html)
+* 128-bit [Firebase Push ID](https://github.com/arturictus/firebase_pushid) using lexicographic sortable Base 64 URL safe encoding
 
 # Background
 
@@ -94,8 +95,8 @@ julia> tsid_int_from_string(iddef, "DJR0RGDG0401")
 ```
 
 ### Firebase PushID
-see https://github.com/arturictus/firebase_pushid
-
+See https://github.com/arturictus/firebase_pushid
+Uses modified Base 64 text encoding to allow for lexicographic sorting and safe URLs.
 ```julia
 # FirebasePushIdDefinition()
 # 48 bits timestamp (ms), 72 randomness
@@ -109,12 +110,12 @@ julia> tsid_generate(iddef)
 301430602692632926610578560781911544
 
 julia> tsid_generate_string(iddef)
-"22BCAUU7RLKOX3CKM24UOTK3JS"
+"EWsj5l65EXH2G1Qfc0Nu"
 
 julia> tsid_to_string(iddef, 301430602692632926610578560781911544)
-"22BCAUU7RLKOX3CKM24UOTK3JS"
+"EWsj5l65EXH2G1Qfc0Nu"
 
-julia> tsid_int_from_string(iddef, "22BCAUU7RLKOX3CKM24UOTK3JS")
+julia> tsid_int_from_string(iddef, "EWsj5l65EXH2G1Qfc0Nu")
 301430602692632926610578560781911544
 ```
 

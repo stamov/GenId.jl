@@ -1,4 +1,5 @@
-BASE_32_CHARS = "234567ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+const BASE_32_CHARS = "234567ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 function base32encode_int128(n::Int128; started_init::Bool=false)
     #@show n
