@@ -29,8 +29,10 @@ _make_timestamp_FirebasePushIdDefinition() = convert(Int128, Dates.value(Dates.n
 
 function tsid_generate(::Type{Val{:FirebasePushIdDefinition}}, def::TsIdDefinition)
     ts = convert(UInt128, _make_timestamp_FirebasePushIdDefinition())
-    r_high = convert(UInt128, rand(0:(1 << 7))) << 64
-    r_low = rand(typemin(UInt64):typemax(UInt64))
-    return convert(Int128, ts | r_high | r_low)
+    r = rand(0:convert(UInt128, 72))
+    # r_high = convert(UInt128, rand(0:(1 << 7))) << 64
+    # r_low = rand(typemin(UInt64):typemax(UInt64))
+    # return convert(Int128, ts | r_high | r_low)
+    return ts | r
 end
 

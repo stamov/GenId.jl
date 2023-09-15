@@ -17,8 +17,11 @@ GenId offers few algorithms to generate mostly non-conflicting and time-ordered 
 In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is higher than desirable. In such contexts Universally Unique IDentifiers (UUIDs) can be used which offer uniqueness across number of machines/threads without round-trip to a central authority.
 
 This library provides few algorithms to generate some of them and supports user friendly text representations:
-* 64-bit [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html)
-* 128-bit [Firebase Push ID](https://github.com/arturictus/firebase_pushid) using lexicographic sortable Base 64 URL safe encoding
+* 128-bit [ULID](https://github.com/ulid/spec) using [Crockford Base 32](https://www.crockford.com/base32.html);
+* 128-bit [XUD](https://github.com/rs/xid) using modified Base 64 text encoding;
+* 128-bit [Firebase Push ID](https://github.com/arturictus/firebase_pushid) using modified Base 64 text encoding;
+* 64-bit [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html);
+* 64-bit [Instagram ID](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c) using [Crockford Base 32](https://www.crockford.com/base32.html);
 
 # Background
 
@@ -96,7 +99,7 @@ julia> tsid_int_from_string(iddef, "DJR0RGDG0401")
 
 ### Firebase PushID
 See https://github.com/arturictus/firebase_pushid
-Uses modified Base 64 text encoding to allow for lexicographic sorting and safe URLs.
+Uses modified Base 64 text encoding.
 ```julia
 # FirebasePushIdDefinition()
 # 48 bits timestamp (ms), 72 randomness
@@ -230,9 +233,9 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 ##### Why variations as Ints instead of using wrapper types?
 
 Just a design choice between trade-offs at the moment, mainly constrained by available time for development.
-##### Why using Crockford Base 32?
+##### Why Crockford Base 32?
 
-* More readable than some others (e.g. Base32, Base64, Base58 etc.), while still compressing a bit over Hex encoding for example (each character in Crockford Base 32 corresponds to 5 bits of input);
+* More human readable and less error prone to dictation than some others (e.g. Base32, Base64, Base58 etc.), while still compressing a bit over Hex encoding for example (each character in Crockford Base 32 corresponds to 5 bits of input);
 * Simple, efficient;
 * Support in other languages (see [Crockford 32 on Github](https://github.com/search?q=crockford+32&type=repositories&s=stars&o=desc)).
 

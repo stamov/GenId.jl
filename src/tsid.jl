@@ -169,6 +169,7 @@ function _make_bits_increment(new_value::TT, tail_mod::Int) where {TT<:Integer}
 end
 
 function _make_bits_increment(def::TsIdDefinition)
+    # TODO reset on each subsequent millisecond
     old = Threads.atomic_xchg!(TSID_MACHINE_INCR, mod(TSID_MACHINE_INCR[] + 1, def.tail_mod))
     
     return mod(old + 1, def.tail_mod)

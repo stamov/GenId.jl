@@ -3,13 +3,18 @@ module GenId
 using ArgCheck
 using Dates
 
+const UNIX_EPOCH_START = DateTime(1970, 1, 1, 0, 0, 0, 0)
+
 include("base64.jl")
 include("base32.jl")
 include("base32_crockford.jl")
 include("bitmasks.jl")
 include("tsid.jl")
 include("snowflakeid.jl")
+include("instagramid.jl")
 include("firebasepushid.jl")
+include("ulid.jl")
+include("xid.jl")
 
 #@__MODULE__
 #println("in file eval:", @__MODULE__)
@@ -26,7 +31,7 @@ export tsid_generate
 export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
 export tsid_to_string, tsid_int_from_string
 
-export SnowflakeIdDefinition, FirebasePushIdDefinition
+export FirebasePushIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition, XIdDefinition
 
 
 # using Base64

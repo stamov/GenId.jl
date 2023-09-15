@@ -465,6 +465,24 @@ using GenId
             tsid_generate(iddef_snowflake)
         end
 
+        @testset "Instagram ID" begin
+            iddef_instagram = InstagramIdDefinition(SOME_EPOCH_START_2020, 1)
+            @test iddef_instagram.name == :InstagramIdDefinition
+            tsid_generate(iddef_instagram)
+        end
+
+        @testset "ULID" begin
+            iddef_ulid = ULIdDefinition()
+            @test iddef_ulid.name == :ULIdDefinition
+            tsid_generate(iddef_ulid)
+        end
+
+        # @testset "XID" begin
+        #     iddef_xid = XIdDefinition(1)
+        #     @test iddef_xid.name == :XIdDefinition
+        #     tsid_generate(iddef_xid)
+        # end
+
         @testset "Firebase PushID" begin
             iddef_firebase_push_id = FirebasePushIdDefinition()
             #@show iddef_firebase_push_id
