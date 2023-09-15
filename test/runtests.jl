@@ -501,38 +501,48 @@ using GenId
         end
 
         @testset "Snowflake ID" begin
-            iddef_int64_1 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            iddef_snowflake = SnowflakeIdDefinition(SOME_EPOCH_START_2020, 1)
-            @test iddef_int64_1.type == iddef_snowflake.type
-            @test iddef_int64_1.bits_time == iddef_snowflake.bits_time
-            @test iddef_int64_1.bits_group_1 == iddef_snowflake.bits_group_1
-            @test iddef_int64_1.bits_group_2 == iddef_snowflake.bits_group_2
-            @test iddef_int64_1.bits_tail == iddef_snowflake.bits_tail
-            @test iddef_int64_1.tail_algorithm == iddef_snowflake.tail_algorithm
-            @test iddef_int64_1.epoch_start_dt == iddef_snowflake.epoch_start_dt
+            # iddef_int64_1 = TsIdDefinition(
+            #     Int64;
+            #     bits_time=41,
+            #     bits_group_1=10,
+            #     bits_tail=12,
+            #     group_1=1,
+            #     epoch_start_dt=SOME_EPOCH_START_2020,
+            #     epoch_end_dt=SOME_EPOCH_END_2070
+            # )
+            # iddef_snowflake = SnowflakeIdDefinition(SOME_EPOCH_START_2020, 1)
+            # @test iddef_int64_1.type == iddef_snowflake.type
+            # @test iddef_int64_1.bits_time == iddef_snowflake.bits_time
+            # @test iddef_int64_1.bits_group_1 == iddef_snowflake.bits_group_1
+            # @test iddef_int64_1.bits_group_2 == iddef_snowflake.bits_group_2
+            # @test iddef_int64_1.bits_tail == iddef_snowflake.bits_tail
+            # @test iddef_int64_1.tail_algorithm == iddef_snowflake.tail_algorithm
+            # @test iddef_int64_1.epoch_start_dt == iddef_snowflake.epoch_start_dt
+            iddef_snowflake = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1))
             @test iddef_snowflake.name == :SnowflakeIdDefinition
-            tsid_generate(iddef_snowflake)
+            #@show "<--- SnowflakeIdDefinition"
+            id1 = tsid_generate(iddef_snowflake)
+            #@show bitstring(id1), length(bitstring(id1)), typeof(id1), id1
+            #@show ">--- SnowflakeIdDefinition"
+            #0000000000000000001110100000110110110010001101101110101100110010
+            #100000110110110010001101101110101100110010 0000000000 000000000000
+            # @show "<--- SnowflakeIdDefinition"
+            # id1 = tsid_generate(iddef_snowflake)
+            # @show bitstring(id1)
+            # @show ">--- SnowflakeIdDefinition"
         end
 
-        # @testset "Instagram ID" begin
-        #     iddef_instagram = InstagramIdDefinition(SOME_EPOCH_START_2020, 1)
-        #     @test iddef_instagram.name == :InstagramIdDefinition
-        #     tsid_generate(iddef_instagram)
-        # end
+        @testset "Instagram ID" begin
+            iddef_instagram = InstagramIdDefinition(SOME_EPOCH_START_2020, 1)
+            @test iddef_instagram.name == :InstagramIdDefinition
+            tsid_generate(iddef_instagram)
+        end
 
-        # @testset "ULID" begin
-        #     iddef_ulid = ULIdDefinition()
-        #     @test iddef_ulid.name == :ULIdDefinition
-        #     tsid_generate(iddef_ulid)
-        # end
+        @testset "ULID" begin
+            iddef_ulid = ULID_DEFINITION # ULIdDefinition()
+            @test iddef_ulid.name == :ULIdDefinition
+            tsid_generate(iddef_ulid)
+        end
 
         # @testset "XID" begin
         #     iddef_xid = XIdDefinition(1)
@@ -541,9 +551,9 @@ using GenId
         # end
 
         @testset "Firebase PushID" begin
-            @show "Test Firebase PushID"
-            iddef_firebase_push_id = FirebasePushIdDefinition()
-            @show iddef_firebase_push_id
+            #@show "Test Firebase PushID"
+            iddef_firebase_push_id = FIREBASE_PUSHID_DEFINITION
+            #@show iddef_firebase_push_id
             #id1 = tsid_generate(Val{:FirebasePushIdDefinition}, iddef_firebase_push_id)
             id1 = tsid_generate(iddef_firebase_push_id)
             #@show bitstring(id1)

@@ -165,9 +165,9 @@ julia> tsid_machine_tail(iddef, 489485826766409729)
 tsid_tail(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = bit_mask_int(def.type, tsid, 0, def.bits_tail - 1)
 tsid_tail(def::TsIdDefinition, tsid::TSID) = tsid_tail(def, tsid.value)
 
-const TSID_MACHINE_INCR = Base.Threads.Atomic{Int64}(0)
-reset_globabl_machine_id_increment() = Threads.atomic_xchg!(TSID_MACHINE_INCR, 0)
-reset_globabl_machine_id_increment(n) = Threads.atomic_xchg!(TSID_MACHINE_INCR, n)
+# const TSID_MACHINE_INCR = Base.Threads.Atomic{Int64}(0)
+# reset_globabl_machine_id_increment() = Threads.atomic_xchg!(TSID_MACHINE_INCR, 0)
+# reset_globabl_machine_id_increment(n) = Threads.atomic_xchg!(TSID_MACHINE_INCR, n)
 
 function _make_bits_increment(new_value::TT, tail_mod::Int) where {TT<:Integer}
     new_value = mod(new_value, tail_mod)

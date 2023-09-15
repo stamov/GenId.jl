@@ -1,23 +1,25 @@
 
+const SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE = MachineSequenceField{Int64}(Int64, :random, 0, 12)
+
 function SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
-    bits_time = 41
-    v_epoch_end_dt = epoch_end_dt_from_epoch_start(epoch_start_dt, bits_time)
-    def = TsIdDefinition(
-        Int64;
-        name=:SnowflakeIdDefinition,
-        bits_time=bits_time,
-        bits_group_1=10,
-        bits_tail=12,
-        group_1=machine_id,
-        tail_algorithm=:machine_increment,
-        epoch_start_dt=epoch_start_dt,
-        epoch_end_dt=v_epoch_end_dt
-    )
-    return def
+    TSIDGenericContainer(
+        Int64,
+        :SnowflakeIdDefinition,
+        [
+            TimestampField(
+                Int64, 
+                :timestamp, 
+                22, 
+                41, 
+                epoch_start_dt
+            ),
+            ConstantField{UInt64}(
+                UInt64,
+                :machine_sequence,
+                12, 
+                10,
+                machine_id
+            ),
+            SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+        ])
 end
-
-function tsid_generate(::Type{Val{:SnowflakeIdDefinition}}, def::TsIdDefinition)
-    return tsid_generate(Val{:TsIdDefinition}, def)
-end
-
-#tsid_timestamp(::Type{Val{:SnowflakeIdDefinition}}, tsid::TT, epoch_start_ms::Int, shift_bits_time::Int) where {TT<:Integer} = DateTime(Dates.UTM((tsid >> shift_bits_time) + epoch_start_ms))

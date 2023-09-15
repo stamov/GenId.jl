@@ -25,6 +25,9 @@ export crockford32_encode_uint64, crockford32_encode_int64, crockford32_decode_i
 export crockford32_encode_int128, crockford32_decode_uint128, crockford32_decode_int128
 
 export AbstractField, AbstractGeneratedField, ConstantField, GeneratedField, RandomField, TimestampField, extract_value_from_bits, implant_value_into_int
+
+export FIREBASE_PUSHID_DEFINITION, ULID_DEFINITION
+
 export TSID, TsIdDefinition
 export reset_globabl_machine_id_increment
 export def_bits_time, def_bits_group_1, def_bits_group_2, def_bits_tail, def_group_1, def_group_2
@@ -32,7 +35,8 @@ export tsid_generate
 export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
 export tsid_to_string, tsid_int_from_string
 
-export FirebasePushIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition #, XIdDefinition
+#export FirebasePushIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition #, XIdDefinition
+export FirebasePushIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition
 
 
 # using Base64

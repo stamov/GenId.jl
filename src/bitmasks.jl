@@ -110,8 +110,21 @@ struct TimestampField{T} <: AbstractGeneratedField
     name::Symbol
     bits_offset::Int64 # starting at 0
     bits_length::Int64
+    epoch_start_dt::DateTime
+    epoch_start_ms::Int64
+
+    function TimestampField(
+        type::DataType, 
+        name::Symbol, 
+        bits_offset::Int64, 
+        bits_length::Int64, 
+        epoch_start_dt::DateTime
+    )
+        epoch_start_ms = Dates.value(epoch_start_dt)
+        new{type}(type, name, bits_offset, bits_length, epoch_start_dt, epoch_start_ms)
+    end
 end
-generate_field_value(field::TimestampField{T} where {T}) = Dates.value(Dates.now())
+generate_field_value(field::TimestampField{T} where {T}) = Dates.value(Dates.now()) - field.epoch_start_ms
 
 struct RandomField{T} <: AbstractGeneratedField
     type::DataType
@@ -120,6 +133,32 @@ struct RandomField{T} <: AbstractGeneratedField
     bits_length::Int64
 end
 generate_field_value(field::RandomField{T} where {T}) = rand(0:one(field.type) << field.bits_length)
+
+
+const TSID_MACHINE_INCR = Base.Threads.Atomic{Int64}(0)
+reset_globabl_machine_id_increment() = Threads.atomic_xchg!(TSID_MACHINE_INCR, 0)
+reset_globabl_machine_id_increment(n) = Threads.atomic_xchg!(TSID_MACHINE_INCR, n)
+
+struct MachineSequenceField{T} <: AbstractGeneratedField
+    type::DataType
+    name::Symbol
+    bits_offset::Int64 # starting at 0
+    bits_length::Int64
+end
+
+function _make_bits_increment(field::MachineSequenceField{T} where {T})
+    mod_divisor = one(field.type) << field.bits_length
+    #new_value = mod(new_value, tail_mod)
+    #TSID_MACHINE_INCR[] = new_value
+    #return new_value
+    old = Threads.atomic_xchg!(TSID_MACHINE_INCR, mod(TSID_MACHINE_INCR[] + 1, mod_divisor))
+    return mod(old + 1, mod_divisor)
+end
+
+function generate_field_value(field::MachineSequenceField{T} where {T})
+    return _make_bits_increment(field)
+end
+
 
 struct ConstantField{T} <: AbstractField
     type::DataType
@@ -167,6 +206,7 @@ struct TSIDGenericContainer <: TSIDAbstractContainer
     fields::Vector{AbstractField}
 end
 
+# TODO convert to a macro per UUID type
 function tsid_generate(def::TSIDGenericContainer)
     #@show "tsid_generate"
     ctr = zero(def.type)
