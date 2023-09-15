@@ -20,9 +20,8 @@ _make_timestamp_ULIdDefinition() = convert(Int128, Dates.value(Dates.now())) << 
 function tsid_generate(::Type{Val{:ULIdDefinition}}, def::TsIdDefinition)
     ts = convert(UInt128, _make_timestamp_ULIdDefinition())
     r = rand(0:convert(UInt128, 80))
-    # r_high = convert(UInt128, rand(0:(1 << 7))) << 64
-    # r_low = rand(typemin(UInt64):typemax(UInt64))
-    # return convert(Int128, ts | r_high | r_low)
     return ts | r
 end
+
+#tsid_timestamp(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = tsid_timestamp(tsid, def.epoch_start_ms, def.shift_bits_time)
 

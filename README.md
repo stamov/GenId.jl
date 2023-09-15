@@ -18,7 +18,7 @@ In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for
 
 This library provides few algorithms to generate some of them and supports user friendly text representations:
 * 128-bit [ULID](https://github.com/ulid/spec) using [Crockford Base 32](https://www.crockford.com/base32.html);
-* 128-bit [XUD](https://github.com/rs/xid) using modified Base 64 text encoding;
+* 128-bit [XID](https://github.com/rs/xid) using modified Base 64 text encoding;
 * 128-bit [Firebase Push ID](https://github.com/arturictus/firebase_pushid) using modified Base 64 text encoding;
 * 64-bit [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html);
 * 64-bit [Instagram ID](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c) using [Crockford Base 32](https://www.crockford.com/base32.html);

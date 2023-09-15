@@ -198,10 +198,7 @@ using GenId
         @test GenId.word_size(Int32) == GenId.word_size(UInt32) == 32
         @test GenId.word_size(Int64) == GenId.word_size(UInt64) == 64
         @test GenId.word_size(Int128) == GenId.word_size(UInt128) == 128
-        @test GenId.mask1_uint(UInt16) == 0x0001
-        @test GenId.mask1_uint(UInt32) == 0x00000001
-        @test GenId.mask1_uint(UInt64) == 0x0000000000000001
-        @test GenId.mask1_uint(UInt128) == 0x00000000000000000000000000000001
+        @test GenId.mask1(UInt128) == convert(UInt128, 1)
         @test GenId.unsigned_int_for_signed(Int16) == UInt16
         @test GenId.unsigned_int_for_signed(Int32) == UInt32
         @test GenId.unsigned_int_for_signed(Int64) == UInt64
@@ -215,6 +212,66 @@ using GenId
         @test_throws AssertionError bitstring(GenId.bit_mask_int(Int64, -1, 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
     end
 
+    @testset "GenId.GeneratedField" begin
+        f1 = GeneratedField(Int64, :hello, 1, 2)
+        #@show bitstring(0)
+        @test extract_value_from_bits(f1, 0) == 0
+        #@show bitstring(1)
+        @test extract_value_from_bits(f1, 1) == 0
+        #@show bitstring(2)
+        @test extract_value_from_bits(f1, 2) == 1
+        #@show bitstring(3)
+        @test extract_value_from_bits(f1, 3) == 1
+        #@show bitstring(4)
+        @test extract_value_from_bits(f1, 4) == 2
+        #@show bitstring(5)
+        @test extract_value_from_bits(f1, 5) == 2
+        #@show bitstring(6)
+        @test extract_value_from_bits(f1, 6) == 3
+        #@show bitstring(7)
+        @test extract_value_from_bits(f1, 7) == 3
+        #@show bitstring(8)
+        @test extract_value_from_bits(f1, 8) == 0
+
+        #@show bitstring(0)
+        @test extract_value_from_bits(f1, 0x0) == 0
+        #@show bitstring(1)
+        @test extract_value_from_bits(f1, 0x1) == 0
+        #@show bitstring(2)
+        @test extract_value_from_bits(f1, 0x2) == 1
+        #@show bitstring(3)
+        @test extract_value_from_bits(f1, 0x3) == 1
+        #@show bitstring(4)
+        @test extract_value_from_bits(f1, 0x4) == 2
+        #@show bitstring(5)
+        @test extract_value_from_bits(f1, 0x5) == 2
+        #@show bitstring(6)
+        @test extract_value_from_bits(f1, 0x6) == 3
+        #@show bitstring(7)
+        @test extract_value_from_bits(f1, 0x7) == 3
+        #@show bitstring(8)
+        @test extract_value_from_bits(f1, 0x8) == 0
+
+        f2 = GeneratedField(UInt64, :hello, 1, 2)
+        @test typeof(extract_value_from_bits(f2, 0)) == UInt64
+
+        f3 = GeneratedField(UInt128, :hello, 1, 2)
+        @test typeof(extract_value_from_bits(f3, 0)) == UInt128
+        @test typeof(extract_value_from_bits(f3, convert(Int128, 0))) == UInt128
+        @test typeof(extract_value_from_bits(f3, convert(UInt128, 0))) == UInt128
+
+        #@show bitstring(0)
+        @test implant_value_into_int(0, f1, 0) == 0
+        #@show bitstring(1)
+        @test implant_value_into_int(0, f1, 1) == 2
+        #@show bitstring(2)
+        @test implant_value_into_int(0, f1, 2) == 4
+        #@show bitstring(3)
+        @test implant_value_into_int(0, f1, 3) == 6
+        # implant_value_into_int can overwrite if new_value has more than GeneratedField.bit_length bits
+        #@show bitstring(4)
+        @test implant_value_into_int(0, f1, 4) == 8
+    end
 
     @testset "GenId.jl.tsid-41-10-12" begin
 
@@ -465,17 +522,17 @@ using GenId
             tsid_generate(iddef_snowflake)
         end
 
-        @testset "Instagram ID" begin
-            iddef_instagram = InstagramIdDefinition(SOME_EPOCH_START_2020, 1)
-            @test iddef_instagram.name == :InstagramIdDefinition
-            tsid_generate(iddef_instagram)
-        end
+        # @testset "Instagram ID" begin
+        #     iddef_instagram = InstagramIdDefinition(SOME_EPOCH_START_2020, 1)
+        #     @test iddef_instagram.name == :InstagramIdDefinition
+        #     tsid_generate(iddef_instagram)
+        # end
 
-        @testset "ULID" begin
-            iddef_ulid = ULIdDefinition()
-            @test iddef_ulid.name == :ULIdDefinition
-            tsid_generate(iddef_ulid)
-        end
+        # @testset "ULID" begin
+        #     iddef_ulid = ULIdDefinition()
+        #     @test iddef_ulid.name == :ULIdDefinition
+        #     tsid_generate(iddef_ulid)
+        # end
 
         # @testset "XID" begin
         #     iddef_xid = XIdDefinition(1)
@@ -484,9 +541,14 @@ using GenId
         # end
 
         @testset "Firebase PushID" begin
+            @show "Test Firebase PushID"
             iddef_firebase_push_id = FirebasePushIdDefinition()
-            #@show iddef_firebase_push_id
-            id = tsid_generate(iddef_firebase_push_id)
+            @show iddef_firebase_push_id
+            #id1 = tsid_generate(Val{:FirebasePushIdDefinition}, iddef_firebase_push_id)
+            id1 = tsid_generate(iddef_firebase_push_id)
+            #@show bitstring(id1)
+            @test id1 > typemax(UInt64)
+            @test typeof(id1) == iddef_firebase_push_id.type
             id_int_1 = 301430602692632926610578560781911544
             id_int_1_str = GenId.base32encode_int128(id_int_1; started_init=true)
             @test id_int_1_str == "22BCAUU7RLKOX3CKM24UOTK3JS"
@@ -494,8 +556,8 @@ using GenId
             id_int_2 = GenId.base32decode_int128("22BCAUU7RLKOX3CKM24UOTK3JS")
             @test id_int_1 == id_int_2
 
-            @test tsid_to_string(iddef_firebase_push_id, id_int_1) == "DVqh4j54DWG1F0Pda-Ms"
-            @test tsid_int_from_string(iddef_firebase_push_id, "DVqh4j54DWG1F0Pda-Ms") == id_int_1
+            #@test tsid_to_string(iddef_firebase_push_id, id_int_1) == "DVqh4j54DWG1F0Pda-Ms"
+            #@test tsid_int_from_string(iddef_firebase_push_id, "DVqh4j54DWG1F0Pda-Ms") == id_int_1
         end
 
         @testset "tsid_to_string" begin

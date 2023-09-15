@@ -111,7 +111,9 @@ _make_bits_group_1(mid::Int64, shift_bits_group_1::Int64) = mid << shift_bits_gr
 _make_bits_group_1(def::TsIdDefinition) = _make_bits_group_1(def.group_1, def.shift_bits_group_1)
 
 
-tsid_timestamp(tsid::TT, epoch_start_ms::Int, shift_bits_time::Int) where {TT<:Integer} = DateTime(Dates.UTM((tsid >> shift_bits_time) + epoch_start_ms))
+function tsid_timestamp(tsid::TT, epoch_start_ms::Int, shift_bits_time::Int) where {TT<:Integer} 
+    return DateTime(Dates.UTM((tsid >> shift_bits_time) + epoch_start_ms))
+end
 """
     tsid_timestamp(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
 
@@ -123,7 +125,13 @@ julia> tsid_timestamp(iddef, 489485826766409729)
 2023-09-12T17:21:55.308
 ```
 """
-tsid_timestamp(def::TsIdDefinition, tsid::TT) where {TT<:Integer} = tsid_timestamp(tsid, def.epoch_start_ms, def.shift_bits_time)
+function tsid_timestamp(def::TsIdDefinition, tsid::TT) where {TT<:Integer}
+    if def.bits_time == 0
+        throw(AssertionError("Timestamp field not supported for TSID of type $(def.name)."))
+    end
+    
+    return tsid_timestamp(tsid, def.epoch_start_ms, def.shift_bits_time)
+end
 tsid_timestamp(def::TsIdDefinition, tsid::TSID) = tsid_timestamp(def, tsid.value)
 
 """
@@ -297,6 +305,9 @@ julia> tsid_generate(iddef)
 function tsid_generate(def::TsIdDefinition)
     return tsid_generate(Val{def.name}, def)
 end
+# function tsid_generate(def::TSIDAbstractContainer)
+#     return tsid_generate(Val{def.name}, def)
+# end
 
 """
     tsid_generate_string(def::TsIdDefinition)

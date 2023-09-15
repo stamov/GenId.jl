@@ -20,3 +20,4 @@ function tsid_generate(::Type{Val{:SnowflakeIdDefinition}}, def::TsIdDefinition)
     return tsid_generate(Val{:TsIdDefinition}, def)
 end
 
+#tsid_timestamp(::Type{Val{:SnowflakeIdDefinition}}, tsid::TT, epoch_start_ms::Int, shift_bits_time::Int) where {TT<:Integer} = DateTime(Dates.UTM((tsid >> shift_bits_time) + epoch_start_ms))
