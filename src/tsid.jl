@@ -210,6 +210,12 @@ function tsid_to_string(def::TsIdDefinition, tsid::T) where T <: Integer
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
         end
+    elseif def.text_algorithm == :base_64
+        if def.type == Int128
+            base64encode_int128(tsid; started_init=def.text_full_width)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))    
+        end
     else
         throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
     end
@@ -238,6 +244,12 @@ function tsid_int_from_string(def::TsIdDefinition, tsid::String)
             crockford32_decode_uint128(tsid; with_checksum=def.text_with_checksum)
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+        end
+    elseif def.text_algorithm == :base_64
+        if def.type == Int128
+            base64decode_int128(tsid)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
         end
     else
         throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))

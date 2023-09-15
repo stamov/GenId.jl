@@ -129,11 +129,66 @@ using GenId
         @test GenId.base32encode_int128(convert(Int128, 1)) == "3"
         @test GenId.base32encode_int128(convert(Int128, 1); started_init=true) == "22222222222222222222222223"
         @test GenId.base32encode_int128(typemax(Int128)) == "5ZZZZZZZZZZZZZZZZZZZZZZZZZ"
-        #@test GenId.base32decode_int128("2") == 0
-        #@test GenId.base32decode_int128("3") == 1
-        #@test GenId.base32decode_int128("2222222222222222222222222") == 0
-        #@test GenId.base32decode_int128("2222222222222222222222223") == 1
-        #@test GenId.base32decode_int128("5ZZZZZZZZZZZZZZZZZZZZZZZZZ") == typemax(Int128)
+        @test GenId.base32decode_int128("2") == 0
+        @test GenId.base32decode_int128("3") == 1
+        @test GenId.base32decode_int128("2222222222222222222222222") == 0
+        @test GenId.base32decode_int128("2222222222222222222222223") == 1
+        @test GenId.base32decode_int128("5ZZZZZZZZZZZZZZZZZZZZZZZZZ") == typemax(Int128)
+        ok = true
+        for i in 1:1000
+            r = rand(0:typemax(Int128))
+            s = GenId.base32encode_int128(r)
+            f = GenId.base32decode_int128(s)
+            if r != f
+                @show r, s, f
+                ok = false
+            end
+        end
+        @test ok == true
+    end
+
+    @testset "base64" begin
+        @test GenId.base64encode_int128(convert(Int128, 0)) == "0"
+        @test GenId.base64encode_int128(convert(Int128, 0); started_init=true) == "0000000000000000000000"
+        @test GenId.base64encode_int128(convert(Int128, 1)) == "1"
+        @test GenId.base64encode_int128(convert(Int128, 1); started_init=true) == "0000000000000000000001"
+        @test GenId.base64encode_int128(convert(Int128, 10)) == "A"
+        @test GenId.base64encode_int128(typemax(Int128)) == "1/////////////////////"
+        @test GenId.base64encode_int128(convert(Int128, 63)) == "/"
+        @test GenId.base64encode_int128(convert(Int128, 64)) == "10"
+        @test GenId.base64encode_int128(convert(Int128, 65)) == "11"
+        @test GenId.base64decode_int128("0") == 0
+        @test GenId.base64decode_int128("1") == 1
+        @test GenId.base64decode_int128("A") == 10
+        @test GenId.base64decode_int128("/") == 63
+        @test GenId.base64decode_int128("10") == 64
+        @test GenId.base64decode_int128("11") == 65
+        @test GenId.base64decode_int128("0000000000000000000000") == 0
+        @test GenId.base64decode_int128("0000000000000000000001") == 1
+        @test GenId.base64decode_int128("1/////////////////////") == typemax(Int128)
+        
+        s = "gRCN4la4I0vGAQ6empS4F"
+        @test GenId.base64decode_int128(s) == 56392355105980817333659767379929710863
+        r = 56392355105980817333659767379929710863
+        
+        # s = GenId.base64encode_int128(r)
+        # @show s
+        # f = GenId.base64decode_int128(s)
+        # @test r == f
+
+        ok = true
+        for i in 1:1000
+            r = rand(0:typemax(Int128))
+            s = GenId.base64encode_int128(r)
+            f = GenId.base64decode_int128(s)
+            if r != f
+                @show r, s, f
+                @show bitstring(r)
+                @show bitstring(f)
+                ok = false
+            end
+        end
+        @test ok == true
     end
 
     @testset "GenId.bit_mask" begin
@@ -408,11 +463,19 @@ using GenId
             tsid_generate(iddef_snowflake)
         end
 
-        @testset "Snowflake ID" begin
-            iddef_firebase_push_id = FirebasePushIdDefinition(SOME_EPOCH_START_2020)
-            @show iddef_firebase_push_id
-            @show tsid_generate(iddef_firebase_push_id)
-            #GenId._make_bits_random(iddef_firebase_push_id)
+        @testset "Firebase PushID" begin
+            iddef_firebase_push_id = FirebasePushIdDefinition()
+            #@show iddef_firebase_push_id
+            id = tsid_generate(iddef_firebase_push_id)
+            id_int_1 = 301430602692632926610578560781911544
+            id_int_1_str = GenId.base32encode_int128(id_int_1; started_init=true)
+            @test id_int_1_str == "22BCAUU7RLKOX3CKM24UOTK3JS"
+            @test length(id_int_1_str) == 26
+            id_int_2 = GenId.base32decode_int128("22BCAUU7RLKOX3CKM24UOTK3JS")
+            @test id_int_1 == id_int_2
+
+            @test tsid_to_string(iddef_firebase_push_id, id_int_1) == "EWsj5l65EXH2G1Qfc0Nu"
+            @test tsid_int_from_string(iddef_firebase_push_id, "EWsj5l65EXH2G1Qfc0Nu") == id_int_1
         end
 
         @testset "tsid_to_string" begin
@@ -488,8 +551,7 @@ using GenId
 
         @testset "tsid_from_string" begin
             @test_throws MethodError tsid_int_from_string(13)
-   
-   
+
             iddef_int64_1 = TsIdDefinition(
                 Int64;
                 bits_time=41,

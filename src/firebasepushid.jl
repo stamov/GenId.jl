@@ -1,18 +1,26 @@
-function FirebasePushIdDefinition(epoch_start_dt::DateTime)
-    bits_time = 48
-    bits_tail= 72
-    v_epoch_end_dt = epoch_end_dt_from_epoch_start(epoch_start_dt, bits_time)
+
+# struct FirebasePushIdDefinition
+#     function FirebasePushIdDefinition()
+#         return new()
+#     end
+# end
+
+function FirebasePushIdDefinition()
+    bits_time=47
+    epoch_start_dt = DateTime(1, 1, 1, 0, 0, 0, 0)
+    epoch_end_dt = epoch_end_dt_from_epoch_start(epoch_start_dt, bits_time)
     def = TsIdDefinition(
         Int128;
         name=:FirebasePushIdDefinition,
-        bits_ignore_start=7,
+        bits_ignore_start=8,
         bits_time=bits_time,
         bits_group_1=0,
-        bits_tail=bits_tail,
+        bits_tail=72,
+        text_algorithm = :base_64,
         group_1=0,
         tail_algorithm=:random,
         epoch_start_dt=epoch_start_dt,
-        epoch_end_dt=v_epoch_end_dt
+        epoch_end_dt=epoch_end_dt
     )
     return def
 end
@@ -26,6 +34,3 @@ function tsid_generate(::Type{Val{:FirebasePushIdDefinition}}, def::TsIdDefiniti
     return convert(Int128, ts | r_high | r_low)
 end
 
-
-
-#BASE_64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"

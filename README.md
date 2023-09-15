@@ -64,6 +64,62 @@ and import it.
 using GenId, Dates
 ```
 
+# Specific UUIDs implemented
+
+### Snowflake ID
+see https://en.wikipedia.org/wiki/Snowflake_ID
+
+```julia
+# SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
+# 41 bits timestamp (ms), 10 bits machine id, 12 bits sequence numbers per machine
+julia> iddef = SnowflakeIdDefinition(DateTime(2020, 1, 1, 0, 0, 0, 0), 1)
+...
+
+julia> iddef.name == :SnowflakeIdDefinition
+true
+
+julia> tsid_generate(iddef)
+489485826766409729
+
+julia> tsid_generate_string(iddef)
+"DJR0RGDG0401"
+
+# en-/decoded using Crockford Base 32
+julia> tsid_to_string(iddef, 489485826766409729)
+"DJR0RGDG0401"
+
+julia> tsid_int_from_string(iddef, "DJR0RGDG0401")
+489485826766409729
+
+```
+
+### Firebase PushID
+see https://github.com/arturictus/firebase_pushid
+
+```julia
+# FirebasePushIdDefinition()
+# 48 bits timestamp (ms), 72 randomness
+julia> iddef = FirebasePushIdDefinition()
+...
+
+julia> iddef.name == :FirebasePushIdDefinition
+true
+
+julia> tsid_generate(iddef)
+301430602692632926610578560781911544
+
+julia> tsid_generate_string(iddef)
+"22BCAUU7RLKOX3CKM24UOTK3JS"
+
+julia> tsid_to_string(iddef, 301430602692632926610578560781911544)
+"22BCAUU7RLKOX3CKM24UOTK3JS"
+
+julia> tsid_int_from_string(iddef, "22BCAUU7RLKOX3CKM24UOTK3JS")
+301430602692632926610578560781911544
+```
+
+### Generic 64-bit UUID
+
 Define an UUID structure
 
 ```julia
@@ -163,29 +219,6 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 489485826766409729
 ```
 
-# Specific UUIDs implemented
-
-#### Snowflake ID
-see https://en.wikipedia.org/wiki/Snowflake_ID
-
-```julia
-# SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
-# 41 bits timestamp (ms), 10 bits machine id, 12 bits sequence numbers per machine
-julia> iddef = SnowflakeIdDefinition(DateTime(2020, 1, 1, 0, 0, 0, 0), 1)
-...
-
-julia> iddef.name == :SnowflakeIdDefinition
-true
-
-julia> tsid_generate(iddef)
-489485826766409729
-
-julia> tsid_generate_string(iddef)
-"DJR0RGDG0401"
-
-julia> tsid_to_string(iddef, 489485826766409729)
-"DJR0RGDG0401"
-```
 
 # FAQ
 

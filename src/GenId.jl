@@ -3,6 +3,7 @@ module GenId
 using ArgCheck
 using Dates
 
+include("base64.jl")
 include("base32.jl")
 include("base32_crockford.jl")
 include("bitmasks.jl")
