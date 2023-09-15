@@ -20,27 +20,15 @@
 #     return tsid_generate(Val{:TsIdDefinition}, def)
 # end
 
-const INSTAGRAM_ID_FIELD_MACHINE_SEQUENCE = MachineSequenceField{UInt64}(UInt64, :random, 0, 10)
+const INSTAGRAM_ID_FIELD_MACHINE_SEQUENCE = MachineSequenceField(UInt64, 0, 10)
 
 function InstagramIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
     TSIDGenericContainer(
         Int64,
         :InstagramIdDefinition,
         [
-            TimestampField(
-                Int64,
-                :timestamp,
-                22,
-                41,
-                epoch_start_dt
-            ),
-            ConstantField{UInt64}(
-                UInt64,
-                :machine_sequence,
-                10,
-                12,
-                machine_id
-            ),
+            TimestampField(Int64, 22, 41, epoch_start_dt),
+            ConstantField(UInt64, :machine_sequence, 10, 12, machine_id),
             SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
         ])
 end

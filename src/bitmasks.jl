@@ -113,15 +113,9 @@ struct TimestampField{T} <: AbstractGeneratedField
     epoch_start_dt::DateTime
     epoch_start_ms::Int64
 
-    function TimestampField(
-        type::DataType, 
-        name::Symbol, 
-        bits_offset::Int64, 
-        bits_length::Int64, 
-        epoch_start_dt::DateTime
-    )
+    function TimestampField(type, bits_offset, bits_length, epoch_start_dt)
         epoch_start_ms = Dates.value(epoch_start_dt)
-        new{type}(type, name, bits_offset, bits_length, epoch_start_dt, epoch_start_ms)
+        new{type}(type, :timestamp, bits_offset, bits_length, epoch_start_dt, epoch_start_ms)
     end
 end
 generate_field_value(field::TimestampField{T} where {T}) = Dates.value(Dates.now()) - field.epoch_start_ms
@@ -131,6 +125,8 @@ struct RandomField{T} <: AbstractGeneratedField
     name::Symbol
     bits_offset::Int64 # starting at 0
     bits_length::Int64
+
+    RandomField(type, bits_offset, bits_length) = new{type}(type, :random, bits_offset, bits_length)
 end
 generate_field_value(field::RandomField{T} where {T}) = rand(0:one(field.type) << field.bits_length)
 
@@ -144,13 +140,14 @@ struct MachineSequenceField{T} <: AbstractGeneratedField
     name::Symbol
     bits_offset::Int64 # starting at 0
     bits_length::Int64
+
+    MachineSequenceField(type, bits_offset, bits_length) = new{type}(type, :machine_sequence, bits_offset, bits_length)
 end
 
 function _make_bits_increment(field::MachineSequenceField{T} where {T})
+    # TODO reset on each new millisecond
     mod_divisor = one(field.type) << field.bits_length
-    #new_value = mod(new_value, tail_mod)
-    #TSID_MACHINE_INCR[] = new_value
-    #return new_value
+    # TODO check if this is fully atomic, as TSID_MACHINE_INCR[] reads before xchg
     old = Threads.atomic_xchg!(TSID_MACHINE_INCR, mod(TSID_MACHINE_INCR[] + 1, mod_divisor))
     return mod(old + 1, mod_divisor)
 end
@@ -159,16 +156,22 @@ function generate_field_value(field::MachineSequenceField{T} where {T})
     return _make_bits_increment(field)
 end
 
-
 struct ConstantField{T} <: AbstractField
     type::DataType
     name::Symbol
     bits_offset::Int64 # starting at 0
     bits_length::Int64
     value::T
+
+    ConstantField(type, name, bits_offset, bits_length, value) = new{type}(type, name, bits_offset, bits_length, value)
 end
 generate_field_value(field::ConstantField{T} where {T}) = field.value
 
+
+function ProcessIdField(type::DataType, bits_offset::Int64, bits_length::Int64)
+    pid = getpid()
+    ConstantField(type, :process_id, bits_offset, bits_length, pid)
+end
 
 function extract_value_from_bits(field::AbstractField, v::TT) where {TT<:Integer}
     #@show bitstring(v), typeof(v)
@@ -182,7 +185,7 @@ function extract_value_from_bits(field::AbstractField, v::TT) where {TT<:Integer
     #@show bitstring(converted), typeof(converted)
     return converted
 end
-
+0000000000000000000000011000111111111100000000000000001111101011
 function implant_value_into_int(container::TC, field::AbstractField, new_value::TV) where {TV<:Integer,TC<:Integer}
     #@show "implant_value_into_int", new_value
     #@show bitstring(container), typeof(container)

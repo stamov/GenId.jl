@@ -544,11 +544,11 @@ using GenId
             tsid_generate(iddef_ulid)
         end
 
-        # @testset "XID" begin
-        #     iddef_xid = XIdDefinition(1)
-        #     @test iddef_xid.name == :XIdDefinition
-        #     tsid_generate(iddef_xid)
-        # end
+        @testset "XID" begin
+            iddef_xid = XIdDefinition(1)
+            @test iddef_xid.name == :XIdDefinition
+            @show bitstring(tsid_generate(iddef_xid))
+        end
 
         @testset "Firebase PushID" begin
             #@show "Test Firebase PushID"
