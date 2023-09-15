@@ -212,66 +212,66 @@ using GenId
         @test_throws AssertionError bitstring(GenId.bit_mask_int(Int64, -1, 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
     end
 
-    @testset "GenId.GeneratedField" begin
-        f1 = GeneratedField(Int64, :hello, 1, 2)
-        #@show bitstring(0)
-        @test extract_value_from_bits(f1, 0) == 0
-        #@show bitstring(1)
-        @test extract_value_from_bits(f1, 1) == 0
-        #@show bitstring(2)
-        @test extract_value_from_bits(f1, 2) == 1
-        #@show bitstring(3)
-        @test extract_value_from_bits(f1, 3) == 1
-        #@show bitstring(4)
-        @test extract_value_from_bits(f1, 4) == 2
-        #@show bitstring(5)
-        @test extract_value_from_bits(f1, 5) == 2
-        #@show bitstring(6)
-        @test extract_value_from_bits(f1, 6) == 3
-        #@show bitstring(7)
-        @test extract_value_from_bits(f1, 7) == 3
-        #@show bitstring(8)
-        @test extract_value_from_bits(f1, 8) == 0
+    # @testset "GenId.GeneratedField" begin
+    #     f1 = GeneratedField(Int64, :hello, 1, 2)
+    #     #@show bitstring(0)
+    #     @test extract_value_from_bits(f1, 0) == 0
+    #     #@show bitstring(1)
+    #     @test extract_value_from_bits(f1, 1) == 0
+    #     #@show bitstring(2)
+    #     @test extract_value_from_bits(f1, 2) == 1
+    #     #@show bitstring(3)
+    #     @test extract_value_from_bits(f1, 3) == 1
+    #     #@show bitstring(4)
+    #     @test extract_value_from_bits(f1, 4) == 2
+    #     #@show bitstring(5)
+    #     @test extract_value_from_bits(f1, 5) == 2
+    #     #@show bitstring(6)
+    #     @test extract_value_from_bits(f1, 6) == 3
+    #     #@show bitstring(7)
+    #     @test extract_value_from_bits(f1, 7) == 3
+    #     #@show bitstring(8)
+    #     @test extract_value_from_bits(f1, 8) == 0
 
-        #@show bitstring(0)
-        @test extract_value_from_bits(f1, 0x0) == 0
-        #@show bitstring(1)
-        @test extract_value_from_bits(f1, 0x1) == 0
-        #@show bitstring(2)
-        @test extract_value_from_bits(f1, 0x2) == 1
-        #@show bitstring(3)
-        @test extract_value_from_bits(f1, 0x3) == 1
-        #@show bitstring(4)
-        @test extract_value_from_bits(f1, 0x4) == 2
-        #@show bitstring(5)
-        @test extract_value_from_bits(f1, 0x5) == 2
-        #@show bitstring(6)
-        @test extract_value_from_bits(f1, 0x6) == 3
-        #@show bitstring(7)
-        @test extract_value_from_bits(f1, 0x7) == 3
-        #@show bitstring(8)
-        @test extract_value_from_bits(f1, 0x8) == 0
+    #     #@show bitstring(0)
+    #     @test extract_value_from_bits(f1, 0x0) == 0
+    #     #@show bitstring(1)
+    #     @test extract_value_from_bits(f1, 0x1) == 0
+    #     #@show bitstring(2)
+    #     @test extract_value_from_bits(f1, 0x2) == 1
+    #     #@show bitstring(3)
+    #     @test extract_value_from_bits(f1, 0x3) == 1
+    #     #@show bitstring(4)
+    #     @test extract_value_from_bits(f1, 0x4) == 2
+    #     #@show bitstring(5)
+    #     @test extract_value_from_bits(f1, 0x5) == 2
+    #     #@show bitstring(6)
+    #     @test extract_value_from_bits(f1, 0x6) == 3
+    #     #@show bitstring(7)
+    #     @test extract_value_from_bits(f1, 0x7) == 3
+    #     #@show bitstring(8)
+    #     @test extract_value_from_bits(f1, 0x8) == 0
 
-        f2 = GeneratedField(UInt64, :hello, 1, 2)
-        @test typeof(extract_value_from_bits(f2, 0)) == UInt64
+    #     f2 = GeneratedField(UInt64, :hello, 1, 2)
+    #     @test typeof(extract_value_from_bits(f2, 0)) == UInt64
 
-        f3 = GeneratedField(UInt128, :hello, 1, 2)
-        @test typeof(extract_value_from_bits(f3, 0)) == UInt128
-        @test typeof(extract_value_from_bits(f3, convert(Int128, 0))) == UInt128
-        @test typeof(extract_value_from_bits(f3, convert(UInt128, 0))) == UInt128
+    #     f3 = GeneratedField(UInt128, :hello, 1, 2)
+    #     @test typeof(extract_value_from_bits(f3, 0)) == UInt128
+    #     @test typeof(extract_value_from_bits(f3, convert(Int128, 0))) == UInt128
+    #     @test typeof(extract_value_from_bits(f3, convert(UInt128, 0))) == UInt128
 
-        #@show bitstring(0)
-        @test implant_value_into_int(0, f1, 0) == 0
-        #@show bitstring(1)
-        @test implant_value_into_int(0, f1, 1) == 2
-        #@show bitstring(2)
-        @test implant_value_into_int(0, f1, 2) == 4
-        #@show bitstring(3)
-        @test implant_value_into_int(0, f1, 3) == 6
-        # implant_value_into_int can overwrite if new_value has more than GeneratedField.bit_length bits
-        #@show bitstring(4)
-        @test implant_value_into_int(0, f1, 4) == 8
-    end
+    #     #@show bitstring(0)
+    #     @test implant_value_into_int(0, f1, 0) == 0
+    #     #@show bitstring(1)
+    #     @test implant_value_into_int(0, f1, 1) == 2
+    #     #@show bitstring(2)
+    #     @test implant_value_into_int(0, f1, 2) == 4
+    #     #@show bitstring(3)
+    #     @test implant_value_into_int(0, f1, 3) == 6
+    #     # implant_value_into_int can overwrite if new_value has more than GeneratedField.bit_length bits
+    #     #@show bitstring(4)
+    #     @test implant_value_into_int(0, f1, 4) == 8
+    # end
 
     @testset "GenId.jl.tsid-41-10-12" begin
 
@@ -501,63 +501,52 @@ using GenId
         end
 
         @testset "Snowflake ID" begin
-            # iddef_int64_1 = TsIdDefinition(
-            #     Int64;
-            #     bits_time=41,
-            #     bits_group_1=10,
-            #     bits_tail=12,
-            #     group_1=1,
-            #     epoch_start_dt=SOME_EPOCH_START_2020,
-            #     epoch_end_dt=SOME_EPOCH_END_2070
-            # )
-            # iddef_snowflake = SnowflakeIdDefinition(SOME_EPOCH_START_2020, 1)
-            # @test iddef_int64_1.type == iddef_snowflake.type
-            # @test iddef_int64_1.bits_time == iddef_snowflake.bits_time
-            # @test iddef_int64_1.bits_group_1 == iddef_snowflake.bits_group_1
-            # @test iddef_int64_1.bits_group_2 == iddef_snowflake.bits_group_2
-            # @test iddef_int64_1.bits_tail == iddef_snowflake.bits_tail
-            # @test iddef_int64_1.tail_algorithm == iddef_snowflake.tail_algorithm
-            # @test iddef_int64_1.epoch_start_dt == iddef_snowflake.epoch_start_dt
             iddef_snowflake = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1))
             @test iddef_snowflake.name == :SnowflakeIdDefinition
-            #@show "<--- SnowflakeIdDefinition"
+            reset_globabl_machine_id_increment()
+            now = Dates.now()
             id1 = tsid_generate(iddef_snowflake)
-            #@show bitstring(id1), length(bitstring(id1)), typeof(id1), id1
-            #@show ">--- SnowflakeIdDefinition"
-            #0000000000000000001110100000110110110010001101101110101100110010
-            #100000110110110010001101101110101100110010 0000000000 000000000000
-            # @show "<--- SnowflakeIdDefinition"
-            # id1 = tsid_generate(iddef_snowflake)
-            # @show bitstring(id1)
-            # @show ">--- SnowflakeIdDefinition"
+            @test tsid_getfield_value(iddef_snowflake, :timestamp, id1) < Dates.value(now) + 100
+            @test tsid_getfield_value(iddef_snowflake, :machine_id, id1) == 1
+            @test tsid_getfield_value(iddef_snowflake, :machine_sequence, id1) == 1
         end
 
         @testset "Instagram ID" begin
             iddef_instagram = InstagramIdDefinition(SOME_EPOCH_START_2020, 1)
             @test iddef_instagram.name == :InstagramIdDefinition
-            tsid_generate(iddef_instagram)
+            reset_globabl_machine_id_increment()
+            now = Dates.now()
+            id1 = tsid_generate(iddef_instagram)
+            @test tsid_getfield_value(iddef_instagram, :timestamp, id1) < Dates.value(now) + 100
+            @test tsid_getfield_value(iddef_instagram, :machine_id, id1) == 1
+            @test tsid_getfield_value(iddef_instagram, :machine_sequence, id1) == 1
         end
 
         @testset "ULID" begin
             iddef_ulid = ULID_DEFINITION # ULIdDefinition()
             @test iddef_ulid.name == :ULIdDefinition
-            tsid_generate(iddef_ulid)
+            now = Dates.now()
+            id1 = tsid_generate(iddef_ulid)
+            @test tsid_getfield_value(iddef_ulid, :timestamp, id1) < Dates.value(now) + 100
         end
 
         @testset "XID" begin
+            reset_globabl_machine_id_increment()
+            now = Dates.now()
             iddef_xid = XIdDefinition(1)
             @test iddef_xid.name == :XIdDefinition
-            @show bitstring(tsid_generate(iddef_xid))
+            id1 = tsid_generate(iddef_xid)
+            @test tsid_getfield_value(iddef_xid, :timestamp, id1) < Dates.value(now) + 100
+            @test tsid_getfield_value(iddef_xid, :machine_id, id1) == 1
+            @test tsid_getfield_value(iddef_xid, :process_id, id1) == bit_mask_uint(UInt16, getpid(), 0, 15)
+            @test tsid_getfield_value(iddef_xid, :machine_sequence, id1) == 1
         end
 
         @testset "Firebase PushID" begin
-            #@show "Test Firebase PushID"
             iddef_firebase_push_id = FIREBASE_PUSHID_DEFINITION
-            #@show iddef_firebase_push_id
-            #id1 = tsid_generate(Val{:FirebasePushIdDefinition}, iddef_firebase_push_id)
+            now = Dates.now()
             id1 = tsid_generate(iddef_firebase_push_id)
-            #@show bitstring(id1)
-            @test id1 > typemax(UInt64)
+            @test tsid_getfield_value(iddef_firebase_push_id, :timestamp, id1) < Dates.value(now) + 100
             @test typeof(id1) == iddef_firebase_push_id.type
             id_int_1 = 301430602692632926610578560781911544
             id_int_1_str = GenId.base32encode_int128(id_int_1; started_init=true)

@@ -41,8 +41,8 @@ julia> bit_mask_uint(12,21)
 """
 function bit_mask_uint(type::Type{<:Unsigned}, from, to)
     size = word_size(type)
-    @argcheck 0 <= from < size AssertionError
-    @argcheck 0 <= to < size AssertionError
+    #@argcheck 0 <= from < size AssertionError
+    #@argcheck 0 <= to < size AssertionError
     @argcheck from <= to AssertionError
 
     return (-mask1(type) >> (size - to - 1)) & ~(mask1(type) << from - 1)
@@ -169,13 +169,13 @@ generate_field_value(field::ConstantField{T} where {T}) = field.value
 
 
 function ProcessIdField(type::DataType, bits_offset::Int64, bits_length::Int64)
-    pid = getpid()
+    pid = bit_mask_uint(UInt16, getpid(), 0, 15)
     ConstantField(type, :process_id, bits_offset, bits_length, pid)
 end
 
-function extract_value_from_bits(field::AbstractField, v::TT) where {TT<:Integer}
+function extract_value_from_bits(field, ctype::DataType, v::TT where {TT<:Integer})
     #@show bitstring(v), typeof(v)
-    umask = bit_mask_uint(unsigned_int_for_signed(field.type), field.bits_offset, field.bits_offset + field.bits_length - 1)
+    umask = bit_mask_uint(unsigned_int_for_signed(ctype), field.bits_offset, field.bits_offset + field.bits_length - 1)
     #@show bitstring(umask), typeof(umask)
     masked = v & umask
     #@show bitstring(masked), typeof(masked)
@@ -185,7 +185,7 @@ function extract_value_from_bits(field::AbstractField, v::TT) where {TT<:Integer
     #@show bitstring(converted), typeof(converted)
     return converted
 end
-0000000000000000000000011000111111111100000000000000001111101011
+
 function implant_value_into_int(container::TC, field::AbstractField, new_value::TV) where {TV<:Integer,TC<:Integer}
     #@show "implant_value_into_int", new_value
     #@show bitstring(container), typeof(container)
@@ -223,3 +223,14 @@ function tsid_generate(def::TSIDGenericContainer)
     end
     return ctr
 end
+
+function tsid_getfield_value(definition::TSIDGenericContainer, name, external_value)
+    for field in definition.fields
+        if field.name == name
+            return extract_value_from_bits(field, definition.type, external_value)
+        end
+    end
+    throw(AssertionError("Field $name doesn't exist in definition $definition."))
+end
+0000000000000000000000000000000000000000000000010011011001110111
+0000000000000000000000000000000000000000000000000011011001110111

@@ -37,7 +37,7 @@ export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
 export tsid_to_string, tsid_int_from_string
 
 export FirebasePushIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition, XIdDefinition
-
+export tsid_getfield_value
 
 # using Base64
 # base64encode(convert(Int128, 1))
