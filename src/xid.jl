@@ -23,4 +23,4 @@
 #     #return tsid_generate(Val{:TsIdDefinition}, def)
 #     div(_make_bits_timestamp(def), 1000) | _make_bits_group_1(def) | _make_bits_tail(def)
 # end
-
+ 
