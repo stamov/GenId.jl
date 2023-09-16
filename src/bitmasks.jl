@@ -281,6 +281,18 @@ function tsid_to_string(def::TSIDGenericContainer, tsid::T) where {T<:Integer}
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
         end
+    elseif def.text_algorithm == :base_32
+        if def.type == Int128
+            r = base32encode_int128(tsid; started_init=def.text_full_width)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
+        end
+    elseif def.text_algorithm == :base_32_hex
+        if def.type == Int128
+            r = base32hexencode_int128(tsid; started_init=def.text_full_width)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
+        end
     else
         throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
     end

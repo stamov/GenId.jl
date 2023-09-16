@@ -11,6 +11,10 @@ function XIdDefinition(machine_id::Int64)
             ConstantField(UInt64, :machine_id, 40, 24, machine_id),
             ProcessIdField(UInt64, 24, 16),
             XID_FIELD_MACHINE_SEQUENCE
-        ])
+        ];
+        text_algorithm=:base_32_hex,
+        text_full_width=true,
+        text_max_length=20
+        )
 end
 

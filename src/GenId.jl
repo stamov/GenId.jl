@@ -7,6 +7,7 @@ const UNIX_EPOCH_START = DateTime(1970, 1, 1, 0, 0, 0, 0)
 
 include("base64.jl")
 include("base32.jl")
+include("base32hex.jl")
 include("base32_crockford.jl")
 include("bitmasks.jl")
 #include("tsid.jl")
