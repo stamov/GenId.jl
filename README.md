@@ -1,6 +1,6 @@
 # GenId
 
-GenId offers few algorithms to generate mostly non-conflicting and time-ordered IDs (mostly for databases/workflows) without a central coordinator. 
+GenId offers few algorithms to generate mostly non-conflicting and time-ordered IDs (mostly for databases/workflows) without a central coordinator.
 
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://stamov.github.io/GenId.jl/stable/)
@@ -10,68 +10,72 @@ GenId offers few algorithms to generate mostly non-conflicting and time-ordered 
 [![Aqua](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![ColPrac: Contributor Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
-[![current status](https://img.shields.io/badge/Julia%20support-v1.6%20and%20up-dark%20green)](https://github.com/stamov/GenId.jl/blob/main/Project.toml) 
- 
-# About
+[![current status](https://img.shields.io/badge/Julia%20support-v1.6%20and%20up-dark%20green)](https://github.com/stamov/GenId.jl/blob/main/Project.toml)
 
-In distributed systems, sometimes the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences) between different nodes/threads and a single coordinator (database/service etc.) is higher than desirable. In such contexts Universally Unique IDentifiers (UUIDs) can be used which offer uniqueness across number of machines/threads without round-trip to a central authority.
+## About
 
-This library provides few algorithms to generate some of them and supports user friendly text representations:
+A library making it easy to generate most of the UUID flavors zoo.
+
+At the lower level it provides a facility to easy combine user defined bit-fields with different semantics (e.g. random numbers, machine id, timestamp etc.) inside Integers. This removes the burden of bit fiddling and correctness from the user, allowing to construct specific UUID generators/parsers in just few lines of code. It also implements widely used (de-)serialization schemes.
+
+Finally it offers implementations for the following specific UUID schemes used in the industry:
+
 * 128-bit [ULID](https://github.com/ulid/spec) using [Crockford Base 32](https://www.crockford.com/base32.html);
 * 128-bit [XID](https://github.com/rs/xid) using modified Base 64 text encoding;
 * 128-bit [Firebase Push ID](https://github.com/arturictus/firebase_pushid) using modified Base 64 text encoding;
 * 64-bit [Snowflake ID](https://github.com/twitter-archive/snowflake) using [Crockford Base 32](https://www.crockford.com/base32.html);
 * 64-bit [Instagram ID](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c) using [Crockford Base 32](https://www.crockford.com/base32.html);
 
-# Background
+## Background
 
-Julia currently offers implementations of UUID v1, v4 and v5 (see [UUIDs in the Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs)). While these provide industry standard algorithms and representations of the IDs (see [RFC 4122](https://www.ietf.org/rfc/rfc4122.txt)), they are not always ideal for usage in databases as they could induce some difficulties like index fragmentation/write amplification.
+In distributed and/or IOT systems, the latency for acquiring unique IDs (e.g. for primary/technical keys, sequences in databases, queue middleware etc.) between different nodes/threads and a single coordinator (database/service etc.) is sometimes higher than desirable. In such contexts Universally Unique IDentifiers ([UUIDs](https://en.wikipedia.org/wiki/Universally_unique_identifier)) can be used as they offer some uniqueness guarantees across number of machines/threads without round-trips to a central authority.
 
-There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)).
+Different flavors of UUIDs have different trade-offs around performance, security, number of bytes used, uniqueness guarantees, (de-)serialization choices etc.
 
-Additional reading:
+Julia currently offers implementations of UUID v1, v4 and v5 (see [UUIDs in the Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs)). While these provide industry standard algorithms and representations of the IDs (see [RFC 4122](https://www.ietf.org/rfc/rfc4122.txt)), they are not always ideal for usage in databases as they can introduce unwanted side effects like index fragmentation/write amplification or require some configuration of the clients generating them in advance.
+
+There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)) which try to address some of these shortcomings:
+
+See for example:
+
 * [The best UUID type for database keys](https://vladmihalcea.com/uuid-database-primary-key/);
 * [The primary key dillema: IDs vs UUIDs and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/);
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
 
-Also for some security implications:
-* https://www.intruder.io/research/in-guid-we-trust
-* https://infosecwriteups.com/how-this-easy-vulnerability-resulted-in-a-20-000-bug-bounty-from-gitlab-d9dc9312c10a
-* https://infosecwriteups.com/bugbounty-how-i-was-able-to-compromise-any-user-account-via-reset-password-functionality-a11bb5f863b3
+As well about some security constraints/implications:
 
-# Features
+* [In GUID we trust](https://www.intruder.io/research/in-guid-we-trust)
+* [Example of a vulnerabilty](https://infosecwriteups.com/how-this-easy-vulnerability-resulted-in-a-20-000-bug-bounty-from-gitlab-d9dc9312c10a)
+* [Another example of a vulerabity](https://infosecwriteups.com/bugbounty-how-i-was-able-to-compromise-any-user-account-via-reset-password-functionality-a11bb5f863b3)
 
-Currently implemented TsIds allow for:
+## Features of the library
 
-* Support 64 bit types (Int64/UInt64) which are shorter than UUIDs, ULIDs, KSUIDs etc.
-  * these can be used as traditional int primary keys in databases (sqllite, postgresql etc.) instead of sequences, with low probability of conflict depending on bit sizes in the ID definition;
-  * if stored as strings, they use 13 (without) or 14 characters (with checksums);
-  * relatively fast - about 200ns per generated 64-bit id on an M1 with a single group,  field and random or sequential tails;
-* Support 128 bit types for rest of the UUID zoo;
-* Default TsIds are using signed integers to cover most database tech out of the box;
-* Using Crockford Base 32 for textual representation makes them somewhat more readable when displayed to end users;
-* Using Crockford Base 32 makes them URL safe (e.g. when used in REST APIs);
-* When using Crockford Base 32, they are case insensitive and support hyphens in the encoding which increases readability for end users;
-* Other text representations, e.g. Base 32 and Base 64, while not sharing the above qualities, still use lexicographic mapping of characters, to allow sorting in a database;
-* Sorted monotonically by generation time;
-
-# Usage
+* Support for 64 and 128 signed and unsigned Integers;
+* Support for fields representing widely used UUID components like machine id, random number, timestamp etc.;
+* Ability to declaratively combine them in a single Integer with custom offsets and bit lengths;
+* Custom implementations of Base 32, Crockford Base 32 and Base 64 text encoding schemes to allow for phonetic sorting for UUIDs having a timestamp component (e.g. to use the IDs as keys in a database);
+* Allows to get back field values from UUIDs;
+* Ability for the user to define own fields and schemes.
+  
+## Usage
 
 Add the package to your project
 
 ```julia
-julia>]
-pkg> add GenId, Dates
+julia> Pkg.add("GenId")
 ```
+
 and import it.
+
 ```julia
 using GenId, Dates
 ```
 
-# Specific UUIDs implemented
+## Specific UUIDs implemented
 
 ### Snowflake ID
-see https://en.wikipedia.org/wiki/Snowflake_ID
+
+See https://en.wikipedia.org/wiki/Snowflake_ID
 
 ```julia
 # SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
@@ -98,8 +102,11 @@ julia> tsid_int_from_string(iddef, "DJR0RGDG0401")
 ```
 
 ### Firebase PushID
+
 See https://github.com/arturictus/firebase_pushid
+
 Uses modified Base 64 text encoding.
+
 ```julia
 # FirebasePushIdDefinition()
 # 48 bits timestamp (ms), 72 randomness
@@ -209,6 +216,7 @@ julia> tsid_machine_tail(iddef, 489485826766409729)
 ```
 
 One can also decode it from a text representation:
+
 ```julia
 julia> tsid_from_string(iddef, "DJR0RGDG0401")
 489485826766409729
@@ -223,39 +231,44 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 489485826766409729
 ```
 
+## FAQ
 
-# FAQ
+### What is the status of the package?
 
-##### What is the status of the package?
+Library and few schemes already used in production. Public API might still change.
 
-64 bit implementation is used internally in production. 128-bit support nearly finished. But public API might still change.
+Few unpolished nuances around (un-)signed integers and (un-)signed fields at first position.
 
-Over 200 unit tests in the repository.
+No guarantees for compatibility with libraries for specific UUID schemes by other authors or in other languages - experience shows that not all adhere to a specification to the last bit...
 
-##### Why variations as Ints instead of using wrapper types?
+Hand written tests as well as generative tests in the repository.
+
+Bit fiddling part of the code is written mostly in an [SSA style](https://en.wikipedia.org/wiki/Static_single-assignment_form) to help understanding/debugging/printouts.
+
+### Why variations as Ints instead of using wrapper types?
 
 A design choice and not a necessity, between trade-offs at this moment, a wrapper type is planned.
 
-##### Why modified Base 64 encoding?
+### Why modified Base 32/64 encoding?
 
-Stock Base 64 is not correctly sortable.
+Stock Base 32/64 are not correctly sortable.
 
-##### Why Crockford Base 32 encoding?
+### Why Crockford Base 32 encoding?
 
 * More human readable and less error prone to dictation than some others (e.g. Base32, Base64, Base58 etc.), while still compressing a bit over Hex encoding for example (each character in Crockford Base 32 corresponds to 5 bits of input);
 * Simple, efficient;
 * Support in other languages (see [Crockford 32 on Github](https://github.com/search?q=crockford+32&type=repositories&s=stars&o=desc)).
 
-##### Future plans
+### Future plans
+
 * Add a wrapper type, which will allow for:
   * Typed UUIDs instead of flavors of Ints only;
   * If there is a way to automatically marshall UUIDs from a UUID wrapper type to databases using [DBInterface.jl](https://github.com/JuliaDatabases/DBInterface.jl), will be implemented;
   * Support basic IO over streams (see [CodecBase.jl](https://github.com/JuliaIO/CodecBase.jl) and [TranscodingStreams.jl](https://github.com/JuliaIO/TranscodingStreams.jl));
   * Provide support functions for [StructTypes](https://github.com/JuliaData/StructTypes.jl).
-* Add support for 128 bit specific UUIDs (e.g. ULID + some of the official RFC proposals) - high priority;
-* Add few more encodings and support declarative grouping through hyphens in textual representations - very low priority.
+* Replace several methods with macros for higher performance
 
-# License
+## License
 
 This library is Open Source software released under the LGPL 3.0+ license.
 

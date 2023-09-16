@@ -224,6 +224,7 @@ function tsid_generate(def::TSIDGenericContainer)
     return ctr
 end
 
+# TODO make a macro pointing to the exact field without iteration
 function tsid_getfield_value(definition::TSIDGenericContainer, name, external_value)
     for field in definition.fields
         if field.name == name
@@ -232,5 +233,3 @@ function tsid_getfield_value(definition::TSIDGenericContainer, name, external_va
     end
     throw(AssertionError("Field $name doesn't exist in definition $definition."))
 end
-0000000000000000000000000000000000000000000000010011011001110111
-0000000000000000000000000000000000000000000000000011011001110111
