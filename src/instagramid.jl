@@ -6,8 +6,8 @@ function InstagramIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
         Int64,
         :InstagramIdDefinition,
         [
-            TimestampField(Int64, 22, 41, epoch_start_dt),
-            ConstantField(UInt64, :machine_id, 10, 12, machine_id),
+            TimestampField(Int64, 23, 41, epoch_start_dt),
+            ConstantField(UInt64, :shard_id, 10, 13, machine_id),
             INSTAGRAM_ID_FIELD_MACHINE_SEQUENCE
         ])
 end

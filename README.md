@@ -34,9 +34,7 @@ Different flavors of UUIDs have different trade-offs around performance, securit
 
 Julia currently offers implementations of UUID v1, v4 and v5 (see [UUIDs in the Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs)). While these provide industry standard algorithms and representations of the IDs (see [RFC 4122](https://www.ietf.org/rfc/rfc4122.txt)), they are not always ideal for usage in databases as they can introduce unwanted side effects like index fragmentation/write amplification or require some configuration of the clients generating them in advance.
 
-There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)) which try to address some of these shortcomings:
-
-See for example:
+There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)) which try to address some of these shortcomings, with few examples:
 
 * [Brief history of UUIDs](https://segment.com/blog/a-brief-history-of-the-uuid/);
 * [The best UUID type for database keys](https://vladmihalcea.com/uuid-database-primary-key/);

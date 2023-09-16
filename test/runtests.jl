@@ -521,7 +521,7 @@ using GenId
             now = Dates.now()
             id1 = tsid_generate(iddef_instagram)
             @test tsid_getfield_value(iddef_instagram, :timestamp, id1) < Dates.value(now) + 100
-            @test tsid_getfield_value(iddef_instagram, :machine_id, id1) == 1
+            @test tsid_getfield_value(iddef_instagram, :shard_id, id1) == 1
             @test tsid_getfield_value(iddef_instagram, :machine_sequence, id1) == 1
         end
 
