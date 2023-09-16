@@ -207,6 +207,22 @@ struct TSIDGenericContainer <: TSIDAbstractContainer
     type::DataType
     name::Symbol
     fields::Vector{AbstractField}
+    text_algorithm::Symbol
+    text_with_checksum::Bool
+    text_full_width::Bool
+    text_max_length::Int
+
+    function TSIDGenericContainer(
+        type, 
+        name, 
+        fields; 
+        text_algorithm=:crockford_base_32,
+        text_with_checksum=false,
+        text_full_width=false,
+        text_max_length=4096 #just some bigger number than usual UUIDs
+    )
+        new(type, name, fields, text_algorithm, text_with_checksum, text_full_width, text_max_length)
+    end
 end
 
 # TODO convert to a macro per UUID type
@@ -233,3 +249,78 @@ function tsid_getfield_value(definition::TSIDGenericContainer, name, external_va
     end
     throw(AssertionError("Field $name doesn't exist in definition $definition."))
 end
+
+"""
+    tsid_to_string(def::TsIdDefinition, tsid::T) where T <: Integer
+
+Creates a new UUID from a textual representation in `s` based on `text_*` flags in `def``.
+
+# Examples
+```julia-repl
+julia> tsid_to_string(iddef, 489485826766409729)
+"DJR0RGDG0401"
+```
+"""
+function tsid_to_string(def::TSIDGenericContainer, tsid::T) where {T<:Integer}
+    if def.text_algorithm == :crockford_base_32
+        if def.type == Int64
+            crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == Int128
+            crockford32_encode_int128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == UInt64
+            crockford32_encode_uint64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        elseif def.type == UInt128
+            crockford32_encode_uint128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+        end
+    elseif def.text_algorithm == :base_64
+        if def.type == Int128
+            base64encode_int128(tsid; started_init=def.text_full_width)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
+        end
+    else
+        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
+    end
+end
+
+"""
+    tsid_int_from_string(def::TsIdDefinition, s::AbstractString)
+
+Creates a new UUID from a textual representation in `s` based on `text_*` flags in `def``.
+
+# Examples
+```julia-repl
+julia> tsid_from_string(iddef, "DJR0RGDG0401")
+489485826766409729
+```
+"""
+function tsid_int_from_string(def::TSIDGenericContainer, tsid::String)
+    if def.text_algorithm == :crockford_base_32
+        if def.type == Int64
+            crockford32_decode_int64(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == Int128
+            crockford32_decode_int128(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == UInt64
+            crockford32_decode_uint64(tsid; with_checksum=def.text_with_checksum)
+        elseif def.type == UInt128
+            crockford32_decode_uint128(tsid; with_checksum=def.text_with_checksum)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+        end
+    elseif def.text_algorithm == :base_64
+        if def.type == Int128
+            base64decode_int128(tsid)
+        else
+            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
+        end
+    else
+        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
+    end
+end
+
+function tsid_generate_string(def::TSIDGenericContainer)
+    return tsid_to_string(def, tsid_generate(def))
+end
+

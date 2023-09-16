@@ -217,66 +217,84 @@ using GenId
         @test_throws AssertionError bitstring(GenId.bit_mask_int(Int64, -1, 12, 21)) == "0000000000000000000000000000000000000000001111111111000000000000"
     end
 
-    # @testset "GenId.GeneratedField" begin
-    #     f1 = GeneratedField(Int64, :hello, 1, 2)
-    #     #@show bitstring(0)
-    #     @test extract_value_from_bits(f1, 0) == 0
-    #     #@show bitstring(1)
-    #     @test extract_value_from_bits(f1, 1) == 0
-    #     #@show bitstring(2)
-    #     @test extract_value_from_bits(f1, 2) == 1
-    #     #@show bitstring(3)
-    #     @test extract_value_from_bits(f1, 3) == 1
-    #     #@show bitstring(4)
-    #     @test extract_value_from_bits(f1, 4) == 2
-    #     #@show bitstring(5)
-    #     @test extract_value_from_bits(f1, 5) == 2
-    #     #@show bitstring(6)
-    #     @test extract_value_from_bits(f1, 6) == 3
-    #     #@show bitstring(7)
-    #     @test extract_value_from_bits(f1, 7) == 3
-    #     #@show bitstring(8)
-    #     @test extract_value_from_bits(f1, 8) == 0
+    @testset "MachineSequenceField" begin
+        GenId.reset_globabl_machine_id_increment(4093)
+        f = GenId.MachineSequenceField(Int64, 0, 12)
+        @test GenId.generate_field_value(f) == 4094
+        @test GenId.generate_field_value(f) == 4095
+        @test GenId.generate_field_value(f) == 0
+        @test GenId.generate_field_value(f) == 1
 
-    #     #@show bitstring(0)
-    #     @test extract_value_from_bits(f1, 0x0) == 0
-    #     #@show bitstring(1)
-    #     @test extract_value_from_bits(f1, 0x1) == 0
-    #     #@show bitstring(2)
-    #     @test extract_value_from_bits(f1, 0x2) == 1
-    #     #@show bitstring(3)
-    #     @test extract_value_from_bits(f1, 0x3) == 1
-    #     #@show bitstring(4)
-    #     @test extract_value_from_bits(f1, 0x4) == 2
-    #     #@show bitstring(5)
-    #     @test extract_value_from_bits(f1, 0x5) == 2
-    #     #@show bitstring(6)
-    #     @test extract_value_from_bits(f1, 0x6) == 3
-    #     #@show bitstring(7)
-    #     @test extract_value_from_bits(f1, 0x7) == 3
-    #     #@show bitstring(8)
-    #     @test extract_value_from_bits(f1, 0x8) == 0
+        GenId.reset_globabl_machine_id_increment()
+        @test GenId.generate_field_value(f) == 1
+        @test GenId.generate_field_value(f) == 2
+    end
 
-    #     f2 = GeneratedField(UInt64, :hello, 1, 2)
-    #     @test typeof(extract_value_from_bits(f2, 0)) == UInt64
+    @testset "GenId.GeneratedField" begin
+        f1 = GeneratedField(Int64, :hello, 1, 2)
 
-    #     f3 = GeneratedField(UInt128, :hello, 1, 2)
-    #     @test typeof(extract_value_from_bits(f3, 0)) == UInt128
-    #     @test typeof(extract_value_from_bits(f3, convert(Int128, 0))) == UInt128
-    #     @test typeof(extract_value_from_bits(f3, convert(UInt128, 0))) == UInt128
+        @test typeof(extract_value_from_bits(f1, Int64, 0)) == Int64
+        #@show bitstring(0)
+        @test extract_value_from_bits(f1, Int64, 0) == 0
+        #@show bitstring(1)
+        @test extract_value_from_bits(f1, Int64, 1) == 0
+        #@show bitstring(2)
+        @test extract_value_from_bits(f1, Int64, 2) == 1
+        #@show bitstring(3)
+        @test extract_value_from_bits(f1, Int64, 3) == 1
+        #@show bitstring(4)
+        @test extract_value_from_bits(f1, Int64, 4) == 2
+        #@show bitstring(5)
+        @test extract_value_from_bits(f1, Int64, 5) == 2
+        #@show bitstring(6)
+        @test extract_value_from_bits(f1, Int64, 6) == 3
+        #@show bitstring(7)
+        @test extract_value_from_bits(f1, Int64, 7) == 3
+        #@show bitstring(8)
+        @test extract_value_from_bits(f1, Int64, 8) == 0
 
-    #     #@show bitstring(0)
-    #     @test implant_value_into_int(0, f1, 0) == 0
-    #     #@show bitstring(1)
-    #     @test implant_value_into_int(0, f1, 1) == 2
-    #     #@show bitstring(2)
-    #     @test implant_value_into_int(0, f1, 2) == 4
-    #     #@show bitstring(3)
-    #     @test implant_value_into_int(0, f1, 3) == 6
-    #     # implant_value_into_int can overwrite if new_value has more than GeneratedField.bit_length bits
-    #     #@show bitstring(4)
-    #     @test implant_value_into_int(0, f1, 4) == 8
-    # end
+        @test typeof(extract_value_from_bits(f1, Int64, 0x0)) == Int64
+        @test typeof(extract_value_from_bits(f1, UInt64, 0x0)) == Int64 # see f1 definition
+        #@show bitstring(0)
+        @test extract_value_from_bits(f1, UInt64, 0x0) == 0
+        #@show bitstring(1)
+        @test extract_value_from_bits(f1, UInt64, 0x1) == 0
+        #@show bitstring(2)
+        @test extract_value_from_bits(f1, UInt64, 0x2) == 1
+        #@show bitstring(3)
+        @test extract_value_from_bits(f1, UInt64, 0x3) == 1
+        #@show bitstring(4)
+        @test extract_value_from_bits(f1, UInt64, 0x4) == 2
+        #@show bitstring(5)
+        @test extract_value_from_bits(f1, UInt64, 0x5) == 2
+        #@show bitstring(6)
+        @test extract_value_from_bits(f1, UInt64, 0x6) == 3
+        #@show bitstring(7)
+        @test extract_value_from_bits(f1, UInt64, 0x7) == 3
+        #@show bitstring(8)
+        @test extract_value_from_bits(f1, UInt64, 0x8) == 0
+
+        f2 = GeneratedField(UInt64, :hello, 1, 2)
+        @test typeof(extract_value_from_bits(f2, UInt64, 0)) == UInt64
+        @test typeof(extract_value_from_bits(f2, Int64, 0)) == UInt64
+
+        f3 = GeneratedField(UInt128, :hello, 1, 2)
+        @test typeof(extract_value_from_bits(f3, UInt128, 0)) == UInt128
+        @test typeof(extract_value_from_bits(f3, UInt128, convert(Int128, 0))) == UInt128
+        @test typeof(extract_value_from_bits(f3, UInt128, convert(UInt128, 0))) == UInt128
+
+        # #@show bitstring(0)
+        @test implant_value_into_int(0, f1, 0) == 0
+        # #@show bitstring(1)
+        @test implant_value_into_int(0, f1, 1) == 2
+        # #@show bitstring(2)
+        @test implant_value_into_int(0, f1, 2) == 4
+        # #@show bitstring(3)
+        @test implant_value_into_int(0, f1, 3) == 6
+        # # implant_value_into_int can overwrite if new_value has more than GeneratedField.bit_length bits
+        # #@show bitstring(4)
+        @test implant_value_into_int(0, f1, 4) == 8
+    end
 
     # @testset "GenId.jl.tsid-41-10-12" begin
 
@@ -399,26 +417,6 @@ using GenId
 
     #     end
 
-    #     @testset "tsid_machine_tail :increment_global" begin
-    #         @test GenId._make_bits_increment(4094, iddef_int64_1.tail_mod) == 4094
-    #         @test GenId._make_bits_increment(4095, iddef_int64_1.tail_mod) == 4095
-    #         @test GenId._make_bits_increment(4096, iddef_int64_1.tail_mod) == 0
-    #         @test GenId._make_bits_increment(4097, iddef_int64_1.tail_mod) == 1
-            
-    #         GenId.reset_globabl_machine_id_increment()
-    #         tsid_tincr_1 = GenId.tsid_generate(iddef_int64_1)
-    #         tsid_tincr_2 = GenId.tsid_generate(iddef_int64_1)
-    #         @test tsid_tail(iddef_int64_1, tsid_tincr_1) == 1
-    #         @test tsid_tail(iddef_int64_1, tsid_tincr_2) == 2
-            
-    #         GenId.reset_globabl_machine_id_increment(4094)
-            
-    #         tsid_tincr_4095 = GenId.tsid_generate(iddef_int64_1)
-    #         @test tsid_tail(iddef_int64_1, tsid_tincr_4095) == 4095
-            
-    #         tsid_tincr_4096 = GenId.tsid_generate(iddef_int64_1)
-    #         @test tsid_tail(iddef_int64_1, tsid_tincr_4096) == 0
-    #     end
         
     #     @testset "def_*" begin
     #         @test def_group_1(iddef_int64_1) == machine_id
@@ -564,150 +562,46 @@ using GenId
             #@test tsid_int_from_string(iddef_firebase_push_id, "DVqh4j54DWG1F0Pda-Ms") == id_int_1
         end
 
-        # @testset "tsid_to_string" begin
-        #     # @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
-        #     # @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
-        #     # @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
-        #     # @test tsid_to_string(convert(Int128, 1)) == "1"
-        #     # @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
-
-        #     iddef_int64_1 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_to_string(iddef_int64_1, 489485826766409729) == "DJR0RGDG0401"
-
-        #     iddef_int64_2 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=true,
-        #         text_full_width=false,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_to_string(iddef_int64_2, 489485826766409729) == "DJR0RGDG04014"
-
-        #     iddef_int64_3 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=false,
-        #         text_full_width=true,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_to_string(iddef_int64_3, 489485826766409729) == "0DJR0RGDG0401"
-
-        #     iddef_int64_4 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=true,
-        #         text_full_width=true,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_to_string(iddef_int64_4, 489485826766409729) == "0DJR0RGDG04014"
-
-        #     iddef_int64_5 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=false,
-        #         text_full_width=false,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_to_string(iddef_int64_5, 489485826766409729) == "DJR0RGDG0401"
+        @testset "tsid_to_string" begin
             
-        #     #tsid_to_string(iddef_int64_1)
-        # end
+            iddef_int64_1 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1))
+            @test tsid_to_string(iddef_int64_1, 489485826766409729) == "DJR0RGDG0401"
 
-        # @testset "tsid_from_string" begin
-        #     @test_throws MethodError tsid_int_from_string(13)
+            iddef_int64_2 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true)
+            @test tsid_to_string(iddef_int64_2, 489485826766409729) == "DJR0RGDG04014"
 
-        #     iddef_int64_1 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_int_from_string(iddef_int64_1, "DJR0RGDG0401") == 489485826766409729
+            iddef_int64_3 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=true)
+            @test tsid_to_string(iddef_int64_3, 489485826766409729) == "0DJR0RGDG0401"
 
-        #     iddef_int64_2 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=true,
-        #         text_full_width=false,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_int_from_string(iddef_int64_2, "DJR0RGDG04014") == 489485826766409729
+            iddef_int64_4 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true, text_full_width=true)
+            @test tsid_to_string(iddef_int64_4, 489485826766409729) == "0DJR0RGDG04014"
 
-        #     iddef_int64_3 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=false,
-        #         text_full_width=true,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_int_from_string(iddef_int64_3, "0DJR0RGDG0401") == 489485826766409729
+            iddef_int64_5 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=false)
+            @test tsid_to_string(iddef_int64_5, 489485826766409729) == "DJR0RGDG0401"
+            
+        end
 
-        #     iddef_int64_4 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=true,
-        #         text_full_width=true,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_int_from_string(iddef_int64_4, "0DJR0RGDG04014") == 489485826766409729
+        @testset "tsid_from_string" begin
+            # @test_throws MethodError tsid_int_from_string(13)
+            iddef_int64_1 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1))
+            @test tsid_int_from_string(iddef_int64_1, "DJR0RGDG0401") == 489485826766409729
 
-        #     iddef_int64_5 = TsIdDefinition(
-        #         Int64;
-        #         bits_time=41,
-        #         bits_group_1=10,
-        #         bits_tail=12,
-        #         text_with_checksum=false,
-        #         text_full_width=false,
-        #         group_1=1,
-        #         epoch_start_dt=SOME_EPOCH_START_2020,
-        #         epoch_end_dt=SOME_EPOCH_END_2070
-        #     )
-        #     @test tsid_int_from_string(iddef_int64_5, "00000000000000000000000001") == convert(Int128, 1)
-        #     @test tsid_int_from_string(iddef_int64_5, "0000000000001") == 1
-        #     @test tsid_int_from_string(iddef_int64_5, "DJR0RGDG0401") == 489485826766409729
-        # end
+            iddef_int64_2 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true)
+            @test tsid_int_from_string(iddef_int64_2, "DJR0RGDG04014") == 489485826766409729
 
-    # end
+            iddef_int64_3 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=true)
+            @test tsid_int_from_string(iddef_int64_3, "0DJR0RGDG0401") == 489485826766409729
+
+            iddef_int64_4 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true, text_full_width=true)
+            @test tsid_int_from_string(iddef_int64_4, "0DJR0RGDG04014") == 489485826766409729
+
+            iddef_int64_5 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=false)
+            @test tsid_int_from_string(iddef_int64_5, "00000000000000000000000001") == convert(Int128, 1)
+            @test tsid_int_from_string(iddef_int64_5, "0000000000001") == 1
+            @test tsid_int_from_string(iddef_int64_5, "DJR0RGDG0401") == 489485826766409729
+        end
+
+    end
 
 end
 
-end
