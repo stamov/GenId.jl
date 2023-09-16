@@ -539,12 +539,22 @@ using GenId
             iddef_xid = XIdDefinition(1)
             @test iddef_xid.name == :XIdDefinition
             id1 = tsid_generate(iddef_xid)
-            @show id1
+            #@show id1
             #@show tsid_to_string(iddef_xid, id1)
             @test tsid_getfield_value(iddef_xid, :timestamp, id1) < Dates.value(now) + 100
             @test tsid_getfield_value(iddef_xid, :machine_id, id1) == 1
             @test tsid_getfield_value(iddef_xid, :process_id, id1) == bit_mask_uint(UInt16, getpid(), 0, 15)
             @test tsid_getfield_value(iddef_xid, :machine_sequence, id1) == 1
+        end
+
+        @testset "Insecure NanoID" begin
+            iddef_nano = InsecureNanoIdDefinition()
+            @test iddef_nano.name == :InsecureNanoIdDefinition
+            id1 = tsid_generate(iddef_nano)
+            id1_str = tsid_to_string(iddef_nano, id1)
+            # @show id1, id1_str
+            id2 = tsid_int_from_string(iddef_nano, id1_str)
+            @test id2 == id1
         end
 
         @testset "Firebase PushID" begin
