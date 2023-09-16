@@ -14,9 +14,9 @@ GenId offers few algorithms to generate mostly non-conflicting and time-ordered 
 
 ## About
 
-A library making it easy to generate most of the UUID flavors zoo.
+A tiny library making it easy to generate most of the [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) flavors zoo.
 
-At the lower level it provides a facility to easy combine user defined bit-fields with different semantics (e.g. random numbers, machine id, timestamp etc.) inside Integers. This removes the burden of bit fiddling and correctness from the user, allowing to construct specific UUID generators/parsers in just few lines of code. It also implements widely used (de-)serialization schemes.
+At the lower level it provides a facility to easy combine user defined bit-fields with different semantics (e.g. random numbers, machine id, timestamp etc.) inside Integers. Combining them allows to construct specific UUID generators/parsers in just few lines of code. It also implements widely used (de-)serialization schemes.
 
 Finally it offers implementations for the following specific UUID schemes used in the industry:
 
@@ -38,6 +38,7 @@ There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.
 
 See for example:
 
+* [Brief history of UUIDs](https://segment.com/blog/a-brief-history-of-the-uuid/);
 * [The best UUID type for database keys](https://vladmihalcea.com/uuid-database-primary-key/);
 * [The primary key dillema: IDs vs UUIDs and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/);
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
@@ -54,6 +55,7 @@ As well about some security constraints/implications:
 * Support for fields representing widely used UUID components like machine id, random number, timestamp etc.;
 * Ability to declaratively combine them in a single Integer with custom offsets and bit lengths;
 * Custom implementations of Base 32, Crockford Base 32 and Base 64 text encoding schemes to allow for phonetic sorting for UUIDs having a timestamp component (e.g. to use the IDs as keys in a database);
+* The text encodings are output in big endian;
 * Allows to get back field values from UUIDs;
 * Ability for the user to define own fields and schemes.
   
@@ -235,19 +237,15 @@ julia> crockford32_decode_int64("DJR0-RGDG-0401-4", with_checksum=true)
 
 ### What is the status of the package?
 
-Library and few schemes already used in production. Public API might still change.
+Used in production.
 
 Few unpolished nuances around (un-)signed integers and (un-)signed fields at first position.
 
-No guarantees for compatibility with libraries for specific UUID schemes by other authors or in other languages - experience shows that not all adhere to a specification to the last bit...
-
-Hand written tests as well as generative tests in the repository.
-
-Bit fiddling part of the code is written mostly in an [SSA style](https://en.wikipedia.org/wiki/Static_single-assignment_form) to help understanding/debugging/printouts.
-
 ### Why variations as Ints instead of using wrapper types?
 
-A design choice and not a necessity, between trade-offs at this moment, a wrapper type is planned.
+A design choice and not a necessity, between trade-offs at this moment. 
+
+A wrapper type would help distinguish between UUIDs and other integer in an application which is useful. Lack of a wrapper allows for transparent passing around UUIDs between an application and databases/drivers without explicit (de-)serialization, while errors around UUIDs used as keys are enought profound for a system, to discover them rather early then late. But, a wrapper type is planned, not just for higher type safety, but also for easier support of larger than UInt128 UUIDs (e.g. KSUID)
 
 ### Why modified Base 32/64 encoding?
 
