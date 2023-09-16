@@ -558,8 +558,8 @@ using GenId
             id_int_2 = GenId.base32decode_int128("22BCAUU7RLKOX3CKM24UOTK3JS")
             @test id_int_1 == id_int_2
 
-            #@test tsid_to_string(iddef_firebase_push_id, id_int_1) == "DVqh4j54DWG1F0Pda-Ms"
-            #@test tsid_int_from_string(iddef_firebase_push_id, "DVqh4j54DWG1F0Pda-Ms") == id_int_1
+            @test tsid_to_string(iddef_firebase_push_id, id_int_1) == "DVqh4j54DWG1F0Pda-Ms"
+            @test tsid_int_from_string(iddef_firebase_push_id, "DVqh4j54DWG1F0Pda-Ms") == id_int_1
         end
 
         @testset "tsid_to_string" begin

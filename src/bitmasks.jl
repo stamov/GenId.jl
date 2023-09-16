@@ -262,27 +262,32 @@ julia> tsid_to_string(iddef, 489485826766409729)
 ```
 """
 function tsid_to_string(def::TSIDGenericContainer, tsid::T) where {T<:Integer}
+    r = ""
     if def.text_algorithm == :crockford_base_32
         if def.type == Int64
-            crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
         elseif def.type == Int128
-            crockford32_encode_int128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_int128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
         elseif def.type == UInt64
-            crockford32_encode_uint64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_uint64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
         elseif def.type == UInt128
-            crockford32_encode_uint128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_uint128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
         end
     elseif def.text_algorithm == :base_64
         if def.type == Int128
-            base64encode_int128(tsid; started_init=def.text_full_width)
+            r = base64encode_int128(tsid; started_init=def.text_full_width)
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
         end
     else
         throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
     end
+    if length(r) > def.text_max_length
+        r = last(r, def.text_max_length)
+    end
+    return r
 end
 
 """
