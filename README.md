@@ -20,6 +20,7 @@ At the lower level it provides a facility to easy combine user defined bit-field
 
 Finally it offers implementations for the following specific UUID schemes used in the industry:
 
+* 128-bit [Nano ID](https://github.com/ai/nanoid) using modified Base 64 text encoding;
 * 128-bit [ULID](https://github.com/ulid/spec) using [Crockford Base 32](https://www.crockford.com/base32.html);
 * 128-bit [XID](https://github.com/rs/xid) using modified Base 64 text encoding;
 * 128-bit [Firebase Push ID](https://github.com/arturictus/firebase_pushid) using modified Base 64 text encoding;
