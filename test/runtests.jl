@@ -13,6 +13,11 @@ using GenId
         Aqua.test_all(GenId)
     end
 
+    SOME_EPOCH_START_2020 = DateTime(2020, 1, 1, 0, 0, 0, 0)
+    SOME_EPOCH_START_VALUE_2020 = Dates.value(SOME_EPOCH_START_2020)
+    #print(SOME_EPOCH_START_VALUE_2020)
+    SOME_EPOCH_END_2070 = DateTime(2070, 12, 31, 23, 59, 59, 999)
+    SOME_EPOCH_END_VALUE_2070 = Dates.value(SOME_EPOCH_END_2070)
 
     @testset "GenId.croford32" begin
         @testset "crockford32_encode_uint64" begin
@@ -273,232 +278,232 @@ using GenId
     #     @test implant_value_into_int(0, f1, 4) == 8
     # end
 
-    @testset "GenId.jl.tsid-41-10-12" begin
+    # @testset "GenId.jl.tsid-41-10-12" begin
 
-        SOME_EPOCH_START_2020 = DateTime(2020, 1, 1, 0, 0, 0, 0)
-        SOME_EPOCH_START_VALUE_2020 = Dates.value(SOME_EPOCH_START_2020)
-        #print(SOME_EPOCH_START_VALUE_2020)
-        SOME_EPOCH_END_2070 = DateTime(2070, 12, 31, 23, 59, 59, 999)
-        SOME_EPOCH_END_VALUE_2070 = Dates.value(SOME_EPOCH_END_2070)
-        #print(SOME_EPOCH_END_VALUE_2070)
+    #     SOME_EPOCH_START_2020 = DateTime(2020, 1, 1, 0, 0, 0, 0)
+    #     SOME_EPOCH_START_VALUE_2020 = Dates.value(SOME_EPOCH_START_2020)
+    #     #print(SOME_EPOCH_START_VALUE_2020)
+    #     SOME_EPOCH_END_2070 = DateTime(2070, 12, 31, 23, 59, 59, 999)
+    #     SOME_EPOCH_END_VALUE_2070 = Dates.value(SOME_EPOCH_END_2070)
+    #     #print(SOME_EPOCH_END_VALUE_2070)
 
-        bits_time = 41
-        bits_machine = 10
-        bits_tail = 12
-        machine_id = 1
-        iddef_int64_1 = TsIdDefinition(
-            Int64; 
-            bits_time=bits_time,
-            bits_group_1=bits_machine,
-            bits_tail=bits_tail,
-            group_1=machine_id,
-            epoch_start_dt=SOME_EPOCH_START_2020, 
-            epoch_end_dt=SOME_EPOCH_END_2070)
-        #@show iddef_int64_1
-        #@show typeof(iddef_int64_1)
+    #     bits_time = 41
+    #     bits_machine = 10
+    #     bits_tail = 12
+    #     machine_id = 1
+    #     iddef_int64_1 = TsIdDefinition(
+    #         Int64; 
+    #         bits_time=bits_time,
+    #         bits_group_1=bits_machine,
+    #         bits_tail=bits_tail,
+    #         group_1=machine_id,
+    #         epoch_start_dt=SOME_EPOCH_START_2020, 
+    #         epoch_end_dt=SOME_EPOCH_END_2070)
+    #     #@show iddef_int64_1
+    #     #@show typeof(iddef_int64_1)
 
-        @testset "GenId TsIdDefinition" begin
-            @test typeof(iddef_int64_1) == TsIdDefinition
-            @test_throws AssertionError TsIdDefinition(
-                Int64;
-                bits_time=-3,
-                bits_group_1=bits_machine,
-                bits_tail=bits_tail,
-                group_1=machine_id,
-                epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
-                epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws AssertionError TsIdDefinition(
-                Int64;
-                bits_time=bits_time,
-                bits_group_1=72,
-                bits_tail=bits_tail,
-                group_1=machine_id,
-                epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
-                epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws AssertionError TsIdDefinition(
-                Int64;
-                bits_time=bits_time,
-                bits_group_1=bits_machine,
-                bits_tail=92,
-                group_1=machine_id,
-                epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
-                epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws AssertionError TsIdDefinition(
-                Int64;
-                bits_time=-3,
-                bits_group_1=bits_machine,
-                bits_tail=bits_tail,
-                group_1=machine_id,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt = DateTime("2090-01-12T17:21:55.308"))
-            @test_throws AssertionError TsIdDefinition(
-                Int64;
-                bits_time=-3,
-                bits_group_1=bits_machine,
-                bits_tail=bits_tail,
-                group_1=machine_id,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws AssertionError TsIdDefinition(
-                Int64;
-                bits_time=1,
-                bits_group_1=1,
-                bits_tail=1,
-                group_1=machine_id,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070)
-            @test_throws AssertionError TsIdDefinition(
-                Int64;
-                bits_time=bits_time,
-                bits_group_1=bits_machine,
-                bits_tail=bits_tail,
-                group_1=machine_id,
-                epoch_start_dt=SOME_EPOCH_END_2070,
-                epoch_end_dt=SOME_EPOCH_START_2020)
+    #     @testset "GenId TsIdDefinition" begin
+    #         @test typeof(iddef_int64_1) == TsIdDefinition
+    #         @test_throws AssertionError TsIdDefinition(
+    #             Int64;
+    #             bits_time=-3,
+    #             bits_group_1=bits_machine,
+    #             bits_tail=bits_tail,
+    #             group_1=machine_id,
+    #             epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
+    #             epoch_end_dt=SOME_EPOCH_END_2070)
+    #         @test_throws AssertionError TsIdDefinition(
+    #             Int64;
+    #             bits_time=bits_time,
+    #             bits_group_1=72,
+    #             bits_tail=bits_tail,
+    #             group_1=machine_id,
+    #             epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
+    #             epoch_end_dt=SOME_EPOCH_END_2070)
+    #         @test_throws AssertionError TsIdDefinition(
+    #             Int64;
+    #             bits_time=bits_time,
+    #             bits_group_1=bits_machine,
+    #             bits_tail=92,
+    #             group_1=machine_id,
+    #             epoch_start_dt=DateTime("2000-01-12T17:21:55.308"),
+    #             epoch_end_dt=SOME_EPOCH_END_2070)
+    #         @test_throws AssertionError TsIdDefinition(
+    #             Int64;
+    #             bits_time=-3,
+    #             bits_group_1=bits_machine,
+    #             bits_tail=bits_tail,
+    #             group_1=machine_id,
+    #             epoch_start_dt=SOME_EPOCH_START_2020,
+    #             epoch_end_dt = DateTime("2090-01-12T17:21:55.308"))
+    #         @test_throws AssertionError TsIdDefinition(
+    #             Int64;
+    #             bits_time=-3,
+    #             bits_group_1=bits_machine,
+    #             bits_tail=bits_tail,
+    #             group_1=machine_id,
+    #             epoch_start_dt=SOME_EPOCH_START_2020,
+    #             epoch_end_dt=SOME_EPOCH_END_2070)
+    #         @test_throws AssertionError TsIdDefinition(
+    #             Int64;
+    #             bits_time=1,
+    #             bits_group_1=1,
+    #             bits_tail=1,
+    #             group_1=machine_id,
+    #             epoch_start_dt=SOME_EPOCH_START_2020,
+    #             epoch_end_dt=SOME_EPOCH_END_2070)
+    #         @test_throws AssertionError TsIdDefinition(
+    #             Int64;
+    #             bits_time=bits_time,
+    #             bits_group_1=bits_machine,
+    #             bits_tail=bits_tail,
+    #             group_1=machine_id,
+    #             epoch_start_dt=SOME_EPOCH_END_2070,
+    #             epoch_end_dt=SOME_EPOCH_START_2020)
 
-        end
-        @testset "tsid_timestamp" begin
-            tsid_start = GenId._make_bits_timestamp(SOME_EPOCH_START_2020, SOME_EPOCH_START_VALUE_2020, iddef_int64_1.shift_bits_time)
-            @test tsid_start == 0
-            @test GenId.tsid_timestamp(tsid_start, SOME_EPOCH_START_VALUE_2020, bits_time) == SOME_EPOCH_START_2020
+    #     end
+    #     @testset "tsid_timestamp" begin
+    #         tsid_start = GenId._make_bits_timestamp(SOME_EPOCH_START_2020, SOME_EPOCH_START_VALUE_2020, iddef_int64_1.shift_bits_time)
+    #         @test tsid_start == 0
+    #         @test GenId.tsid_timestamp(tsid_start, SOME_EPOCH_START_VALUE_2020, bits_time) == SOME_EPOCH_START_2020
             
-            tsid_end = GenId._make_bits_timestamp(SOME_EPOCH_END_2070, SOME_EPOCH_START_VALUE_2020, 22)
-            @test tsid_end == 6750561160392605696
-            @test tsid_timestamp(iddef_int64_1, tsid_end) == SOME_EPOCH_END_2070
+    #         tsid_end = GenId._make_bits_timestamp(SOME_EPOCH_END_2070, SOME_EPOCH_START_VALUE_2020, 22)
+    #         @test tsid_end == 6750561160392605696
+    #         @test tsid_timestamp(iddef_int64_1, tsid_end) == SOME_EPOCH_END_2070
             
-            @test GenId._make_bits_timestamp(iddef_int64_1, SOME_EPOCH_START_2020) == tsid_start
-            @test GenId._make_bits_timestamp(iddef_int64_1, SOME_EPOCH_END_2070) == tsid_end
-        end
+    #         @test GenId._make_bits_timestamp(iddef_int64_1, SOME_EPOCH_START_2020) == tsid_start
+    #         @test GenId._make_bits_timestamp(iddef_int64_1, SOME_EPOCH_END_2070) == tsid_end
+    #     end
 
-        @testset "tsid_machine_id" begin
-            mid1 = GenId._make_bits_group_1(1, iddef_int64_1.shift_bits_group_1)
-            @test mid1 == 4096
-            @test tsid_group_1(iddef_int64_1, mid1) == 1
+    #     @testset "tsid_machine_id" begin
+    #         mid1 = GenId._make_bits_group_1(1, iddef_int64_1.shift_bits_group_1)
+    #         @test mid1 == 4096
+    #         @test tsid_group_1(iddef_int64_1, mid1) == 1
             
-            mid2 = GenId._make_bits_group_1(2, iddef_int64_1.shift_bits_group_1)
-            @test mid2 == 8192
-            @test tsid_group_1(iddef_int64_1, mid2) == 2
+    #         mid2 = GenId._make_bits_group_1(2, iddef_int64_1.shift_bits_group_1)
+    #         @test mid2 == 8192
+    #         @test tsid_group_1(iddef_int64_1, mid2) == 2
             
-            mid1023 = GenId._make_bits_group_1(1023, iddef_int64_1.shift_bits_group_1)
-            @test mid1023 == 4190208
-            @test tsid_group_1(iddef_int64_1, mid1023) == 1023
-            @test GenId._make_bits_group_1(iddef_int64_1) == mid1
+    #         mid1023 = GenId._make_bits_group_1(1023, iddef_int64_1.shift_bits_group_1)
+    #         @test mid1023 == 4190208
+    #         @test tsid_group_1(iddef_int64_1, mid1023) == 1023
+    #         @test GenId._make_bits_group_1(iddef_int64_1) == mid1
             
-            tsid_r = GenId._make_bits_group_1(iddef_int64_1)
-            @test tsid_group_1(iddef_int64_1, tsid_r) == machine_id
+    #         tsid_r = GenId._make_bits_group_1(iddef_int64_1)
+    #         @test tsid_group_1(iddef_int64_1, tsid_r) == machine_id
 
-            @test tsid_timestamp(iddef_int64_1, TSID{Int64}(489485826766409729)) == DateTime("2023-09-12T17:21:55.308")
-            @test tsid_group_1(iddef_int64_1, TSID{Int64}(489485826766409729)) == machine_id
-            @test tsid_group_2(iddef_int64_1, TSID{Int64}(489485826766409729)) == 0
-            @test tsid_tail(iddef_int64_1, TSID{Int64}(489485826766409729)) == 1
+    #         @test tsid_timestamp(iddef_int64_1, TSID{Int64}(489485826766409729)) == DateTime("2023-09-12T17:21:55.308")
+    #         @test tsid_group_1(iddef_int64_1, TSID{Int64}(489485826766409729)) == machine_id
+    #         @test tsid_group_2(iddef_int64_1, TSID{Int64}(489485826766409729)) == 0
+    #         @test tsid_tail(iddef_int64_1, TSID{Int64}(489485826766409729)) == 1
 
-        end
+    #     end
 
-        @testset "tsid_machine_tail :increment_global" begin
-            @test GenId._make_bits_increment(4094, iddef_int64_1.tail_mod) == 4094
-            @test GenId._make_bits_increment(4095, iddef_int64_1.tail_mod) == 4095
-            @test GenId._make_bits_increment(4096, iddef_int64_1.tail_mod) == 0
-            @test GenId._make_bits_increment(4097, iddef_int64_1.tail_mod) == 1
+    #     @testset "tsid_machine_tail :increment_global" begin
+    #         @test GenId._make_bits_increment(4094, iddef_int64_1.tail_mod) == 4094
+    #         @test GenId._make_bits_increment(4095, iddef_int64_1.tail_mod) == 4095
+    #         @test GenId._make_bits_increment(4096, iddef_int64_1.tail_mod) == 0
+    #         @test GenId._make_bits_increment(4097, iddef_int64_1.tail_mod) == 1
             
-            GenId.reset_globabl_machine_id_increment()
-            tsid_tincr_1 = GenId.tsid_generate(iddef_int64_1)
-            tsid_tincr_2 = GenId.tsid_generate(iddef_int64_1)
-            @test tsid_tail(iddef_int64_1, tsid_tincr_1) == 1
-            @test tsid_tail(iddef_int64_1, tsid_tincr_2) == 2
+    #         GenId.reset_globabl_machine_id_increment()
+    #         tsid_tincr_1 = GenId.tsid_generate(iddef_int64_1)
+    #         tsid_tincr_2 = GenId.tsid_generate(iddef_int64_1)
+    #         @test tsid_tail(iddef_int64_1, tsid_tincr_1) == 1
+    #         @test tsid_tail(iddef_int64_1, tsid_tincr_2) == 2
             
-            GenId.reset_globabl_machine_id_increment(4094)
+    #         GenId.reset_globabl_machine_id_increment(4094)
             
-            tsid_tincr_4095 = GenId.tsid_generate(iddef_int64_1)
-            @test tsid_tail(iddef_int64_1, tsid_tincr_4095) == 4095
+    #         tsid_tincr_4095 = GenId.tsid_generate(iddef_int64_1)
+    #         @test tsid_tail(iddef_int64_1, tsid_tincr_4095) == 4095
             
-            tsid_tincr_4096 = GenId.tsid_generate(iddef_int64_1)
-            @test tsid_tail(iddef_int64_1, tsid_tincr_4096) == 0
-        end
+    #         tsid_tincr_4096 = GenId.tsid_generate(iddef_int64_1)
+    #         @test tsid_tail(iddef_int64_1, tsid_tincr_4096) == 0
+    #     end
         
-        @testset "def_*" begin
-            @test def_group_1(iddef_int64_1) == machine_id
-            @test def_group_2(iddef_int64_1) == 0
-            @test def_bits_time(iddef_int64_1) == bits_time
-            @test def_bits_group_1(iddef_int64_1) == bits_machine
-            @test def_bits_group_2(iddef_int64_1) == 0
-            @test def_bits_tail(iddef_int64_1) == bits_tail
-        end
+    #     @testset "def_*" begin
+    #         @test def_group_1(iddef_int64_1) == machine_id
+    #         @test def_group_2(iddef_int64_1) == 0
+    #         @test def_bits_time(iddef_int64_1) == bits_time
+    #         @test def_bits_group_1(iddef_int64_1) == bits_machine
+    #         @test def_bits_group_2(iddef_int64_1) == 0
+    #         @test def_bits_tail(iddef_int64_1) == bits_tail
+    #     end
 
-        @testset "tsid_generate random" begin
-            n_ids = 1000
+    #     @testset "tsid_generate random" begin
+    #         n_ids = 1000
             
-            iddef_s1 = GenId.TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                tail_algorithm=:machine_increment,
-                group_1=1,
-                epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
-                epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
-            )
+    #         iddef_s1 = GenId.TsIdDefinition(
+    #             Int64;
+    #             bits_time=41,
+    #             bits_group_1=10,
+    #             bits_tail=12,
+    #             tail_algorithm=:machine_increment,
+    #             group_1=1,
+    #             epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
+    #             epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
+    #         )
             
-            ids = [tsid_generate(iddef_s1) for i in 1:n_ids]
-            millis = collect(map(x -> tsid_timestamp(iddef_s1, x), ids))
-            tails = collect(map(x -> tsid_tail(iddef_s1, x), ids))
+    #         ids = [tsid_generate(iddef_s1) for i in 1:n_ids]
+    #         millis = collect(map(x -> tsid_timestamp(iddef_s1, x), ids))
+    #         tails = collect(map(x -> tsid_tail(iddef_s1, x), ids))
             
-            montonic = true
-            for i in 2:n_ids
-                if millis[i] < millis[i-1]
-                    monotonic = false
-                end
-            end
-            @test monotinic = true
+    #         montonic = true
+    #         for i in 2:n_ids
+    #             if millis[i] < millis[i-1]
+    #                 monotonic = false
+    #             end
+    #         end
+    #         @test monotinic = true
             
-            sequential = true
-            for i in 2:n_ids
-                if tails[i] < tails[i-1]
-                    sequential = false
-                end
-            end
-            @test sequential = true
+    #         sequential = true
+    #         for i in 2:n_ids
+    #             if tails[i] < tails[i-1]
+    #                 sequential = false
+    #             end
+    #         end
+    #         @test sequential = true
 
 
-            iddef_r1 = GenId.TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                tail_algorithm=:random,
-                group_1=1,
-                epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
-                epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
-            )
+    #         iddef_r1 = GenId.TsIdDefinition(
+    #             Int64;
+    #             bits_time=41,
+    #             bits_group_1=10,
+    #             bits_tail=12,
+    #             tail_algorithm=:random,
+    #             group_1=1,
+    #             epoch_start_dt=DateTime(2020, 1, 1, 0, 0, 0, 0),
+    #             epoch_end_dt=DateTime(2070, 12, 31, 23, 59, 59, 999)
+    #         )
             
-            ids = [tsid_generate(iddef_r1) for i in 1:n_ids]
-            millis = collect(map(x -> tsid_timestamp(iddef_r1, x), ids))
-            tails = collect(map(x -> tsid_tail(iddef_r1, x), ids))
+    #         ids = [tsid_generate(iddef_r1) for i in 1:n_ids]
+    #         millis = collect(map(x -> tsid_timestamp(iddef_r1, x), ids))
+    #         tails = collect(map(x -> tsid_tail(iddef_r1, x), ids))
             
-            montonic = true
-            for i in 2:n_ids
-                if millis[i] < millis[i-1]
-                    monotonic = false
-                end
-            end
-            @test monotinic = true
+    #         montonic = true
+    #         for i in 2:n_ids
+    #             if millis[i] < millis[i-1]
+    #                 monotonic = false
+    #             end
+    #         end
+    #         @test monotinic = true
 
-            sequential = true
-            for i in 2:n_ids
-                if tails[i] < tails[i-1]
-                    sequential = false
-                end
-            end
-            @test sequential == false
+    #         sequential = true
+    #         for i in 2:n_ids
+    #             if tails[i] < tails[i-1]
+    #                 sequential = false
+    #             end
+    #         end
+    #         @test sequential == false
 
-            in_rand_max = true
-            for i in 1:n_ids
-                if tails[i] < 0 || tails[i] > iddef_r1.rand_max
-                    in_rand_max = false
-                end
-            end
-            @test in_rand_max == true
+    #         in_rand_max = true
+    #         for i in 1:n_ids
+    #             if tails[i] < 0 || tails[i] > iddef_r1.rand_max
+    #                 in_rand_max = false
+    #             end
+    #         end
+    #         @test in_rand_max == true
 
-        end
+    #     end
 
         @testset "Snowflake ID" begin
             iddef_snowflake = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1))
@@ -559,149 +564,149 @@ using GenId
             #@test tsid_int_from_string(iddef_firebase_push_id, "DVqh4j54DWG1F0Pda-Ms") == id_int_1
         end
 
-        @testset "tsid_to_string" begin
-            # @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
-            # @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
-            # @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
-            # @test tsid_to_string(convert(Int128, 1)) == "1"
-            # @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
+        # @testset "tsid_to_string" begin
+        #     # @test tsid_to_string(convert(Int64, 0b0000000000000000000000000000000000000000000000000000000000000001)) == "1"
+        #     # @test tsid_to_string(0b0000000000000000000000000000000000000000000000000000000000000001) == "1"
+        #     # @test tsid_to_string(0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) == "1"
+        #     # @test tsid_to_string(convert(Int128, 1)) == "1"
+        #     # @test tsid_to_string(0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111) == "3ZZZZZZZZZZZZZZZZZZZZZZZZZ"
 
-            iddef_int64_1 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_to_string(iddef_int64_1, 489485826766409729) == "DJR0RGDG0401"
+        #     iddef_int64_1 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_to_string(iddef_int64_1, 489485826766409729) == "DJR0RGDG0401"
 
-            iddef_int64_2 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=true,
-                text_full_width=false,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_to_string(iddef_int64_2, 489485826766409729) == "DJR0RGDG04014"
+        #     iddef_int64_2 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=true,
+        #         text_full_width=false,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_to_string(iddef_int64_2, 489485826766409729) == "DJR0RGDG04014"
 
-            iddef_int64_3 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=false,
-                text_full_width=true,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_to_string(iddef_int64_3, 489485826766409729) == "0DJR0RGDG0401"
+        #     iddef_int64_3 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=false,
+        #         text_full_width=true,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_to_string(iddef_int64_3, 489485826766409729) == "0DJR0RGDG0401"
 
-            iddef_int64_4 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=true,
-                text_full_width=true,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_to_string(iddef_int64_4, 489485826766409729) == "0DJR0RGDG04014"
+        #     iddef_int64_4 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=true,
+        #         text_full_width=true,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_to_string(iddef_int64_4, 489485826766409729) == "0DJR0RGDG04014"
 
-            iddef_int64_5 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=false,
-                text_full_width=false,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_to_string(iddef_int64_5, 489485826766409729) == "DJR0RGDG0401"
+        #     iddef_int64_5 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=false,
+        #         text_full_width=false,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_to_string(iddef_int64_5, 489485826766409729) == "DJR0RGDG0401"
             
-            #tsid_to_string(iddef_int64_1)
-        end
+        #     #tsid_to_string(iddef_int64_1)
+        # end
 
-        @testset "tsid_from_string" begin
-            @test_throws MethodError tsid_int_from_string(13)
+        # @testset "tsid_from_string" begin
+        #     @test_throws MethodError tsid_int_from_string(13)
 
-            iddef_int64_1 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_int_from_string(iddef_int64_1, "DJR0RGDG0401") == 489485826766409729
+        #     iddef_int64_1 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_int_from_string(iddef_int64_1, "DJR0RGDG0401") == 489485826766409729
 
-            iddef_int64_2 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=true,
-                text_full_width=false,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_int_from_string(iddef_int64_2, "DJR0RGDG04014") == 489485826766409729
+        #     iddef_int64_2 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=true,
+        #         text_full_width=false,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_int_from_string(iddef_int64_2, "DJR0RGDG04014") == 489485826766409729
 
-            iddef_int64_3 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=false,
-                text_full_width=true,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_int_from_string(iddef_int64_3, "0DJR0RGDG0401") == 489485826766409729
+        #     iddef_int64_3 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=false,
+        #         text_full_width=true,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_int_from_string(iddef_int64_3, "0DJR0RGDG0401") == 489485826766409729
 
-            iddef_int64_4 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=true,
-                text_full_width=true,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_int_from_string(iddef_int64_4, "0DJR0RGDG04014") == 489485826766409729
+        #     iddef_int64_4 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=true,
+        #         text_full_width=true,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_int_from_string(iddef_int64_4, "0DJR0RGDG04014") == 489485826766409729
 
-            iddef_int64_5 = TsIdDefinition(
-                Int64;
-                bits_time=41,
-                bits_group_1=10,
-                bits_tail=12,
-                text_with_checksum=false,
-                text_full_width=false,
-                group_1=1,
-                epoch_start_dt=SOME_EPOCH_START_2020,
-                epoch_end_dt=SOME_EPOCH_END_2070
-            )
-            @test tsid_int_from_string(iddef_int64_5, "00000000000000000000000001") == convert(Int128, 1)
-            @test tsid_int_from_string(iddef_int64_5, "0000000000001") == 1
-            @test tsid_int_from_string(iddef_int64_5, "DJR0RGDG0401") == 489485826766409729
-        end
+        #     iddef_int64_5 = TsIdDefinition(
+        #         Int64;
+        #         bits_time=41,
+        #         bits_group_1=10,
+        #         bits_tail=12,
+        #         text_with_checksum=false,
+        #         text_full_width=false,
+        #         group_1=1,
+        #         epoch_start_dt=SOME_EPOCH_START_2020,
+        #         epoch_end_dt=SOME_EPOCH_END_2070
+        #     )
+        #     @test tsid_int_from_string(iddef_int64_5, "00000000000000000000000001") == convert(Int128, 1)
+        #     @test tsid_int_from_string(iddef_int64_5, "0000000000001") == 1
+        #     @test tsid_int_from_string(iddef_int64_5, "DJR0RGDG0401") == 489485826766409729
+        # end
 
-    end
+    # end
 
 end
 

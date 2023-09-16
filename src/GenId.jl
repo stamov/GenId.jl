@@ -9,7 +9,7 @@ include("base64.jl")
 include("base32.jl")
 include("base32_crockford.jl")
 include("bitmasks.jl")
-include("tsid.jl")
+#include("tsid.jl")
 include("snowflakeid.jl")
 include("instagramid.jl")
 include("firebasepushid.jl")
@@ -29,12 +29,12 @@ export extract_value_from_bits, implant_value_into_int
 
 export FIREBASE_PUSHID_DEFINITION, ULID_DEFINITION
 
-export TSID, TsIdDefinition
+#export TSID, TsIdDefinition
 export reset_globabl_machine_id_increment
-export def_bits_time, def_bits_group_1, def_bits_group_2, def_bits_tail, def_group_1, def_group_2
+#export def_bits_time, def_bits_group_1, def_bits_group_2, def_bits_tail, def_group_1, def_group_2
 export tsid_generate
-export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
-export tsid_to_string, tsid_int_from_string
+#export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
+#export tsid_to_string, tsid_int_from_string
 
 export FirebasePushIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition, XIdDefinition
 export tsid_getfield_value
