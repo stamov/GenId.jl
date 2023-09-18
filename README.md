@@ -18,8 +18,9 @@ A tiny library making it easy to generate most of the [UUID](https://en.wikipedi
 
 At the lower level it provides a facility to easy combine user defined bit-fields with different semantics (e.g. random numbers, machine id, timestamp etc.) inside Integers. Combining them allows to construct specific UUID generators/parsers in just few lines of code. It also implements widely used (de-)serialization schemes.
 
-Finally it offers implementations for the following specific UUID schemes used in the industry:
+Finally it offers example implementations for the following specific UUID schemes used in the industry:
 
+* 128-bit [UUIDv7](https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format#old_var_table) proposal/variant with machine id;
 * 128-bit [Nano ID](https://github.com/ai/nanoid) using modified Base 64 text encoding;
 * 128-bit [ULID](https://github.com/ulid/spec) using [Crockford Base 32](https://www.crockford.com/base32.html);
 * 128-bit [XID](https://github.com/rs/xid) using modified Base 64 text encoding;

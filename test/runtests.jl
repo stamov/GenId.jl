@@ -557,6 +557,12 @@ using GenId
             @test id2 == id1
         end
 
+        @testset "UUIDv7 1" begin
+            iddef_uuidv7_1 = UUIDv7_1_IdDefinition()
+            @show tsid_generate(iddef_uuidv7_1)
+            @show tsid_generate_string(iddef_uuidv7_1)
+        end
+
         @testset "Firebase PushID" begin
             iddef_firebase_push_id = FIREBASE_PUSHID_DEFINITION
             now = Dates.now()
