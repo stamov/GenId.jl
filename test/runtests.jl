@@ -18,6 +18,7 @@ using GenId
     #print(SOME_EPOCH_START_VALUE_2020)
     SOME_EPOCH_END_2070 = DateTime(2070, 12, 31, 23, 59, 59, 999)
     SOME_EPOCH_END_VALUE_2070 = Dates.value(SOME_EPOCH_END_2070)
+    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE = MachineSequenceField(Int64, 0, 12)
 
     @testset "GenId.croford32" begin
         @testset "crockford32_encode_uint64" begin
@@ -557,11 +558,11 @@ using GenId
             @test id2 == id1
         end
 
-        @testset "UUIDv7 1" begin
-            iddef_uuidv7_1 = UUIDv7_1_IdDefinition()
-            @show tsid_generate(iddef_uuidv7_1)
-            @show tsid_generate_string(iddef_uuidv7_1)
-        end
+        # @testset "UUIDv7 1" begin
+        #     iddef_uuidv7_1 = UUIDv7_1_IdDefinition()
+        #     @show tsid_generate(iddef_uuidv7_1)
+        #     @show tsid_generate_string(iddef_uuidv7_1)
+        # end
 
         @testset "Firebase PushID" begin
             iddef_firebase_push_id = FIREBASE_PUSHID_DEFINITION
@@ -582,38 +583,168 @@ using GenId
 
         @testset "tsid_to_string" begin
             
-            iddef_int64_1 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1))
+            iddef_int64_1 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=false,
+                    use_full_with=false
+                )
+            )
             @test tsid_to_string(iddef_int64_1, 489485826766409729) == "DJR0RGDG0401"
 
-            iddef_int64_2 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true)
+            iddef_int64_2 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=true,
+                    use_full_with=false
+                )
+            )
             @test tsid_to_string(iddef_int64_2, 489485826766409729) == "DJR0RGDG04014"
 
-            iddef_int64_3 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=true)
+            iddef_int64_3 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=false,
+                    use_full_with=true
+                )
+            )
             @test tsid_to_string(iddef_int64_3, 489485826766409729) == "0DJR0RGDG0401"
 
-            iddef_int64_4 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true, text_full_width=true)
+            iddef_int64_4 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=true,
+                    use_full_with=true
+                )
+            )
             @test tsid_to_string(iddef_int64_4, 489485826766409729) == "0DJR0RGDG04014"
 
-            iddef_int64_5 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=false)
+            iddef_int64_5 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=false,
+                    use_full_with=false
+                )
+            )
             @test tsid_to_string(iddef_int64_5, 489485826766409729) == "DJR0RGDG0401"
             
         end
 
         @testset "tsid_from_string" begin
             # @test_throws MethodError tsid_int_from_string(13)
-            iddef_int64_1 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1))
+            iddef_int64_1 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=false,
+                    use_full_with=true
+                )
+            )
             @test tsid_int_from_string(iddef_int64_1, "DJR0RGDG0401") == 489485826766409729
 
-            iddef_int64_2 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true)
+            iddef_int64_2 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=true,
+                    use_full_with=false
+                )
+            )
             @test tsid_int_from_string(iddef_int64_2, "DJR0RGDG04014") == 489485826766409729
 
-            iddef_int64_3 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=true)
+            iddef_int64_3 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=false,
+                    use_full_with=true
+                )
+            )
             @test tsid_int_from_string(iddef_int64_3, "0DJR0RGDG0401") == 489485826766409729
 
-            iddef_int64_4 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=true, text_full_width=true)
+            iddef_int64_4 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=true,
+                    use_full_with=true
+                )
+            )
             @test tsid_int_from_string(iddef_int64_4, "0DJR0RGDG04014") == 489485826766409729
 
-            iddef_int64_5 = SnowflakeIdDefinition(SOME_EPOCH_START_2020, convert(Int64, 1); text_with_checksum=false, text_full_width=false)
+            iddef_int64_5 = TSIDGenericContainer(
+                Int64,
+                :SnowflakeIdDefinition,
+                [
+                    TimestampField(Int64, 22, 41, SOME_EPOCH_START_2020),
+                    ConstantField(UInt64, :machine_id, 12, 10, 1),
+                    SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
+                ],
+                make_crockford_base_32_coder(;
+                    pad_char='0',
+                    has_checksum=false,
+                    use_full_with=true
+                )
+            )
             @test tsid_int_from_string(iddef_int64_5, "00000000000000000000000001") == convert(Int128, 1)
             @test tsid_int_from_string(iddef_int64_5, "0000000000001") == 1
             @test tsid_int_from_string(iddef_int64_5, "DJR0RGDG0401") == 489485826766409729

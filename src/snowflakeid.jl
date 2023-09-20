@@ -1,7 +1,7 @@
 
 const SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE = MachineSequenceField(Int64, 0, 12)
 
-function SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64; args...)
+function SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64)
     TSIDGenericContainer(
         Int64,
         :SnowflakeIdDefinition,
@@ -9,6 +9,11 @@ function SnowflakeIdDefinition(epoch_start_dt::DateTime, machine_id::Int64; args
             TimestampField(Int64, 22, 41, epoch_start_dt),
             ConstantField(UInt64, :machine_id, 12, 10, machine_id),
             SNOWFLAKE_ID_FIELD_MACHINE_SEQUENCE
-        ];
-        args...)
+        ],
+        make_crockford_base_32_coder(;
+            pad_char='0',
+            has_checksum=false,
+            use_full_with=true
+        )
+    )
 end

@@ -5,19 +5,20 @@ using Dates
 
 const UNIX_EPOCH_START = DateTime(1970, 1, 1, 0, 0, 0, 0)
 
+include("text_coders.jl")
 include("base64.jl")
 include("base32.jl")
 include("base32hex.jl")
 include("base32_crockford.jl")
 include("bitmasks.jl")
-#include("tsid.jl")
+include("tsid.jl")
 include("snowflakeid.jl")
 include("instagramid.jl")
 include("firebasepushid.jl")
 include("ulid.jl")
 include("xid.jl")
 include("nanoid.jl")
-include("uuidv71.jl")
+#include("uuidv71.jl")
 
 #@__MODULE__
 #println("in file eval:", @__MODULE__)
@@ -26,20 +27,21 @@ export bit_mask_uint, bit_mask_int
 
 export crockford32_encode_uint64, crockford32_encode_int64, crockford32_decode_int64, crockford32_decode_uint64
 export crockford32_encode_int128, crockford32_decode_uint128, crockford32_decode_int128
-
-export AbstractField, AbstractGeneratedField, ConstantField, GeneratedField, ProcessIdField, RandomField, TimestampField
+export make_basic_coder, make_crockford_base_32_coder
+export AbstractField, AbstractGeneratedField, ConstantField, GeneratedField, MachineSequenceField, ProcessIdField, RandomField, TimestampField
 export extract_value_from_bits, implant_value_into_int
 
 export FIREBASE_PUSHID_DEFINITION, ULID_DEFINITION
 
 #export TSID, TsIdDefinition
+export TSIDGenericContainer
 export reset_globabl_machine_id_increment
 #export def_bits_time, def_bits_group_1, def_bits_group_2, def_bits_tail, def_group_1, def_group_2
 export tsid_generate, tsid_generate_string
 #export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
 export tsid_to_string, tsid_int_from_string
 
-export FirebasePushIdDefinition, InsecureNanoIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, UUIDv7_1_IdDefinition, ULIdDefinition, XIdDefinition
+export FirebasePushIdDefinition, InsecureNanoIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition, XIdDefinition # UUIDv7_1_IdDefinition
 export tsid_getfield_value
 
 

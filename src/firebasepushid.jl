@@ -10,9 +10,15 @@ function FirebasePushIdDefinition()
             FIREBASE_PUSH_ID_FIELD_TIMESTAMP, 
             FIREBASE_PUSH_ID_FIELD_RANDOM
         ],
-        text_algorithm=:base_64,
-        text_full_width=true,
-        text_max_length=20
+        make_basic_coder(;
+            algorithm=:base_64, 
+            bits_per_character=6,
+            dictionary="-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+            pad_char='0',
+            has_checksum=false,
+            use_full_with=true,
+            max_string_length=20
+        )
     )
 end
 

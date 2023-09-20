@@ -207,21 +207,19 @@ struct TSIDGenericContainer <: TSIDAbstractContainer
     type::DataType
     name::Symbol
     fields::Vector{AbstractField}
-    text_algorithm::Symbol
-    text_with_checksum::Bool
-    text_full_width::Bool
-    text_max_length::Int
+    text_coder::TextCoder
+    #text_algorithm::Symbol
+    #text_with_checksum::Bool
+    #text_full_width::Bool
+    #text_max_length::Int
 
     function TSIDGenericContainer(
         type, 
         name, 
-        fields; 
-        text_algorithm=:crockford_base_32,
-        text_with_checksum=false,
-        text_full_width=false,
-        text_max_length=4096 #just some bigger number than usual UUIDs
+        fields,
+        text_coder 
     )
-        new(type, name, fields, text_algorithm, text_with_checksum, text_full_width, text_max_length)
+        new(type, name, fields, text_coder) #, text_algorithm, text_with_checksum, text_full_width, text_max_length)
     end
 end
 
@@ -263,41 +261,42 @@ julia> tsid_to_string(iddef, 489485826766409729)
 """
 function tsid_to_string(def::TSIDGenericContainer, tsid::T) where {T<:Integer}
     r = ""
-    if def.text_algorithm == :crockford_base_32
+    tc = def.text_coder
+    if tc.algorithm == :crockford_base_32
         if def.type == Int64
-            r = crockford32_encode_int64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_int64(tsid; started_init=tc.use_full_width, with_checksum=tc.has_checksum)
         elseif def.type == Int128
-            r = crockford32_encode_int128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_int128(tsid; started_init=tc.use_full_width, with_checksum=tc.has_checksum)
         elseif def.type == UInt64
-            r = crockford32_encode_uint64(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_uint64(tsid; started_init=tc.use_full_width, with_checksum=tc.has_checksum)
         elseif def.type == UInt128
-            r = crockford32_encode_uint128(tsid; started_init=def.text_full_width, with_checksum=def.text_with_checksum)
+            r = crockford32_encode_uint128(tsid; started_init=tc.use_full_width, with_checksum=tc.has_checksum)
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
         end
-    elseif def.text_algorithm == :base_64
+    elseif tc.algorithm == :base_64
         if def.type == Int128
-            r = base64encode_int128(tsid; started_init=def.text_full_width)
+            r = base64encode_int128(tsid; started_init=tc.use_full_width)
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
         end
-    elseif def.text_algorithm == :base_32
+    elseif tc.algorithm == :base_32
         if def.type == Int128
-            r = base32encode_int128(tsid; started_init=def.text_full_width)
+            r = base32encode_int128(tsid; started_init=tc.use_full_width)
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
         end
-    elseif def.text_algorithm == :base_32_hex
+    elseif tc.algorithm == :base_32_hex
         if def.type == Int128
-            r = base32hexencode_int128(tsid; started_init=def.text_full_width)
+            r = base32hexencode_int128(tsid; started_init=tc.use_full_width)
         else
             throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
         end
     else
         throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
     end
-    if length(r) > def.text_max_length
-        r = last(r, def.text_max_length)
+    if length(r) > tc.max_string_length
+        r = last(r, tc.max_string_length)
     end
     return r
 end
@@ -314,26 +313,27 @@ julia> tsid_from_string(iddef, "DJR0RGDG0401")
 ```
 """
 function tsid_int_from_string(def::TSIDGenericContainer, tsid::String)
-    if def.text_algorithm == :crockford_base_32
+    tc = def.text_coder
+    if tc.algorithm == :crockford_base_32
         if def.type == Int64
-            crockford32_decode_int64(tsid; with_checksum=def.text_with_checksum)
+            crockford32_decode_int64(tsid; with_checksum=tc.has_checksum)
         elseif def.type == Int128
-            crockford32_decode_int128(tsid; with_checksum=def.text_with_checksum)
+            crockford32_decode_int128(tsid; with_checksum=tc.has_checksum)
         elseif def.type == UInt64
-            crockford32_decode_uint64(tsid; with_checksum=def.text_with_checksum)
+            crockford32_decode_uint64(tsid; with_checksum=tc.has_checksum)
         elseif def.type == UInt128
-            crockford32_decode_uint128(tsid; with_checksum=def.text_with_checksum)
+            crockford32_decode_uint128(tsid; with_checksum=tc.has_checksum)
         else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+            throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $(iddef.type)."))
         end
-    elseif def.text_algorithm == :base_64
+    elseif tc.algorithm == :base_64
         if def.type == Int128
             base64decode_int128(tsid)
         else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
+            throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $iddef.type)."))
         end
     else
-        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
+        throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm)."))
     end
 end
 

@@ -23,10 +23,15 @@ function InsecureNanoIdDefinition()
         :InsecureNanoIdDefinition,
         [
             NANO_ID_FIELD_RANDOM
-        ];
-        text_algorithm=:base_64,
-        text_full_width=true,
-        text_max_length=21
+        ],
+        make_basic_coder(;
+            algorithm=:base_64,
+            bits_per_character=6,
+            dictionary="useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict",
+            pad_char='0',
+            use_full_with=true,
+            max_string_length=21
+        )
     )
 end
 

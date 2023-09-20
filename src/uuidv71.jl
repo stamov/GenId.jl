@@ -13,7 +13,6 @@ function UUIDv7_1_IdDefinition()
             UUIDv7_1_FIELD_TIMESTAMP,
             UUIDv7_1_FIELD_VERSION,
             UUIDv7_1_FIELD_MACHINE_SEQUENCE,
-            #ConstantField(UInt64, :machine_id, 12, 10, machine_id),
             UUIDv7_1_FIELD_VARIANT,
             UUIDv7_1_FIELD_RANDOM
         ],
