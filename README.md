@@ -36,7 +36,7 @@ Different flavors of UUIDs have different trade-offs around performance, securit
 
 Julia currently offers implementations of UUID v1, v4 and v5 (see [UUIDs in the Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs)). While these provide industry standard algorithms and representations of the IDs (see [RFC 4122](https://www.ietf.org/rfc/rfc4122.txt)), they are not always ideal for usage in databases as they can introduce unwanted side effects like index fragmentation/write amplification or require some configuration of the clients generating them in advance.
 
-There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)) which try to address some of these shortcomings, with few examples:
+There are number of new UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)) which try to address under different trade-offs some of these shortcomings. Below are few examples:
 
 * [Brief history of UUIDs](https://segment.com/blog/a-brief-history-of-the-uuid/);
 * [The best UUID type for database keys](https://vladmihalcea.com/uuid-database-primary-key/);
@@ -249,7 +249,7 @@ A wrapper type would help distinguish between UUIDs and other integer in an appl
 
 ### Why modified Base 32/64 encoding?
 
-Stock Base 32/64 are not correctly sortable.
+Stock Base 32/64 are not correctly sortable under standard ASCII or UTF variants (esp. under big endian schemes). The library uses encodings where at first come ASCII numbers, then capital letters, then small letters and finally punctuation characters, which allows for lexicographic sorting of encoded strings. E.g. in a standard (as per [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648) and earlier [RFC 3548](https://datatracker.ietf.org/doc/html/rfc3548)), characters in the encoding table of the Base 64 encoding are ordered like "ABCDE....abcde...01223...+/", while we use "0123...ABCD...abcd...+-", which is in line with integer codes in ASCII/UTF variants.
 
 ### Why Crockford Base 32 encoding?
 
@@ -261,6 +261,7 @@ Stock Base 32/64 are not correctly sortable.
 
 * Add a wrapper type, which will allow for:
   * Typed UUIDs instead of flavors of Ints only;
+  * Instead of run-time interpretation of the UUID definitions, compile them with macros at compile time for faster execution;
   * If there is a way to automatically marshall UUIDs from a UUID wrapper type to databases using [DBInterface.jl](https://github.com/JuliaDatabases/DBInterface.jl), will be implemented;
   * Support basic IO over streams (see [CodecBase.jl](https://github.com/JuliaIO/CodecBase.jl) and [TranscodingStreams.jl](https://github.com/JuliaIO/TranscodingStreams.jl));
   * Provide support functions for [StructTypes](https://github.com/JuliaData/StructTypes.jl).
