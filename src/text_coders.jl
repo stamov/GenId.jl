@@ -100,7 +100,10 @@ function base_dictionary_encode_int128(n::Int128, coder::TextCoder)
         started = true
     end
 
-    mask_init = convert(Int128, mask_rest(Val{coder.bits_per_character}))
+    #mask_init = convert(Int128, mask_rest(Val{coder.bits_per_character}))
+    #@show bitstring(mask_init), coder.bits_per_character
+    mask_init = convert(Int128, bit_mask_uint(UInt128, 0, coder.bits_per_character-1))
+    #@show bitstring(mask_init), coder.bits_per_character
     remaining_number_of_chars = p-1
     for i in remaining_number_of_chars:-1:0
         #@show i
