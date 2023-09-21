@@ -272,28 +272,30 @@ function tsid_to_string(def::TSIDGenericContainer, tsid::T) where {T<:Integer}
         elseif def.type == UInt128
             r = crockford32_encode_uint128(tsid; started_init=tc.use_full_width, with_checksum=tc.has_checksum)
         else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $(iddef.type)."))
+            throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $(iddef.type)."))
         end
-    elseif tc.algorithm == :base_64
-        if def.type == Int128
-            r = base64encode_int128(tsid; started_init=tc.use_full_width)
-        else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
-        end
-    elseif tc.algorithm == :base_32
-        if def.type == Int128
-            r = base32encode_int128(tsid; started_init=tc.use_full_width)
-        else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
-        end
-    elseif tc.algorithm == :base_32_hex
-        if def.type == Int128
-            r = base32hexencode_int128(tsid; started_init=tc.use_full_width)
-        else
-            throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm) and $iddef.type)."))
-        end
+    elseif def.type == Int128
+        r = base_dictionary_encode_int128(tsid, tc)
+    # elseif tc.algorithm == :base_64
+    #     if def.type == Int128
+    #         r = base64encode_int128(tsid; started_init=tc.use_full_width)
+    #     else
+    #         throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $iddef.type)."))
+    #     end
+    # elseif tc.algorithm == :base_32
+    #     if def.type == Int128
+    #         r = base32encode_int128(tsid; started_init=tc.use_full_width)
+    #     else
+    #         throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $iddef.type)."))
+    #     end
+    # elseif tc.algorithm == :base_32_hex
+    #     if def.type == Int128
+    #         r = base32hexencode_int128(tsid; started_init=tc.use_full_width)
+    #     else
+    #         throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $iddef.type)."))
+    #     end
     else
-        throw(AssertionError("No tsid_to_string implementation for $(iddef.text_algorithm)."))
+        throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and type $(iddef.type)."))
     end
     if length(r) > tc.max_string_length
         r = last(r, tc.max_string_length)
@@ -326,12 +328,14 @@ function tsid_int_from_string(def::TSIDGenericContainer, tsid::String)
         else
             throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $(iddef.type)."))
         end
-    elseif tc.algorithm == :base_64
-        if def.type == Int128
-            base64decode_int128(tsid)
-        else
-            throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $iddef.type)."))
-        end
+    elseif def.type == Int128
+        base_dictionary_decode_int128(tsid, tc)
+    # elseif tc.algorithm == :base_64
+    #     if def.type == Int128
+    #         base64decode_int128(tsid)
+    #     else
+    #         throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm) and $iddef.type)."))
+    #     end
     else
         throw(AssertionError("No tsid_to_string implementation for $(tc.algorithm)."))
     end

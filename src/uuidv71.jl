@@ -16,8 +16,12 @@ function UUIDv7_1_IdDefinition()
             UUIDv7_1_FIELD_VARIANT,
             UUIDv7_1_FIELD_RANDOM
         ],
-        text_algorithm=:base_32_hex,
-        text_full_width=true,
-        #text_max_length=20
+        make_basic_coder(;
+            algorithm=:base_16,
+            bits_per_character=4,
+            dictionary="0123456789ABCDEF",
+            pad_char='0',
+            use_full_with=true
+        )
     )
 end

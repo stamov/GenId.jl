@@ -129,12 +129,26 @@ using GenId
     end
 
     @testset "base32" begin
+        tcf = make_basic_coder(;
+            algorithm=:base_32,
+            bits_per_character=5,
+            dictionary="234567ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            pad_char='2',
+            use_full_with=false
+        )
+        tct = make_basic_coder(;
+            algorithm=:base_32,
+            bits_per_character=5,
+            dictionary="234567ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            pad_char='2',
+            use_full_with=true
+        )
         #@test GenId.base32encode_int128(convert(Int128, 0); started_init=true) == "2"
-        @test GenId.base32encode_int128(convert(Int128, 0)) == "2"
-        @test GenId.base32encode_int128(convert(Int128, 0); started_init=true) == "22222222222222222222222222"
-        @test GenId.base32encode_int128(convert(Int128, 1)) == "3"
-        @test GenId.base32encode_int128(convert(Int128, 1); started_init=true) == "22222222222222222222222223"
-        @test GenId.base32encode_int128(typemax(Int128)) == "5ZZZZZZZZZZZZZZZZZZZZZZZZZ"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 0), tcf) == "2"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 0), tct) == "22222222222222222222222222"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 1), tcf) == "3"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 1), tct) == "22222222222222222222222223"
+        @test GenId.base_dictionary_encode_int128(typemax(Int128), tcf) == "5ZZZZZZZZZZZZZZZZZZZZZZZZZ"
         @test GenId.base32decode_int128("2") == 0
         @test GenId.base32decode_int128("3") == 1
         @test GenId.base32decode_int128("2222222222222222222222222") == 0
@@ -154,15 +168,33 @@ using GenId
     end
 
     @testset "base64" begin
-        @test GenId.base64encode_int128(convert(Int128, 0)) == "0"
-        @test GenId.base64encode_int128(convert(Int128, 0); started_init=true) == "0000000000000000000000"
-        @test GenId.base64encode_int128(convert(Int128, 1)) == "0"
-        @test GenId.base64encode_int128(convert(Int128, 1); started_init=true) == "---------------------0"
-        @test GenId.base64encode_int128(convert(Int128, 10)) == "9"
-        @test GenId.base64encode_int128(typemax(Int128)) == "0zzzzzzzzzzzzzzzzzzzzz"
-        @test GenId.base64encode_int128(convert(Int128, 63)) == "z"
-        @test GenId.base64encode_int128(convert(Int128, 64)) == "0-"
-        @test GenId.base64encode_int128(convert(Int128, 65)) == "00"
+        tcf = make_basic_coder(;
+            algorithm=:base_64,
+            bits_per_character=6,
+            dictionary="-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+            #dictionary="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/",
+            pad_char='0',
+            use_full_with=false,
+            max_string_length=21
+        )
+        tct = make_basic_coder(;
+            algorithm=:base_64,
+            bits_per_character=6,
+            dictionary="-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+            #dictionary="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/",
+            pad_char='0',
+            use_full_with=true,
+            max_string_length=21
+        )
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 0), tcf) == "-"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 0), tct) == "----------------------"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 1), tcf) == "0"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 1), tct) == "---------------------0"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 10), tcf) == "9"
+        @test GenId.base_dictionary_encode_int128(typemax(Int128), tcf) == "0zzzzzzzzzzzzzzzzzzzzz"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 63), tcf) == "z"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 64), tcf) == "0-"
+        @test GenId.base_dictionary_encode_int128(convert(Int128, 65), tcf) == "00"
         @test GenId.base64decode_int128("-") == 0
         @test GenId.base64decode_int128("0") == 1
         @test GenId.base64decode_int128("A") == 11
@@ -553,16 +585,16 @@ using GenId
             @test iddef_nano.name == :InsecureNanoIdDefinition
             id1 = tsid_generate(iddef_nano)
             id1_str = tsid_to_string(iddef_nano, id1)
-            # @show id1, id1_str
+            @show id1, id1_str
             id2 = tsid_int_from_string(iddef_nano, id1_str)
             @test id2 == id1
         end
 
-        # @testset "UUIDv7 1" begin
-        #     iddef_uuidv7_1 = UUIDv7_1_IdDefinition()
-        #     @show tsid_generate(iddef_uuidv7_1)
-        #     @show tsid_generate_string(iddef_uuidv7_1)
-        # end
+        @testset "UUIDv7 1" begin
+            iddef_uuidv7_1 = UUIDv7_1_IdDefinition()
+            @show tsid_generate(iddef_uuidv7_1)
+            @show tsid_generate_string(iddef_uuidv7_1)
+        end
 
         @testset "Firebase PushID" begin
             iddef_firebase_push_id = FIREBASE_PUSHID_DEFINITION

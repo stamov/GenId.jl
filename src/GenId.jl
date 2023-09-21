@@ -18,7 +18,7 @@ include("firebasepushid.jl")
 include("ulid.jl")
 include("xid.jl")
 include("nanoid.jl")
-#include("uuidv71.jl")
+include("uuidv71.jl")
 
 #@__MODULE__
 #println("in file eval:", @__MODULE__)
@@ -41,7 +41,7 @@ export tsid_generate, tsid_generate_string
 #export tsid_timestamp, tsid_group_1, tsid_group_2, tsid_tail
 export tsid_to_string, tsid_int_from_string
 
-export FirebasePushIdDefinition, InsecureNanoIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition, XIdDefinition # UUIDv7_1_IdDefinition
+export FirebasePushIdDefinition, InsecureNanoIdDefinition, InstagramIdDefinition, SnowflakeIdDefinition, ULIdDefinition, UUIDv7_1_IdDefinition, XIdDefinition
 export tsid_getfield_value
 
 
