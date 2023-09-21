@@ -51,14 +51,16 @@ As well about some security constraints/implications:
 
 ## Features of the library
 
-* Support for 64 and 128 signed and unsigned Integers;
+* Support for 64- and 128-bit UUIDs;
+* Small DSL for defining the structure & semantic of a UUID (no syntax/but data oriented through data definitions)
 * Support for fields representing widely used UUID components like machine id, random number, timestamp etc.;
 * Ability to declaratively combine them in a single Integer with custom offsets and bit lengths;
 * Custom implementations of Base 32, Crockford Base 32 and Base 64 text encoding schemes to allow for phonetic sorting for UUIDs having a timestamp component (e.g. to use the IDs as keys in a database);
-* The text encodings are output in big endian;
+* The text encodings are produced/parsed back in big endian byte order;
 * Allows to get back field values from UUIDs;
-* Ability for the user to define own fields and schemes.
-  
+* Ability to use own text encoding dictionaries;
+* Currently all UUID examples mask the highest bit, to allow transparent storage in databases which don't have large unsigned integer types.
+
 ## Usage
 
 Add the package to your project
@@ -261,11 +263,7 @@ Stock Base 32/64 are not correctly sortable under standard ASCII or UTF variants
 
 * Add a wrapper type, which will allow for:
   * Typed UUIDs instead of flavors of Ints only;
-  * Instead of run-time interpretation of the UUID definitions, compile them with macros at compile time for faster execution;
-  * If there is a way to automatically marshall UUIDs from a UUID wrapper type to databases using [DBInterface.jl](https://github.com/JuliaDatabases/DBInterface.jl), will be implemented;
-  * Support basic IO over streams (see [CodecBase.jl](https://github.com/JuliaIO/CodecBase.jl) and [TranscodingStreams.jl](https://github.com/JuliaIO/TranscodingStreams.jl));
-  * Provide support functions for [StructTypes](https://github.com/JuliaData/StructTypes.jl).
-* Replace several methods with macros for higher performance
+  * Compile UUID definitions to minimal set of bit-shifts for calculations and (de-)encoding
 
 ## License
 

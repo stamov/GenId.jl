@@ -13,12 +13,12 @@ struct TextCoder
 end
 
 
-function make_basic_coder(; algorithm::Symbol, bits_per_character::Int64, dictionary::String, pad_char::Char='0', separator_char::Char='-', has_checksum::Bool=false, use_full_with::Bool=false, max_string_length::Int64=typemax(Int64))
+function make_basic_coder(; algorithm::Symbol, bits_per_character::Int64, dictionary::String, pad_char::Char='0', separator_char::Char='-', has_checksum::Bool=false, use_full_with::Bool=false, max_string_length::Int64=typemax(Int64), case_sensitive::Bool = true)
     reverse_dictionary = IdDict{Char,UInt64}()
     len = length(dictionary)
     for i in 1:len
         c = dictionary[i]
-        p = findfirst(c, dictionary)
+        p = findfirst(if case_sensitive c else uppercase(c) end, dictionary)
         push!(reverse_dictionary, c => p - 1)
     end
     return TextCoder(algorithm, bits_per_character, dictionary, reverse_dictionary, pad_char, separator_char, has_checksum, use_full_with, max_string_length)
