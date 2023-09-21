@@ -149,18 +149,18 @@ using GenId
         @test GenId.base_dictionary_encode_int128(convert(Int128, 1), tcf) == "3"
         @test GenId.base_dictionary_encode_int128(convert(Int128, 1), tct) == "22222222222222222222222223"
         @test GenId.base_dictionary_encode_int128(typemax(Int128), tcf) == "5ZZZZZZZZZZZZZZZZZZZZZZZZZ"
-        @test GenId.base32decode_int128("2") == 0
-        @test GenId.base32decode_int128("3") == 1
-        @test GenId.base32decode_int128("2222222222222222222222222") == 0
-        @test GenId.base32decode_int128("2222222222222222222222223") == 1
-        @test GenId.base32decode_int128("5ZZZZZZZZZZZZZZZZZZZZZZZZZ") == typemax(Int128)
+        @test GenId.base_dictionary_decode_int128("2", tcf) == 0
+        @test GenId.base_dictionary_decode_int128("3", tcf) == 1
+        @test GenId.base_dictionary_decode_int128("2222222222222222222222222", tcf) == 0
+        @test GenId.base_dictionary_decode_int128("2222222222222222222222223", tcf) == 1
+        @test GenId.base_dictionary_decode_int128("5ZZZZZZZZZZZZZZZZZZZZZZZZZ", tcf) == typemax(Int128)
         ok = true
         for i in 1:1000
             r = rand(0:typemax(Int128))
-            s = GenId.base32encode_int128(r)
-            f = GenId.base32decode_int128(s)
+            s = GenId.base_dictionary_encode_int128(r, tcf)
+            f = GenId.base_dictionary_decode_int128(s, tcf)
             if r != f
-                @show r, s, f
+                @show :base_32, r, s, f
                 ok = false
             end
         end
@@ -172,19 +172,15 @@ using GenId
             algorithm=:base_64,
             bits_per_character=6,
             dictionary="-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
-            #dictionary="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/",
             pad_char='0',
-            use_full_with=false,
-            max_string_length=21
+            use_full_with=false
         )
         tct = make_basic_coder(;
             algorithm=:base_64,
             bits_per_character=6,
             dictionary="-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
-            #dictionary="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/",
             pad_char='0',
-            use_full_with=true,
-            max_string_length=21
+            use_full_with=true
         )
         @test GenId.base_dictionary_encode_int128(convert(Int128, 0), tcf) == "-"
         @test GenId.base_dictionary_encode_int128(convert(Int128, 0), tct) == "----------------------"
@@ -195,21 +191,31 @@ using GenId
         @test GenId.base_dictionary_encode_int128(convert(Int128, 63), tcf) == "z"
         @test GenId.base_dictionary_encode_int128(convert(Int128, 64), tcf) == "0-"
         @test GenId.base_dictionary_encode_int128(convert(Int128, 65), tcf) == "00"
-        @test GenId.base64decode_int128("-") == 0
-        @test GenId.base64decode_int128("0") == 1
-        @test GenId.base64decode_int128("A") == 11
-        @test GenId.base64decode_int128("z") == 63
-        @test GenId.base64decode_int128("0-") == 64
-        @test GenId.base64decode_int128("00") == 65
-        @test GenId.base64decode_int128("10") == 129
-        @test GenId.base64decode_int128("11") == 130
-        @test GenId.base64decode_int128("----------------------") == 0
-        @test GenId.base64decode_int128("---------------------0") == 1
-        @test GenId.base64decode_int128("0zzzzzzzzzzzzzzzzzzzzz") == typemax(Int128)
-        
+        @test GenId.base_dictionary_decode_int128("-", tcf) == 0
+        @test GenId.base_dictionary_decode_int128("0", tcf) == 1
+        @test GenId.base_dictionary_decode_int128("A", tcf) == 11
+        @test GenId.base_dictionary_decode_int128("z", tcf) == 63
+        @test GenId.base_dictionary_decode_int128("0-", tcf) == 64
+        @test GenId.base_dictionary_decode_int128("00", tcf) == 65
+        @test GenId.base_dictionary_decode_int128("10", tcf) == 129
+        @test GenId.base_dictionary_decode_int128("11", tcf) == 130
+        @test GenId.base_dictionary_decode_int128("----------------------", tcf) == 0
+        @test GenId.base_dictionary_decode_int128("---------------------0", tcf) == 1
+        @test GenId.base_dictionary_decode_int128("0zzzzzzzzzzzzzzzzzzzzz", tcf) == typemax(Int128)
+
+        tcf22 = make_basic_coder(;
+            algorithm=:base_64,
+            bits_per_character=6,
+            dictionary="-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+            pad_char='0',
+            use_full_with=false,
+            max_string_length=22
+        )
+
+        #@show "!+-------------------------------------------------------------------"
         s = "DVqh4j54DWG1F0Pda-Ms"
         r = 301430602692632926610578560781911544
-        @test GenId.base64decode_int128(s) == 301430602692632926610578560781911544
+        @test GenId.base_dictionary_decode_int128(s, tcf22) == 301430602692632926610578560781911544
         
         # s = GenId.base64encode_int128(r)
         # @show s
@@ -219,16 +225,17 @@ using GenId
         ok = true
         for i in 1:1000
             r = rand(0:typemax(Int128))
-            s = GenId.base64encode_int128(r)
-            f = GenId.base64decode_int128(s)
+            s = GenId.base_dictionary_encode_int128(r, tcf22)
+            f = GenId.base_dictionary_decode_int128(s, tcf22)
             if r != f
-                @show r, s, f
+                @show :base_64, r, s, f
                 @show bitstring(r)
                 @show bitstring(f)
                 ok = false
             end
         end
         @test ok == true
+
     end
 
     @testset "GenId.bit_mask" begin
@@ -603,10 +610,11 @@ using GenId
             @test tsid_getfield_value(iddef_firebase_push_id, :timestamp, id1) < Dates.value(now) + 100
             @test typeof(id1) == iddef_firebase_push_id.type
             id_int_1 = 301430602692632926610578560781911544
-            id_int_1_str = GenId.base32encode_int128(id_int_1; started_init=true)
-            @test id_int_1_str == "22BCAUU7RLKOX3CKM24UOTK3JS"
-            @test length(id_int_1_str) == 26
-            id_int_2 = GenId.base32decode_int128("22BCAUU7RLKOX3CKM24UOTK3JS")
+            #id_int_1_str = GenId.base32encode_int128(id_int_1; started_init=true)
+            id_int_1_str = GenId.base_dictionary_encode_int128(id_int_1, iddef_firebase_push_id.text_coder)
+            @test id_int_1_str == "DVqh4j54DWG1F0Pda-Ms"
+            @test length(id_int_1_str) == 20
+            id_int_2 = GenId.base_dictionary_decode_int128("DVqh4j54DWG1F0Pda-Ms", iddef_firebase_push_id.text_coder)
             @test id_int_1 == id_int_2
 
             @test tsid_to_string(iddef_firebase_push_id, id_int_1) == "DVqh4j54DWG1F0Pda-Ms"
