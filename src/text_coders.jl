@@ -148,6 +148,7 @@ function base_dictionary_decode_int128(s_input::String, coder::TextCoder)
     #@show s26m
     ls = length(s22m)
     #@show ls
+    # TODO expand for with_checksum
     if ls == 22
         c = s22m[1]
         #@show 1, c

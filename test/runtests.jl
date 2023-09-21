@@ -217,16 +217,23 @@ using GenId
         r = 301430602692632926610578560781911544
         @test GenId.base_dictionary_decode_int128(s, tcf22) == 301430602692632926610578560781911544
         
-        # s = GenId.base64encode_int128(r)
-        # @show s
-        # f = GenId.base64decode_int128(s)
-        # @test r == f
+        s = "0nlFslT4egAtALWMufGCWP"
+        @test GenId.base_dictionary_encode_int128(GenId.base_dictionary_decode_int128(s, tcf22), tcf22) == s
+        s = "0xCp88XEq4zfFlFc7w3FnU"
+        @test GenId.base_dictionary_encode_int128(GenId.base_dictionary_decode_int128(s, tcf22), tcf22) == s
+        s = "WLig_yjsbi3533cN6eu6e"
+        @test GenId.base_dictionary_encode_int128(GenId.base_dictionary_decode_int128(s, tcf22), tcf22) == s
+        s = "QWqHmAFtCdSKybuPdaYaI"
+        @test GenId.base_dictionary_encode_int128(GenId.base_dictionary_decode_int128(s, tcf22), tcf22) == s
+        s = "0DIR5jE2U8o3az6DX5gUT5"
+        @test GenId.base_dictionary_encode_int128(GenId.base_dictionary_decode_int128(s, tcf22), tcf22) == s
 
         ok = true
         for i in 1:1000
             r = rand(0:typemax(Int128))
             s = GenId.base_dictionary_encode_int128(r, tcf22)
             f = GenId.base_dictionary_decode_int128(s, tcf22)
+            #@show bitstring(r), s
             if r != f
                 @show :base_64, r, s, f
                 @show bitstring(r)
@@ -235,6 +242,19 @@ using GenId
             end
         end
         @test ok == true
+
+        tcf21 = make_basic_coder(;
+            algorithm=:base_64,
+            bits_per_character=6,
+            dictionary="-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+            pad_char='0',
+            use_full_with=false,
+            max_string_length=21
+        )
+
+        s = "0DIR5jE2U8o3az6DX5gUT5"
+        s21 = "DIR5jE2U8o3az6DX5gUT5"
+        @test GenId.base_dictionary_encode_int128(GenId.base_dictionary_decode_int128(s, tcf21), tcf21) == s21
 
     end
 
