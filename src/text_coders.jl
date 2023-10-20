@@ -30,11 +30,11 @@ function make_crockford_base_32_coder(; pad_char::Char='0', separator_char::Char
     reverse_dictionary = IdDict{Char,UInt64}()
     for c in '0':'z'
         p = findfirst(c, dictionary_string)
-        if p != nothing
+        if !isnothing(p)
             push!(reverse_dictionary, c => p - 1)
         else
             p = findfirst(uppercase(c), dictionary_string)
-            if p != nothing
+            if !isnothing(p)
                 push!(reverse_dictionary, c => p - 1)
             end
         end

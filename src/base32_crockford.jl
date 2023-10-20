@@ -210,11 +210,11 @@ const CF32_REVERSE_DICT = IdDict{Char,UInt64}()
 
 for c in '0':'z'
     p = findfirst(c, CF32_UPPERCASE_ENCODING_STR)
-    if p != nothing
+    if !isnothing(p)
         push!(CF32_REVERSE_DICT, c => p - 1)
     else
         p = findfirst(uppercase(c), CF32_UPPERCASE_ENCODING_STR)
-        if p != nothing
+        if !isnothing(p)
             push!(CF32_REVERSE_DICT, c => p - 1)
         end
     end

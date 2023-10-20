@@ -55,10 +55,10 @@ As well about some security constraints/implications:
 * Small DSL for defining the structure & semantic of a UUID (no syntax/but data oriented through data definitions)
 * Support for fields representing widely used UUID components like machine id, random number, timestamp etc.;
 * Ability to declaratively combine them in a single Integer with custom offsets and bit lengths;
-* Custom implementations of Base 32, Crockford Base 32 and Base 64 text encoding schemes to allow for phonetic sorting for UUIDs having a timestamp component (e.g. to use the IDs as keys in a database);
+* Custom implementations of Base 16 (Hex), Base 32, Crockford Base 32 and Base 64 text encoding schemes to allow for phonetic sorting for UUIDs having a timestamp component (e.g. to use the IDs as keys in a database);
 * The text encodings are produced/parsed back in big endian byte order;
 * Allows to get back field values from UUIDs;
-* Ability to use own text encoding dictionaries;
+* Ability to use own text encoding dictionaries with declarative case sensitivity for the simple ones;
 * Currently all UUID examples mask the highest bit, to allow transparent storage in databases which don't have large unsigned integer types.
 
 ## Usage
@@ -251,7 +251,7 @@ A wrapper type would help distinguish between UUIDs and other integer in an appl
 
 ### Why modified Base 32/64 encoding?
 
-Stock Base 32/64 are not correctly sortable under standard ASCII or UTF variants (esp. under big endian schemes). The library uses encodings where at first come ASCII numbers, then capital letters, then small letters and finally punctuation characters, which allows for lexicographic sorting of encoded strings. E.g. in a standard (as per [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648) and earlier [RFC 3548](https://datatracker.ietf.org/doc/html/rfc3548)), characters in the encoding table of the Base 64 encoding are ordered like "ABCDE....abcde...01223...+/", while we use "0123...ABCD...abcd...+-", which is in line with integer codes in ASCII/UTF variants.
+Stock Base 32/64 are not correctly sortable under standard ASCII or UTF variants (even under big endian schemes). The library uses encodings where at first come ASCII numbers, then capital letters, then small letters and finally punctuation characters, which allows for lexicographic sorting of encoded strings. E.g. in a standard (as per [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648) and earlier [RFC 3548](https://datatracker.ietf.org/doc/html/rfc3548)), characters in the encoding table of the Base 64 encoding are ordered like "ABCDE....abcde...01223...+/", while we use "0123...ABCD...abcd...+-", which is in line with integer codes in ASCII/UTF variants.
 
 ### Why Crockford Base 32 encoding?
 
