@@ -1,0 +1,13 @@
+.vscode/launch.json
+*.jl.*.cov
+*.jl.cov
+*.jl.mem
+/docs/Manifest.toml
+/docs/build/
+
+claudedocs/
+Manifest.toml
+
+# AI assistant instructions (local only)
+CLAUDE.md
+
