@@ -22,6 +22,9 @@ include("nanoid.jl")
 include("uuidv7.jl")
 include("uuidv7_secure.jl")
 
+# Precompilation workload for faster startup
+include("precompile.jl")
+
 #@__MODULE__
 #println("in file eval:", @__MODULE__)
 

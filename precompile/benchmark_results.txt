@@ -1,0 +1,10 @@
+GenId TTFX Benchmark Results
+Date: 2025-10-10T17:34:14.674
+Julia Version: 1.12.0
+======================================================================
+
+Module load time:        0.433s
+Snowflake operations:    15.99ms
+ULID operations:         41.96ms
+UUIDv7 operations:       0.06ms
+TOTAL TIME (TTFX):       0.491s
