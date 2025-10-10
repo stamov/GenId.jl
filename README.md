@@ -710,7 +710,7 @@ Time-ordered UUIDs significantly improve database performance when used as prima
 
 Different UUID flavors involve trade-offs around performance, security, size (64-bit vs 128-bit), uniqueness guarantees, and serialization formats.
 
-Julia's standard library provides UUID v1, v4, and v7 implementations ([UUIDs in the Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs/)). While these follow industry standards ([RFC 4122](https://www.ietf.org/rfc/rfc4122.txt) and [RFC 9562](https://datatracker.ietf.org/doc/rfc9562/)), the standard library UUIDv7 provides only one configuration. GenId extends this by offering four different UUIDv7 configurations (Simple, Monotonic, Sub-millisecond, and Distributed) to match different use cases, plus additional ID formats like ULID, Snowflake, and Firebase Push ID that may be better suited for specific database or distributed system requirements.
+Julia's standard library provides UUID v1, v4, and v7 (since Julia 1.2.0) implementations ([UUIDs in the Standard Library](https://docs.julialang.org/en/v1/stdlib/UUIDs/)). While these follow industry standards ([RFC 4122](https://www.ietf.org/rfc/rfc4122.txt) and [RFC 9562](https://datatracker.ietf.org/doc/rfc9562/)), the standard library UUIDv7 provides only one configuration. GenId extends this by offering four different UUIDv7 configurations (Simple, Monotonic, Sub-millisecond, and Distributed) to match different use cases, plus additional ID formats like ULID, Snowflake, and Firebase Push ID that may be better suited for specific database or distributed system requirements.
 
 Several newer UUID proposals (see [New UUID Formats](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html)) address these limitations with different trade-offs. Below are some resources exploring these developments:
 
@@ -732,7 +732,7 @@ As well about some security constraints/implications:
 
 Used in production.
 
-Currently we generate signed Integers only. Will be amended in the future.
+Currently we generate signed Integers only mainly because this is what we need. Unsigned might be amended in the future.
 
 ### Why variations as Ints instead of using wrapper types?
 
